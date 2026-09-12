@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, Plus, Search, Filter, Eye, Printer, Trash2 } from 'lucide-react';
+import { FileText, Plus, Search, Filter, Eye, Printer, Trash2, Camera } from 'lucide-react';
 import { useDocuments } from '../hooks/useDocuments';
 import { useClients } from '../../clients/hooks/useClients';
 import { DocumentType, DOCUMENT_TYPE_NAMES } from '../types';
@@ -116,6 +116,13 @@ export function DocumentsList() {
           >
             <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">Талон</span>
+          </Link>
+          <Link
+            to="/documents/photo-reports/new"
+            className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-3 rounded-lg transition-colors text-sm"
+          >
+            <Camera className="w-4 h-4" />
+            <span className="hidden sm:inline">Фотоотчёт</span>
           </Link>
         </div>
       </div>
