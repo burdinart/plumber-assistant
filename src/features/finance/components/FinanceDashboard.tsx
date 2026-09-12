@@ -35,13 +35,19 @@ export function FinanceDashboard() {
       </div>
 
       {/* Main balance */}
-      <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl p-6 mb-6 text-white">
+      <div className={`bg-gradient-to-r rounded-2xl p-6 mb-6 text-white ${
+        balance.balance < 0 
+          ? 'from-red-500 to-red-600' 
+          : 'from-emerald-500 to-emerald-600'
+      }`}>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-emerald-100 text-sm mb-1">Баланс за текущий месяц</p>
+            <p className={balance.balance < 0 ? 'text-red-100 text-sm mb-1' : 'text-emerald-100 text-sm mb-1'}>
+              Баланс за текущий месяц
+            </p>
             <p className="text-4xl font-bold">{formatCurrency(balance.balance)}</p>
           </div>
-          <Wallet className="w-12 h-12 text-emerald-200" />
+          <Wallet className={`w-12 h-12 ${balance.balance < 0 ? 'text-red-200' : 'text-emerald-200'}`} />
         </div>
         <div className="grid grid-cols-2 gap-4 mt-4">
           <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3">
