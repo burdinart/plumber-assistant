@@ -87,15 +87,6 @@ export const MODULES: Module[] = [
     category: 'calculators',
     isNew: true,
   },
-  {
-    id: 'pump-selection',
-    title: 'Подбор насоса',
-    description: 'Расчёт необходимых параметров насоса для системы',
-    icon: 'Zap',
-    path: '/planning/pump-selection',
-    category: 'planning',
-    isNew: true,
-  },
   // Проектирование
   {
     id: 'design-pipe-diameter',

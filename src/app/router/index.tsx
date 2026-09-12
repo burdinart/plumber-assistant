@@ -8,7 +8,6 @@ import { MaterialsReferencePage } from '../../features/materials-reference/Mater
 import { UnitsConverterPage } from '../../features/units-converter/UnitsConverterPage';
 import { PipeLengthPage } from '../../features/pipe-length/PipeLengthPage';
 import { HeatLossPage } from '../../features/heat-loss/HeatLossPage';
-import { PumpSelectionPage } from '../../features/pump-selection/PumpSelectionPage';
 import { SlopeCalculator } from '../../features/calculators/components/SlopeCalculator';
 import { BoilerErrors } from '../../features/reference/components/BoilerErrors';
 import { Troubleshooting } from '../../features/reference/components/Troubleshooting';
@@ -136,11 +135,6 @@ export const router = createBrowserRouter([
       {
         path: 'tools/units-converter',
         element: <UnitsConverterPage />,
-      },
-      // Planning
-      {
-        path: 'planning/pump-selection',
-        element: <PumpSelectionPage />,
       },
       // Finance
       {
