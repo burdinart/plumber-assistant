@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { FileText, Save, X, ArrowLeft } from 'lucide-react';
+import { FileText, Save, X, ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useDocuments } from '../hooks/useDocuments';
 import { useClients } from '../../clients/hooks/useClients';
 import { useOrders } from '../../orders/hooks/useOrders';
 import { useReminders } from '../../reminders/hooks/useReminders';
 import { Warranty } from '../types';
+import { EstimateItem } from '../../finance/types';
 import { getTodayDate, getDateAfterDays } from '../../finance/utils/formatters';
 import { Toast } from '../../../shared/ui/Toast';
 
@@ -13,7 +14,7 @@ export function WarrantyForm() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { createWarranty } = useDocuments();
-  const { getClient } = useClients();
+  const { clients, getClient } = useClients();
   const { getOrder } = useOrders();
   const { addReminder } = useReminders();
 
@@ -28,6 +29,7 @@ export function WarrantyForm() {
     issueDate: getTodayDate(),
     warrantyMonths: 12,
     workDescription: order?.description || '',
+    items: [] as EstimateItem[],
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -43,6 +45,50 @@ export function WarrantyForm() {
       }));
     }
   }, [order]);
+
+  // Добавление новой работы
+  const addItem = () => {
+    const newItem: EstimateItem = {
+      id: `item-${Date.now()}`,
+      name: '',
+      unit: 'шт',
+      quantity: 1,
+      price: 0,
+      type: 'work',
+    };
+    setFormData(prev => ({
+      ...prev,
+      items: [...prev.items, newItem],
+    }));
+  };
+
+  // Удаление работы
+  const removeItem = (itemId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      items: prev.items.filter(item => item.id !== itemId),
+    }));
+  };
+
+  // Обновление работы
+  const updateItem = (itemId: string, field: keyof EstimateItem, value: string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      items: prev.items.map(item =>
+        item.id === itemId ? { ...item, [field]: value } : item
+      ),
+    }));
+  };
+
+  // Генерация описания работ из items
+  useEffect(() => {
+    if (formData.items.length > 0) {
+      const description = formData.items
+        .map(item => `${item.name} (${item.quantity} ${item.unit})`)
+        .join(', ');
+      setFormData(prev => ({ ...prev, workDescription: description }));
+    }
+  }, [formData.items]);
 
   // Расчёт даты окончания гарантии
   const calculateExpiryDate = (issueDate: string, months: number): string => {
@@ -163,12 +209,20 @@ export function WarrantyForm() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Клиент <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              value={client?.name || ''}
-              disabled
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
+            <select
+              value={formData.clientId}
+              onChange={(e) => handleChange('clientId', e.target.value)}
+              className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                errors.clientId ? 'border-red-300 dark:border-red-700' : 'border-gray-300 dark:border-gray-600'
+              }`}
+            >
+              <option value="">Выберите клиента</option>
+              {clients.map(client => (
+                <option key={client.id} value={client.id}>
+                  {client.name}
+                </option>
+              ))}
+            </select>
             {errors.clientId && <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.clientId}</p>}
           </div>
 
@@ -217,6 +271,102 @@ export function WarrantyForm() {
             </p>
           </div>
 
+          {/* Items table */}
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Работы и материалы
+              </h3>
+              <button
+                type="button"
+                onClick={addItem}
+                className="flex items-center gap-1 px-3 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors text-sm font-medium"
+              >
+                <Plus className="w-4 h-4" />
+                Добавить
+              </button>
+            </div>
+
+            {formData.items.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="text-left py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Наименование</th>
+                      <th className="text-left py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Тип</th>
+                      <th className="text-center py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Кол-во</th>
+                      <th className="text-center py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Цена</th>
+                      <th className="text-right py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Сумма</th>
+                      <th className="py-2 px-2"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {formData.items.map((item) => (
+                      <tr key={item.id} className="border-b border-gray-100 dark:border-gray-700/50">
+                        <td className="py-2 px-2">
+                          <input
+                            type="text"
+                            value={item.name}
+                            onChange={(e) => updateItem(item.id, 'name', e.target.value)}
+                            placeholder="Название работы"
+                            className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
+                          <select
+                            value={item.type}
+                            onChange={(e) => updateItem(item.id, 'type', e.target.value)}
+                            className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm"
+                          >
+                            <option value="work">Работа</option>
+                            <option value="material">Материал</option>
+                          </select>
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="number"
+                            value={item.quantity}
+                            onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value))}
+                            min="0.1"
+                            step="0.1"
+                            className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="number"
+                            value={item.price}
+                            onChange={(e) => updateItem(item.id, 'price', Number(e.target.value))}
+                            min="0"
+                            step="100"
+                            className="w-24 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
+                          />
+                        </td>
+                        <td className="py-2 px-2 text-right font-medium text-gray-800 dark:text-white">
+                          {(item.quantity * item.price).toLocaleString('ru-RU')} ₽
+                        </td>
+                        <td className="py-2 px-2">
+                          <button
+                            type="button"
+                            onClick={() => removeItem(item.id)}
+                            className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <p>Нет добавленных работ</p>
+                <p className="text-sm mt-1">Нажмите "Добавить" для добавления работы</p>
+              </div>
+            )}
+          </div>
+
           {/* Work Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -232,6 +382,9 @@ export function WarrantyForm() {
               }`}
             />
             {errors.workDescription && <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.workDescription}</p>}
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+              Автоматически заполняется из списка работ выше
+            </p>
           </div>
 
           {/* Reminder info */}

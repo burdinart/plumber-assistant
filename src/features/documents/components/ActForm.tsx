@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { FileText, Save, X, ArrowLeft } from 'lucide-react';
+import { FileText, Save, X, ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useDocuments } from '../hooks/useDocuments';
 import { useClients } from '../../clients/hooks/useClients';
 import { useEstimates } from '../../finance/hooks/useEstimates';
+import { useOrders } from '../../orders/hooks/useOrders';
 import { Act } from '../types';
+import { EstimateItem } from '../../finance/types';
 import { getTodayDate } from '../../finance/utils/formatters';
 import { Toast } from '../../../shared/ui/Toast';
 
@@ -12,18 +14,20 @@ export function ActForm() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { createAct } = useDocuments();
-  const { getClient } = useClients();
+  const { clients, getClient } = useClients();
   const { getEstimate } = useEstimates();
+  const { getOrder } = useOrders();
 
   const estimateId = searchParams.get('estimateId');
   const orderId = searchParams.get('orderId');
   const clientId = searchParams.get('clientId');
 
   const estimate = estimateId ? getEstimate(estimateId) : undefined;
+  const order = orderId ? getOrder(orderId) : undefined;
   const preselectedClient = clientId ? getClient(clientId) : undefined;
 
   const [formData, setFormData] = useState({
-    clientId: preselectedClient?.id || estimate?.clientId || '',
+    clientId: preselectedClient?.id || estimate?.clientId || order?.clientId || '',
     orderId: orderId || '',
     estimateId: estimateId || '',
     completionDate: getTodayDate(),
@@ -52,6 +56,71 @@ export function ActForm() {
       }));
     }
   }, [estimate]);
+
+  // Автозаполнение из заявки
+  useEffect(() => {
+    if (order && !estimate) {
+      setFormData(prev => ({
+        ...prev,
+        clientId: order.clientId,
+        complaints: order.description || '',
+      }));
+    }
+  }, [order, estimate]);
+
+  // Пересчёт итогов при изменении items
+  useEffect(() => {
+    const totalWork = formData.items
+      .filter(item => item.type === 'work')
+      .reduce((sum, item) => sum + item.quantity * item.price, 0);
+    
+    const totalMaterials = formData.items
+      .filter(item => item.type === 'material')
+      .reduce((sum, item) => sum + item.quantity * item.price, 0);
+    
+    const total = totalWork + totalMaterials;
+    
+    setFormData(prev => ({
+      ...prev,
+      totalWork,
+      totalMaterials,
+      total,
+    }));
+  }, [formData.items]);
+
+  // Добавление новой работы
+  const addItem = () => {
+    const newItem: EstimateItem = {
+      id: `item-${Date.now()}`,
+      name: '',
+      unit: 'шт',
+      quantity: 1,
+      price: 0,
+      type: 'work',
+    };
+    setFormData(prev => ({
+      ...prev,
+      items: [...prev.items, newItem],
+    }));
+  };
+
+  // Удаление работы
+  const removeItem = (itemId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      items: prev.items.filter(item => item.id !== itemId),
+    }));
+  };
+
+  // Обновление работы
+  const updateItem = (itemId: string, field: keyof EstimateItem, value: string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      items: prev.items.map(item =>
+        item.id === itemId ? { ...item, [field]: value } : item
+      ),
+    }));
+  };
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -154,12 +223,20 @@ export function ActForm() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Клиент <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              value={client?.name || ''}
-              disabled
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
+            <select
+              value={formData.clientId}
+              onChange={(e) => handleChange('clientId', e.target.value)}
+              className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                errors.clientId ? 'border-red-300 dark:border-red-700' : 'border-gray-300 dark:border-gray-600'
+              }`}
+            >
+              <option value="">Выберите клиента</option>
+              {clients.map(client => (
+                <option key={client.id} value={client.id}>
+                  {client.name}
+                </option>
+              ))}
+            </select>
             {errors.clientId && <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.clientId}</p>}
           </div>
 
@@ -227,13 +304,104 @@ export function ActForm() {
             />
           </div>
 
-          {/* Items summary */}
-          {formData.items.length > 0 && (
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Работы и материалы ({formData.items.length} позиций)
+          {/* Items table */}
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Работы и материалы
               </h3>
-              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+              <button
+                type="button"
+                onClick={addItem}
+                className="flex items-center gap-1 px-3 py-1.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors text-sm font-medium"
+              >
+                <Plus className="w-4 h-4" />
+                Добавить
+              </button>
+            </div>
+
+            {formData.items.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="text-left py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Наименование</th>
+                      <th className="text-left py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Тип</th>
+                      <th className="text-center py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Кол-во</th>
+                      <th className="text-center py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Цена</th>
+                      <th className="text-right py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Сумма</th>
+                      <th className="py-2 px-2"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {formData.items.map((item) => (
+                      <tr key={item.id} className="border-b border-gray-100 dark:border-gray-700/50">
+                        <td className="py-2 px-2">
+                          <input
+                            type="text"
+                            value={item.name}
+                            onChange={(e) => updateItem(item.id, 'name', e.target.value)}
+                            placeholder="Название работы"
+                            className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
+                          <select
+                            value={item.type}
+                            onChange={(e) => updateItem(item.id, 'type', e.target.value)}
+                            className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm"
+                          >
+                            <option value="work">Работа</option>
+                            <option value="material">Материал</option>
+                          </select>
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="number"
+                            value={item.quantity}
+                            onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value))}
+                            min="0.1"
+                            step="0.1"
+                            className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="number"
+                            value={item.price}
+                            onChange={(e) => updateItem(item.id, 'price', Number(e.target.value))}
+                            min="0"
+                            step="100"
+                            className="w-24 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
+                          />
+                        </td>
+                        <td className="py-2 px-2 text-right font-medium text-gray-800 dark:text-white">
+                          {(item.quantity * item.price).toLocaleString('ru-RU')} ₽
+                        </td>
+                        <td className="py-2 px-2">
+                          <button
+                            type="button"
+                            onClick={() => removeItem(item.id)}
+                            className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <p>Нет добавленных работ</p>
+                <p className="text-sm mt-1">Нажмите "Добавить" для добавления работы</p>
+              </div>
+            )}
+
+            {/* Totals */}
+            {formData.items.length > 0 && (
+              <div className="mt-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-gray-600 dark:text-gray-400">Работы:</span>
                   <span className="font-medium text-gray-800 dark:text-white">{formData.totalWork.toLocaleString('ru-RU')} ₽</span>
@@ -247,8 +415,8 @@ export function ActForm() {
                   <span className="font-bold text-blue-600 dark:text-blue-400">{formData.total.toLocaleString('ru-RU')} ₽</span>
                 </div>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
         {/* Buttons */}

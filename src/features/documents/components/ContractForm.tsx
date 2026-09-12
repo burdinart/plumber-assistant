@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { FileText, Save, X, ArrowLeft } from 'lucide-react';
+import { FileText, Save, X, ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useDocuments } from '../hooks/useDocuments';
 import { useClients } from '../../clients/hooks/useClients';
+import { useOrders } from '../../orders/hooks/useOrders';
 import { Contract } from '../types';
+import { EstimateItem } from '../../finance/types';
 import { getTodayDate, getDateAfterDays } from '../../finance/utils/formatters';
 import { Toast } from '../../../shared/ui/Toast';
 
@@ -11,14 +13,16 @@ export function ContractForm() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { createContract } = useDocuments();
-  const { getClient } = useClients();
+  const { clients, getClient } = useClients();
+  const { getOrder } = useOrders();
 
   const orderId = searchParams.get('orderId');
   const clientId = searchParams.get('clientId');
+  const order = orderId ? getOrder(orderId) : undefined;
   const preselectedClient = clientId ? getClient(clientId) : undefined;
 
   const [formData, setFormData] = useState({
-    clientId: preselectedClient?.id || '',
+    clientId: preselectedClient?.id || order?.clientId || '',
     orderId: orderId || '',
     startDate: getTodayDate(),
     endDate: getDateAfterDays(14),
@@ -26,10 +30,64 @@ export function ContractForm() {
     paymentTerms: '100% по факту выполнения работ',
     warrantyTerms: 'Гарантия на выполненные работы — 12 месяцев',
     additionalTerms: '',
+    items: [] as EstimateItem[],
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  // Автозаполнение из заявки
+  useEffect(() => {
+    if (order) {
+      setFormData(prev => ({
+        ...prev,
+        clientId: order.clientId,
+        additionalTerms: order.description || '',
+      }));
+    }
+  }, [order]);
+
+  // Пересчёт стоимости при изменении items
+  useEffect(() => {
+    const total = formData.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
+    if (total > 0) {
+      setFormData(prev => ({ ...prev, cost: total }));
+    }
+  }, [formData.items]);
+
+  // Добавление новой работы
+  const addItem = () => {
+    const newItem: EstimateItem = {
+      id: `item-${Date.now()}`,
+      name: '',
+      unit: 'шт',
+      quantity: 1,
+      price: 0,
+      type: 'work',
+    };
+    setFormData(prev => ({
+      ...prev,
+      items: [...prev.items, newItem],
+    }));
+  };
+
+  // Удаление работы
+  const removeItem = (itemId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      items: prev.items.filter(item => item.id !== itemId),
+    }));
+  };
+
+  // Обновление работы
+  const updateItem = (itemId: string, field: keyof EstimateItem, value: string | number) => {
+    setFormData(prev => ({
+      ...prev,
+      items: prev.items.map(item =>
+        item.id === itemId ? { ...item, [field]: value } : item
+      ),
+    }));
+  };
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -137,12 +195,20 @@ export function ContractForm() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Клиент <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              value={client?.name || ''}
-              disabled
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
+            <select
+              value={formData.clientId}
+              onChange={(e) => handleChange('clientId', e.target.value)}
+              className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                errors.clientId ? 'border-red-300 dark:border-red-700' : 'border-gray-300 dark:border-gray-600'
+              }`}
+            >
+              <option value="">Выберите клиента</option>
+              {clients.map(client => (
+                <option key={client.id} value={client.id}>
+                  {client.name}
+                </option>
+              ))}
+            </select>
             {errors.clientId && <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.clientId}</p>}
           </div>
 
@@ -239,6 +305,112 @@ export function ContractForm() {
               rows={3}
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
             />
+          </div>
+
+          {/* Items table */}
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Работы и материалы
+              </h3>
+              <button
+                type="button"
+                onClick={addItem}
+                className="flex items-center gap-1 px-3 py-1.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors text-sm font-medium"
+              >
+                <Plus className="w-4 h-4" />
+                Добавить
+              </button>
+            </div>
+
+            {formData.items.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="text-left py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Наименование</th>
+                      <th className="text-left py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Тип</th>
+                      <th className="text-center py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Кол-во</th>
+                      <th className="text-center py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Цена</th>
+                      <th className="text-right py-2 px-2 text-gray-600 dark:text-gray-400 font-medium">Сумма</th>
+                      <th className="py-2 px-2"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {formData.items.map((item) => (
+                      <tr key={item.id} className="border-b border-gray-100 dark:border-gray-700/50">
+                        <td className="py-2 px-2">
+                          <input
+                            type="text"
+                            value={item.name}
+                            onChange={(e) => updateItem(item.id, 'name', e.target.value)}
+                            placeholder="Название работы"
+                            className="w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
+                          <select
+                            value={item.type}
+                            onChange={(e) => updateItem(item.id, 'type', e.target.value)}
+                            className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm"
+                          >
+                            <option value="work">Работа</option>
+                            <option value="material">Материал</option>
+                          </select>
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="number"
+                            value={item.quantity}
+                            onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value))}
+                            min="0.1"
+                            step="0.1"
+                            className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
+                          />
+                        </td>
+                        <td className="py-2 px-2">
+                          <input
+                            type="number"
+                            value={item.price}
+                            onChange={(e) => updateItem(item.id, 'price', Number(e.target.value))}
+                            min="0"
+                            step="100"
+                            className="w-24 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
+                          />
+                        </td>
+                        <td className="py-2 px-2 text-right font-medium text-gray-800 dark:text-white">
+                          {(item.quantity * item.price).toLocaleString('ru-RU')} ₽
+                        </td>
+                        <td className="py-2 px-2">
+                          <button
+                            type="button"
+                            onClick={() => removeItem(item.id)}
+                            className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <p>Нет добавленных работ</p>
+                <p className="text-sm mt-1">Нажмите "Добавить" для добавления работы</p>
+              </div>
+            )}
+
+            {/* Total */}
+            {formData.items.length > 0 && (
+              <div className="mt-4 flex justify-between items-center pt-3 border-t border-gray-200 dark:border-gray-600">
+                <span className="font-semibold text-gray-700 dark:text-gray-300">Итого:</span>
+                <span className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                  {formData.items.reduce((sum, item) => sum + item.quantity * item.price, 0).toLocaleString('ru-RU')} ₽
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
