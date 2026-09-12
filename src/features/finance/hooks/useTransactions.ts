@@ -102,9 +102,15 @@ export function useTransactions() {
     
     console.log('New transaction created:', newTransaction);
     
+    // Обновляем state
     setTransactions(prev => {
       const updated = [...prev, newTransaction];
       console.log('Updated transactions array:', updated);
+      
+      // Сразу сохраняем в LocalStorage
+      const saveSuccess = storage.set(STORAGE_KEY, updated);
+      console.log('Immediate save to localStorage:', saveSuccess);
+      
       return updated;
     });
     

@@ -114,10 +114,10 @@ export function TransactionForm() {
       
       setToast({ message: 'Транзакция успешно добавлена!', type: 'success' });
       
-      // Увеличиваем задержку для лучшей видимости toast
+      // Небольшая задержка для отображения toast, затем навигация
       setTimeout(() => {
         navigate('/finance/transactions');
-      }, 2000);
+      }, 1500);
     } catch (error) {
       console.error('Error adding transaction:', error);
       setToast({ message: 'Ошибка при сохранении транзакции', type: 'error' });
