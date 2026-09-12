@@ -34,6 +34,7 @@ export interface Estimate {
   id: string;
   number: string;
   clientId: string;
+  propertyId?: string; // Привязка к объекту
   orderId?: string;
   address: string;
   createdAt: string;
@@ -61,6 +62,7 @@ export interface Transaction {
   clientName?: string; // Имя клиента для быстрого отображения (денормализация)
   clientType?: 'individual' | 'legal'; // Тип клиента для отображения иконки
   
+  propertyId?: string; // Привязка к объекту
   orderId?: string; // ID заявки (если есть)
   estimateId?: string; // ID сметы (если есть)
   

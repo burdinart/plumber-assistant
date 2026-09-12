@@ -55,6 +55,7 @@ export type OrderType = 'emergency' | 'installation' | 'repair' | 'consultation'
 export interface Order {
   id: string;
   clientId: string;
+  propertyId?: string; // Привязка к объекту
   type: OrderType;
   address: string;
   date: string;

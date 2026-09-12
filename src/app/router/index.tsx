@@ -35,6 +35,9 @@ import { ContractPreview } from '../../features/documents/components/ContractPre
 import { WarrantyForm } from '../../features/documents/components/WarrantyForm';
 import { WarrantyPreview } from '../../features/documents/components/WarrantyPreview';
 import { PhotoReportForm } from '../../features/documents/components/PhotoReport';
+import { PropertyList } from '../../features/objects/components/PropertyList';
+import { PropertyForm } from '../../features/objects/components/PropertyForm';
+import { PropertyCard } from '../../features/objects/components/PropertyCard';
 import { DesignHub } from '../../features/calculators/components/DesignHub';
 import { PipeDiameterCalculator } from '../../features/calculators/components/PipeDiameterCalculator';
 import { PumpCalculator } from '../../features/calculators/components/PumpCalculator';
@@ -66,6 +69,23 @@ export const router = createBrowserRouter([
       {
         path: 'clients/:id/edit',
         element: <ClientForm />,
+      },
+      // CRM - Objects (Properties)
+      {
+        path: 'objects',
+        element: <PropertyList />,
+      },
+      {
+        path: 'objects/new',
+        element: <PropertyForm />,
+      },
+      {
+        path: 'objects/:id',
+        element: <PropertyCard />,
+      },
+      {
+        path: 'objects/:id/edit',
+        element: <PropertyForm />,
       },
       // CRM - Orders
       {

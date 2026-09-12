@@ -29,6 +29,7 @@ import {
   Wallet,
   BarChart3,
   Flame,
+  Building2,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -133,6 +134,20 @@ export function Sidebar() {
         >
           <ClipboardList className="w-5 h-5 flex-shrink-0" />
           {!sidebarCollapsed && <span className="text-sm font-medium">Заявки</span>}
+        </NavLink>
+
+        <NavLink
+          to="/objects"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg transition-colors ${
+              isActive || location.pathname.startsWith('/objects/')
+                ? 'bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            } ${sidebarCollapsed ? 'justify-center' : ''}`
+          }
+        >
+          <Building2 className="w-5 h-5 flex-shrink-0" />
+          {!sidebarCollapsed && <span className="text-sm font-medium">Объекты</span>}
         </NavLink>
 
         <NavLink
