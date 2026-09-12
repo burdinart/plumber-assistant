@@ -18,6 +18,9 @@ import {
   ArrowLeftRight,
   Ruler,
   Zap,
+  Users,
+  ClipboardList as OrdersIcon,
+  Bell,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -83,14 +86,62 @@ export function Sidebar() {
           {!sidebarCollapsed && <span className="text-sm font-medium">Главная</span>}
         </NavLink>
 
-        {/* Categories */}
+        {/* CRM Section */}
+        {!sidebarCollapsed && (
+          <div className="mt-4 mb-2 px-4">
+            <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+              CRM
+            </div>
+          </div>
+        )}
+
+        <NavLink
+          to="/clients"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg transition-colors ${
+              isActive || location.pathname.startsWith('/clients/')
+                ? 'bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            } ${sidebarCollapsed ? 'justify-center' : ''}`
+          }
+        >
+          <Users className="w-5 h-5 flex-shrink-0" />
+          {!sidebarCollapsed && <span className="text-sm font-medium">Клиенты</span>}
+        </NavLink>
+
+        <NavLink
+          to="/orders"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg transition-colors ${
+              isActive || location.pathname.startsWith('/orders/')
+                ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            } ${sidebarCollapsed ? 'justify-center' : ''}`
+          }
+        >
+          <ClipboardList className="w-5 h-5 flex-shrink-0" />
+          {!sidebarCollapsed && <span className="text-sm font-medium">Заявки</span>}
+        </NavLink>
+
+        <NavLink
+          to="/reminders"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg transition-colors ${
+              isActive
+                ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            } ${sidebarCollapsed ? 'justify-center' : ''}`
+          }
+        >
+          <Bell className="w-5 h-5 flex-shrink-0" />
+          {!sidebarCollapsed && <span className="text-sm font-medium">Напоминания</span>}
+        </NavLink>
+
+        {/* Tools Section */}
         <div className="mt-4">
           {CATEGORIES.map((category) => {
             const categoryModules = MODULES.filter((m) => m.category === category.id);
             const CategoryIcon = ICON_MAP[category.icon] || Wrench;
-            const isCategoryActive = categoryModules.some((m) =>
-              location.pathname.startsWith(m.path)
-            );
 
             return (
               <div key={category.id} className="mb-2">

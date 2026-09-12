@@ -10,6 +10,13 @@ import { UnitsConverterPage } from '../../features/units-converter/UnitsConverte
 import { PipeLengthPage } from '../../features/pipe-length/PipeLengthPage';
 import { HeatLossPage } from '../../features/heat-loss/HeatLossPage';
 import { PumpSelectionPage } from '../../features/pump-selection/PumpSelectionPage';
+import { ClientsPage } from '../../features/clients/ClientsPage';
+import { ClientForm } from '../../features/clients/components/ClientForm';
+import { ClientCard } from '../../features/clients/components/ClientCard';
+import { OrdersPage } from '../../features/orders/OrdersPage';
+import { OrderForm } from '../../features/orders/components/OrderForm';
+import { OrderCard } from '../../features/orders/components/OrderCard';
+import { RemindersPage } from '../../features/reminders/RemindersPage';
 
 export const router = createBrowserRouter([
   {
@@ -20,7 +27,46 @@ export const router = createBrowserRouter([
         index: true,
         element: <DashboardPage />,
       },
-      // Калькуляторы
+      // CRM - Clients
+      {
+        path: 'clients',
+        element: <ClientsPage />,
+      },
+      {
+        path: 'clients/new',
+        element: <ClientForm />,
+      },
+      {
+        path: 'clients/:id',
+        element: <ClientCard />,
+      },
+      {
+        path: 'clients/:id/edit',
+        element: <ClientForm />,
+      },
+      // CRM - Orders
+      {
+        path: 'orders',
+        element: <OrdersPage />,
+      },
+      {
+        path: 'orders/new',
+        element: <OrderForm />,
+      },
+      {
+        path: 'orders/:id',
+        element: <OrderCard />,
+      },
+      {
+        path: 'orders/:id/edit',
+        element: <OrderForm />,
+      },
+      // CRM - Reminders
+      {
+        path: 'reminders',
+        element: <RemindersPage />,
+      },
+      // Calculators
       {
         path: 'calculators/pressure',
         element: <PressureCalculatorPage />,
@@ -41,7 +87,7 @@ export const router = createBrowserRouter([
         path: 'calculators/heat-loss',
         element: <HeatLossPage />,
       },
-      // Справочники
+      // Reference
       {
         path: 'reference/materials',
         element: <MaterialsReferencePage />,
@@ -50,12 +96,12 @@ export const router = createBrowserRouter([
         path: 'reference/fittings',
         element: <FittingsReferencePage />,
       },
-      // Инструменты
+      // Tools
       {
         path: 'tools/units-converter',
         element: <UnitsConverterPage />,
       },
-      // Проектирование
+      // Planning
       {
         path: 'planning/pump-selection',
         element: <PumpSelectionPage />,
