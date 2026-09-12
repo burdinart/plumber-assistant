@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, Plus, Search, Star, Phone, MapPin } from 'lucide-react';
+import { Users, Plus, Search, Star, Phone, MapPin, User, Building2 } from 'lucide-react';
 import { useClients } from '../hooks/useClients';
 import { formatPhone, getInitials } from '../../../shared/utils/helpers';
 
@@ -73,13 +73,26 @@ export function ClientList() {
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-violet-500 to-violet-600 rounded-full flex items-center justify-center text-white font-semibold text-lg">
-                    {getInitials(client.name)}
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold text-lg ${
+                    client.type === 'legal'
+                      ? 'bg-gradient-to-br from-purple-500 to-purple-600'
+                      : 'bg-gradient-to-br from-violet-500 to-violet-600'
+                  }`}>
+                    {client.type === 'legal' ? (
+                      <Building2 className="w-6 h-6" />
+                    ) : (
+                      getInitials(client.name)
+                    )}
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">
                       {client.name}
                     </h3>
+                    {client.type === 'legal' && client.inn && (
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        ИНН: {client.inn}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <button

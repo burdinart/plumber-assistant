@@ -55,9 +55,15 @@ export interface Transaction {
   date: string;
   category: TransactionCategory;
   description?: string;
-  clientId?: string;
-  orderId?: string;
-  estimateId?: string;
+  
+  // Связь с клиентами
+  clientId?: string; // ID клиента из CRM
+  clientName?: string; // Имя клиента для быстрого отображения (денормализация)
+  clientType?: 'individual' | 'legal'; // Тип клиента для отображения иконки
+  
+  orderId?: string; // ID заявки (если есть)
+  estimateId?: string; // ID сметы (если есть)
+  
   createdAt: string;
 }
 

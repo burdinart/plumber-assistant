@@ -1,16 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Wallet, Save, X } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Wallet, Save, X, User, Building2 } from 'lucide-react';
 import { useTransactions } from '../hooks/useTransactions';
 import { useClients } from '../../clients/hooks/useClients';
-import { Transaction, TransactionType, TransactionCategory, INCOME_CATEGORY_NAMES, EXPENSE_CATEGORY_NAMES, TRANSACTION_CATEGORY_NAMES } from '../types';
+import { Transaction, TransactionType, TransactionCategory, INCOME_CATEGORY_NAMES, EXPENSE_CATEGORY_NAMES } from '../types';
 import { getTodayDate } from '../utils/formatters';
 import { Toast } from '../../../shared/ui/Toast';
 
 export function TransactionForm() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { addTransaction } = useTransactions();
   const { clients } = useClients();
+
+  const preselectedClientId = searchParams.get('clientId') || '';
 
   const [formData, setFormData] = useState({
     type: 'income' as TransactionType,
@@ -18,7 +21,7 @@ export function TransactionForm() {
     date: getTodayDate(),
     category: 'private_client' as TransactionCategory,
     description: '',
-    clientId: '',
+    clientId: preselectedClientId,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -32,6 +35,27 @@ export function TransactionForm() {
       setFormData(prev => ({ ...prev, category: 'materials' }));
     }
   }, [formData.type]);
+
+  // Автозаполнение при выборе клиента
+  const handleClientChange = (clientId: string) => {
+    setFormData(prev => ({ ...prev, clientId }));
+    
+    if (clientId) {
+      const client = clients.find(c => c.id === clientId);
+      if (client) {
+        // Автоматически выбираем категорию на основе типа клиента
+        if (formData.type === 'income') {
+          if (client.type === 'legal') {
+            setFormData(prev => ({ ...prev, category: 'legal_entity' }));
+          } else {
+            setFormData(prev => ({ ...prev, category: 'private_client' }));
+          }
+        }
+      }
+    }
+  };
+
+  const selectedClient = formData.clientId ? clients.find(c => c.id === formData.clientId) : null;
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -57,14 +81,22 @@ export function TransactionForm() {
     }
 
     try {
-      addTransaction({
+      const transactionData: Omit<Transaction, 'id' | 'createdAt'> = {
         type: formData.type,
         amount: formData.amount,
         date: formData.date,
         category: formData.category,
         description: formData.description,
         clientId: formData.clientId || undefined,
-      });
+      };
+
+      // Добавляем информацию о клиенте для денормализации
+      if (selectedClient) {
+        transactionData.clientName = selectedClient.name;
+        transactionData.clientType = selectedClient.type;
+      }
+
+      addTransaction(transactionData);
       setToast({ message: 'Транзакция добавлена', type: 'success' });
       setTimeout(() => navigate('/finance/transactions'), 1000);
     } catch (error) {
@@ -169,6 +201,39 @@ export function TransactionForm() {
             {errors.date && <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.date}</p>}
           </div>
 
+          {/* Клиент (только для доходов) */}
+          {formData.type === 'income' && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Клиент
+              </label>
+              <select
+                value={formData.clientId}
+                onChange={(e) => handleClientChange(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              >
+                <option value="">Не указан</option>
+                {clients.map(client => (
+                  <option key={client.id} value={client.id}>
+                    {client.type === 'legal' ? '🏢' : '👤'} {client.name}
+                  </option>
+                ))}
+              </select>
+              
+              {/* Подсказка для юрлиц */}
+              {selectedClient && selectedClient.type === 'legal' && (
+                <div className="mt-2 p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <Building2 className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-purple-700 dark:text-purple-300">
+                      Для юрлица рекомендуется создать акт выполненных работ
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Категория */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -198,25 +263,6 @@ export function TransactionForm() {
               className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
             />
           </div>
-
-          {/* Клиент (только для доходов) */}
-          {formData.type === 'income' && (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Клиент (опционально)
-              </label>
-              <select
-                value={formData.clientId}
-                onChange={(e) => handleChange('clientId', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              >
-                <option value="">Не указан</option>
-                {clients.map(client => (
-                  <option key={client.id} value={client.id}>{client.name}</option>
-                ))}
-              </select>
-            </div>
-          )}
         </div>
 
         {/* Buttons */}

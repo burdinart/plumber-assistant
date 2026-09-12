@@ -6,8 +6,10 @@ const STORAGE_KEY = 'plumber-assistant-clients';
 
 // Демо-данные клиентов
 const DEMO_CLIENTS: Client[] = [
+  // Физические лица
   {
     id: 'client-1',
+    type: 'individual',
     name: 'Иванов Иван Иванович',
     phone: '+79991234567',
     address: 'г. Москва, ул. Ленина, д. 1, кв. 10',
@@ -19,6 +21,7 @@ const DEMO_CLIENTS: Client[] = [
   },
   {
     id: 'client-2',
+    type: 'individual',
     name: 'Петрова Мария Сергеевна',
     phone: '+79162345678',
     address: 'г. Москва, пр. Мира, д. 15, кв. 42',
@@ -30,6 +33,7 @@ const DEMO_CLIENTS: Client[] = [
   },
   {
     id: 'client-3',
+    type: 'individual',
     name: 'Сидоров Алексей Петрович',
     phone: '+79033456789',
     address: 'г. Москва, ул. Пушкина, д. 7, кв. 3',
@@ -38,22 +42,37 @@ const DEMO_CLIENTS: Client[] = [
     createdAt: '2026-03-10T09:15:00Z',
     updatedAt: '2026-03-10T09:15:00Z',
   },
+  // Юридические лица
   {
     id: 'client-4',
-    name: 'Козлова Елена Дмитриевна',
+    type: 'legal',
+    name: 'ООО "Стройинвест"',
     phone: '+79254567890',
-    address: 'г. Москва, ул. Гагарина, д. 23, кв. 156',
-    email: 'kozlova@yandex.ru',
-    notes: 'Работает из дома, звонить заранее',
+    address: 'г. Москва, ул. Гагарина, д. 23, оф. 156',
+    email: 'info@stroyinvest.ru',
+    inn: '7712345678',
+    kpp: '771201001',
+    ogrn: '1167746123456',
+    legalAddress: 'г. Москва, ул. Гагарина, д. 23, оф. 156',
+    bankName: 'ПАО Сбербанк',
+    bik: '044525225',
+    account: '40702810123456789012',
+    correspondentAccount: '30101810400000000225',
+    notes: 'Крупный заказчик, оплата по безналу',
     isFavorite: true,
     createdAt: '2026-04-05T16:45:00Z',
     updatedAt: '2026-04-05T16:45:00Z',
   },
   {
     id: 'client-5',
-    name: 'Николаев Дмитрий Владимирович',
+    type: 'legal',
+    name: 'ИП Козлов А.В.',
     phone: '+79775678901',
-    address: 'г. Москва, ул. Чехова, д. 42, кв. 8',
+    address: 'г. Москва, ул. Чехова, д. 42, оф. 8',
+    email: 'kozlov@mail.ru',
+    inn: '772345678901',
+    ogrn: '318774612345678',
+    notes: 'Частые заказы, постоянный клиент',
     isFavorite: false,
     createdAt: '2026-05-12T11:20:00Z',
     updatedAt: '2026-05-12T11:20:00Z',

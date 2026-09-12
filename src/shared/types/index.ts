@@ -17,12 +17,32 @@ export interface CategoryInfo {
 }
 
 // CRM Types
+export type ClientType = 'individual' | 'legal';
+
 export interface Client {
   id: string;
-  name: string;
+  type: ClientType; // Тип клиента: физическое или юридическое лицо
+  name: string; // Для физ: ФИО, для юр: Название организации
   phone: string;
-  address: string;
   email?: string;
+  address: string; // Для физ: адрес проживания, для юр: юридический адрес
+  
+  // Поля для юридических лиц
+  inn?: string; // ИНН (10 или 12 цифр)
+  kpp?: string; // КПП (9 цифр)
+  ogrn?: string; // ОГРН
+  legalAddress?: string; // Фактический адрес (если отличается от юридического)
+  bankName?: string; // Название банка
+  bik?: string; // БИК банка
+  account?: string; // Расчётный счёт
+  correspondentAccount?: string; // Корреспондентский счёт
+  
+  // Поля для физических лиц (опционально)
+  passportSeries?: string; // Серия паспорта
+  passportNumber?: string; // Номер паспорта
+  passportIssuedBy?: string; // Кем выдан
+  passportDate?: string; // Дата выдачи
+  
   notes?: string;
   isFavorite: boolean;
   createdAt: string;
