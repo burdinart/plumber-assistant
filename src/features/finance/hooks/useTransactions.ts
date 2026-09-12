@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Transaction } from '../types';
 import { storage, generateId } from '../../../shared/utils/storage';
 
@@ -62,58 +62,59 @@ const DEMO_TRANSACTIONS: Transaction[] = [
   },
 ];
 
-export function useTransactions() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-
-  // Загрузка из LocalStorage
-  useEffect(() => {
-    console.log('Loading transactions from localStorage...');
-    const stored = storage.get<Transaction[]>(STORAGE_KEY, []);
-    console.log('Loaded transactions:', stored);
-    
-    // Если данных нет, загружаем демо-данные
-    if (stored.length === 0) {
-      console.log('No stored transactions, loading demo data');
-      setTransactions(DEMO_TRANSACTIONS);
-      storage.set(STORAGE_KEY, DEMO_TRANSACTIONS);
-    } else {
-      setTransactions(stored);
+/**
+ * Загружает транзакции из LocalStorage или демо-данные
+ */
+function loadTransactions(): Transaction[] {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
     }
-  }, []);
+    // Если данных нет — загружаем демо-данные и сохраняем
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEMO_TRANSACTIONS));
+    return DEMO_TRANSACTIONS;
+  } catch (error) {
+    console.error('Error loading transactions:', error);
+    return DEMO_TRANSACTIONS;
+  }
+}
 
-  // Сохранение в LocalStorage
-  useEffect(() => {
-    console.log('Saving transactions to localStorage:', transactions);
-    const success = storage.set(STORAGE_KEY, transactions);
-    console.log('LocalStorage save result:', success);
-  }, [transactions]);
+/**
+ * Сохраняет транзакции в LocalStorage
+ */
+function saveTransactions(transactions: Transaction[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+  } catch (error) {
+    console.error('Error saving transactions:', error);
+  }
+}
+
+export function useTransactions() {
+  // Инициализируем state сразу из localStorage (не через useEffect!)
+  const [transactions, setTransactions] = useState<Transaction[]>(() => loadTransactions());
 
   /**
    * Добавить транзакцию
    */
   const addTransaction = (data: Omit<Transaction, 'id' | 'createdAt'>): Transaction => {
-    console.log('Adding transaction with data:', data);
-    
     const newTransaction: Transaction = {
       ...data,
       id: generateId(),
       createdAt: new Date().toISOString(),
     };
-    
-    console.log('New transaction created:', newTransaction);
-    
-    // Обновляем state
+
     setTransactions(prev => {
       const updated = [...prev, newTransaction];
-      console.log('Updated transactions array:', updated);
-      
       // Сразу сохраняем в LocalStorage
-      const saveSuccess = storage.set(STORAGE_KEY, updated);
-      console.log('Immediate save to localStorage:', saveSuccess);
-      
+      saveTransactions(updated);
       return updated;
     });
-    
+
     return newTransaction;
   };
 
@@ -122,15 +123,20 @@ export function useTransactions() {
    */
   const updateTransaction = (id: string, data: Partial<Transaction>): Transaction | undefined => {
     let updated: Transaction | undefined;
-    setTransactions(prev =>
-      prev.map(t => {
+
+    setTransactions(prev => {
+      const newTransactions = prev.map(t => {
         if (t.id === id) {
           updated = { ...t, ...data };
           return updated;
         }
         return t;
-      })
-    );
+      });
+      // Сохраняем после обновления
+      saveTransactions(newTransactions);
+      return newTransactions;
+    });
+
     return updated;
   };
 
@@ -138,12 +144,21 @@ export function useTransactions() {
    * Удалить транзакцию
    */
   const deleteTransaction = (id: string): boolean => {
-    const exists = transactions.some(t => t.id === id);
-    if (exists) {
-      setTransactions(prev => prev.filter(t => t.id !== id));
-      return true;
-    }
-    return false;
+    let deleted = false;
+
+    setTransactions(prev => {
+      const exists = prev.some(t => t.id === id);
+      if (exists) {
+        deleted = true;
+        const newTransactions = prev.filter(t => t.id !== id);
+        // Сохраняем после удаления
+        saveTransactions(newTransactions);
+        return newTransactions;
+      }
+      return prev;
+    });
+
+    return deleted;
   };
 
   /**

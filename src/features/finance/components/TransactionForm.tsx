@@ -60,33 +60,22 @@ export function TransactionForm() {
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Проверка суммы
     if (!formData.amount || formData.amount <= 0 || isNaN(formData.amount)) {
       newErrors.amount = 'Сумма должна быть больше 0';
     }
 
-    // Проверка даты
     if (!formData.date) {
       newErrors.date = 'Укажите дату';
     }
 
     setErrors(newErrors);
-    
-    // Если есть ошибки, показываем toast
-    if (Object.keys(newErrors).length > 0) {
-      console.log('Validation errors:', newErrors);
-    }
-    
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log('Submitting transaction:', formData);
-
     if (!validate()) {
-      console.log('Validation failed:', errors);
       setToast({ message: 'Заполните обязательные поля', type: 'error' });
       return;
     }
@@ -107,19 +96,15 @@ export function TransactionForm() {
         transactionData.clientType = selectedClient.type;
       }
 
-      console.log('Transaction data:', transactionData);
-
-      const result = addTransaction(transactionData);
-      console.log('Transaction added:', result);
+      addTransaction(transactionData);
       
-      setToast({ message: 'Транзакция успешно добавлена!', type: 'success' });
+      setToast({ message: 'Транзакция добавлена', type: 'success' });
       
-      // Небольшая задержка для отображения toast, затем навигация
+      // Переход на страницу списка после короткой задержки
       setTimeout(() => {
         navigate('/finance/transactions');
-      }, 1500);
+      }, 1000);
     } catch (error) {
-      console.error('Error adding transaction:', error);
       setToast({ message: 'Ошибка при сохранении транзакции', type: 'error' });
     }
   };
