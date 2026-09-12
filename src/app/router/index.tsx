@@ -11,6 +11,8 @@ import { PipeLengthPage } from '../../features/pipe-length/PipeLengthPage';
 import { HeatLossPage } from '../../features/heat-loss/HeatLossPage';
 import { PumpSelectionPage } from '../../features/pump-selection/PumpSelectionPage';
 import { SlopeCalculator } from '../../features/calculators/components/SlopeCalculator';
+import { BoilerErrors } from '../../features/reference/components/BoilerErrors';
+import { Troubleshooting } from '../../features/reference/components/Troubleshooting';
 import { ClientsPage } from '../../features/clients/ClientsPage';
 import { ClientForm } from '../../features/clients/components/ClientForm';
 import { ClientCard } from '../../features/clients/components/ClientCard';
@@ -105,6 +107,14 @@ export const router = createBrowserRouter([
       {
         path: 'reference/fittings',
         element: <FittingsReferencePage />,
+      },
+      {
+        path: 'reference/boiler-errors',
+        element: <BoilerErrors />,
+      },
+      {
+        path: 'reference/troubleshooting',
+        element: <Troubleshooting />,
       },
       // Tools
       {

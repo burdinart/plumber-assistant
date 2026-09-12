@@ -22,6 +22,8 @@ import {
   ClipboardList as OrdersIcon,
   Bell,
   TrendingDown,
+  AlertTriangle,
+  Stethoscope,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -39,6 +41,8 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Ruler,
   Zap,
   TrendingDown,
+  AlertTriangle,
+  Stethoscope,
 };
 
 export function Sidebar() {

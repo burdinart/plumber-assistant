@@ -26,6 +26,8 @@ import {
   Plus,
   Bell,
   Calendar,
+  AlertTriangle,
+  Stethoscope,
 } from 'lucide-react';
 import { useOrders } from '../orders/hooks/useOrders';
 import { useClients } from '../clients/hooks/useClients';
@@ -40,6 +42,8 @@ const ICON_MAP: Record<string, React.ElementType> = {
   ClipboardList,
   Gauge,
   TrendingDown,
+  AlertTriangle,
+  Stethoscope,
   CircleDot,
   Droplets,
   Thermometer,
