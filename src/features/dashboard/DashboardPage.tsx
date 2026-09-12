@@ -32,6 +32,7 @@ import {
 import { useOrders } from '../orders/hooks/useOrders';
 import { useClients } from '../clients/hooks/useClients';
 import { useReminders } from '../reminders/hooks/useReminders';
+import { useTransactions } from '../finance/hooks/useTransactions';
 import { ReminderWidget } from '../reminders/components/ReminderWidget';
 import { formatCurrency, formatDate, getOrderStatusText, getOrderStatusColor, getOrderTypeText } from '../../shared/utils/helpers';
 
@@ -65,10 +66,17 @@ export function DashboardPage() {
   const { getTodayOrders, getMonthlyStats } = useOrders();
   const { clients } = useClients();
   const { getTodayReminders } = useReminders();
+  const { getBalance } = useTransactions();
 
   const todayOrders = getTodayOrders();
   const monthlyStats = getMonthlyStats();
   const todayReminders = getTodayReminders();
+
+  // Баланс за текущий месяц (как в разделе Финансы)
+  const now = new Date();
+  const startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
+  const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
+  const balance = getBalance(startDate, endDate);
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -146,13 +154,25 @@ export function DashboardPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+        <div className={`bg-white dark:bg-gray-800 rounded-xl border p-4 ${
+          balance.balance < 0 
+            ? 'border-red-300 dark:border-red-700' 
+            : 'border-gray-200 dark:border-gray-700'
+        }`}>
           <div className="flex items-center gap-2 mb-2">
-            <DollarSign className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <DollarSign className={`w-5 h-5 ${
+              balance.balance < 0 
+                ? 'text-red-600 dark:text-red-400' 
+                : 'text-green-600 dark:text-green-400'
+            }`} />
             <span className="text-xs text-gray-500 dark:text-gray-400">Заработано</span>
           </div>
-          <div className="text-xl font-bold text-gray-800 dark:text-white">
-            {formatCurrency(monthlyStats.totalEarnings)}
+          <div className={`text-xl font-bold ${
+            balance.balance < 0 
+              ? 'text-red-600 dark:text-red-400' 
+              : 'text-gray-800 dark:text-white'
+          }`}>
+            {formatCurrency(balance.balance)}
           </div>
           <div className="text-xs text-gray-500 dark:text-gray-400">за месяц</div>
         </div>
