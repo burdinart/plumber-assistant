@@ -45,14 +45,6 @@ export const MODULES: Module[] = [
     category: 'reference',
   },
   {
-    id: 'fittings',
-    title: 'Фитинги и соединения',
-    description: 'Справочник фитингов, их типов и назначений',
-    icon: 'GitBranch',
-    path: '/reference/fittings',
-    category: 'reference',
-  },
-  {
     id: 'boiler-errors',
     title: 'Ошибки котлов',
     description: 'Коды ошибок Baxi, Vaillant, Bosch, Navien, Protherm',

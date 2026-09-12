@@ -5,7 +5,6 @@ import { PressureCalculatorPage } from '../../features/pressure-calculator/Press
 import { PipeDiameterPage } from '../../features/pipe-calculator/PipeDiameterPage';
 import { WaterFlowPage } from '../../features/water-flow-calculator/WaterFlowPage';
 import { MaterialsReferencePage } from '../../features/materials-reference/MaterialsReferencePage';
-import { FittingsReferencePage } from '../../features/fittings-reference/FittingsReferencePage';
 import { UnitsConverterPage } from '../../features/units-converter/UnitsConverterPage';
 import { PipeLengthPage } from '../../features/pipe-length/PipeLengthPage';
 import { HeatLossPage } from '../../features/heat-loss/HeatLossPage';
@@ -103,10 +102,6 @@ export const router = createBrowserRouter([
       {
         path: 'reference/materials',
         element: <MaterialsReferencePage />,
-      },
-      {
-        path: 'reference/fittings',
-        element: <FittingsReferencePage />,
       },
       {
         path: 'reference/boiler-errors',
