@@ -17,6 +17,7 @@ import { OrdersPage } from '../../features/orders/OrdersPage';
 import { OrderForm } from '../../features/orders/components/OrderForm';
 import { OrderCard } from '../../features/orders/components/OrderCard';
 import { RemindersPage } from '../../features/reminders/RemindersPage';
+import { ReminderForm } from '../../features/reminders/components/ReminderForm';
 
 export const router = createBrowserRouter([
   {
@@ -65,6 +66,10 @@ export const router = createBrowserRouter([
       {
         path: 'reminders',
         element: <RemindersPage />,
+      },
+      {
+        path: 'reminders/new',
+        element: <ReminderForm />,
       },
       // Calculators
       {

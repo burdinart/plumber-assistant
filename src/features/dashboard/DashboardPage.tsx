@@ -181,7 +181,7 @@ export function DashboardPage() {
 
       {/* Widgets */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Today's Reminders */}
+        {/* Today's Reminders - always shown now */}
         <ReminderWidget />
 
         {/* Today's Orders */}

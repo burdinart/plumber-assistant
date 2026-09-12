@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Bell, Plus, Search, CheckCircle, Circle } from 'lucide-react';
 import { useReminders } from '../hooks/useReminders';
 import { useClients } from '../../clients/hooks/useClients';
@@ -35,6 +36,13 @@ export function ReminderList() {
             </p>
           </div>
         </div>
+        <Link
+          to="/reminders/new"
+          className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          <span className="hidden sm:inline">Новое напоминание</span>
+        </Link>
       </div>
 
       {/* Search and filters */}
