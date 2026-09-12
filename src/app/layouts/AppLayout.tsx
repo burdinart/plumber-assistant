@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { BottomNav } from './BottomNav';
+import { PWAInstallButton } from '../../shared/ui/PWAInstallButton';
 import { useAppStore } from '../../shared/store/useAppStore';
 import { useEffect } from 'react';
 
@@ -22,6 +23,7 @@ export function AppLayout() {
         </main>
       </div>
       <BottomNav />
+      <PWAInstallButton />
     </div>
   );
 }
