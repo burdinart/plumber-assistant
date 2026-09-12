@@ -60,22 +60,33 @@ export function TransactionForm() {
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (formData.amount <= 0) {
+    // Проверка суммы
+    if (!formData.amount || formData.amount <= 0 || isNaN(formData.amount)) {
       newErrors.amount = 'Сумма должна быть больше 0';
     }
 
+    // Проверка даты
     if (!formData.date) {
       newErrors.date = 'Укажите дату';
     }
 
     setErrors(newErrors);
+    
+    // Если есть ошибки, показываем toast
+    if (Object.keys(newErrors).length > 0) {
+      console.log('Validation errors:', newErrors);
+    }
+    
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log('Submitting transaction:', formData);
+
     if (!validate()) {
+      console.log('Validation failed:', errors);
       setToast({ message: 'Заполните обязательные поля', type: 'error' });
       return;
     }
@@ -86,8 +97,8 @@ export function TransactionForm() {
         amount: formData.amount,
         date: formData.date,
         category: formData.category,
-        description: formData.description,
-        clientId: formData.clientId || undefined,
+        description: formData.description && formData.description.trim() !== '' ? formData.description : undefined,
+        clientId: formData.clientId && formData.clientId.trim() !== '' ? formData.clientId : undefined,
       };
 
       // Добавляем информацию о клиенте для денормализации
@@ -96,11 +107,20 @@ export function TransactionForm() {
         transactionData.clientType = selectedClient.type;
       }
 
-      addTransaction(transactionData);
-      setToast({ message: 'Транзакция добавлена', type: 'success' });
-      setTimeout(() => navigate('/finance/transactions'), 1000);
+      console.log('Transaction data:', transactionData);
+
+      const result = addTransaction(transactionData);
+      console.log('Transaction added:', result);
+      
+      setToast({ message: 'Транзакция успешно добавлена!', type: 'success' });
+      
+      // Увеличиваем задержку для лучшей видимости toast
+      setTimeout(() => {
+        navigate('/finance/transactions');
+      }, 2000);
     } catch (error) {
-      setToast({ message: 'Ошибка при сохранении', type: 'error' });
+      console.error('Error adding transaction:', error);
+      setToast({ message: 'Ошибка при сохранении транзакции', type: 'error' });
     }
   };
 
