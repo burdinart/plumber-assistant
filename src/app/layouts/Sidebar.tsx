@@ -24,6 +24,10 @@ import {
   TrendingDown,
   AlertTriangle,
   Stethoscope,
+  DollarSign,
+  FileText,
+  Wallet,
+  BarChart3,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -141,6 +145,85 @@ export function Sidebar() {
         >
           <Bell className="w-5 h-5 flex-shrink-0" />
           {!sidebarCollapsed && <span className="text-sm font-medium">Напоминания</span>}
+        </NavLink>
+
+        {/* Finance Section */}
+        {!sidebarCollapsed && (
+          <div className="mt-4 mb-2 px-4">
+            <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+              Финансы
+            </div>
+          </div>
+        )}
+
+        <NavLink
+          to="/finance"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg transition-colors ${
+              isActive || location.pathname.startsWith('/finance')
+                ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            } ${sidebarCollapsed ? 'justify-center' : ''}`
+          }
+        >
+          <DollarSign className="w-5 h-5 flex-shrink-0" />
+          {!sidebarCollapsed && <span className="text-sm font-medium">Главная</span>}
+        </NavLink>
+
+        <NavLink
+          to="/finance/price-list"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg transition-colors ${
+              isActive
+                ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            } ${sidebarCollapsed ? 'justify-center' : ''}`
+          }
+        >
+          <FileText className="w-5 h-5 flex-shrink-0" />
+          {!sidebarCollapsed && <span className="text-sm font-medium">Прайс-лист</span>}
+        </NavLink>
+
+        <NavLink
+          to="/finance/estimates"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg transition-colors ${
+              isActive || location.pathname.startsWith('/finance/estimates')
+                ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            } ${sidebarCollapsed ? 'justify-center' : ''}`
+          }
+        >
+          <ClipboardList className="w-5 h-5 flex-shrink-0" />
+          {!sidebarCollapsed && <span className="text-sm font-medium">Сметы</span>}
+        </NavLink>
+
+        <NavLink
+          to="/finance/transactions"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg transition-colors ${
+              isActive || location.pathname.startsWith('/finance/transactions')
+                ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            } ${sidebarCollapsed ? 'justify-center' : ''}`
+          }
+        >
+          <Wallet className="w-5 h-5 flex-shrink-0" />
+          {!sidebarCollapsed && <span className="text-sm font-medium">Транзакции</span>}
+        </NavLink>
+
+        <NavLink
+          to="/finance/reports"
+          className={({ isActive }) =>
+            `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg transition-colors ${
+              isActive
+                ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
+                : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+            } ${sidebarCollapsed ? 'justify-center' : ''}`
+          }
+        >
+          <BarChart3 className="w-5 h-5 flex-shrink-0" />
+          {!sidebarCollapsed && <span className="text-sm font-medium">Отчёты</span>}
         </NavLink>
 
         {/* Tools Section */}

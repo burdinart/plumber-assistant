@@ -20,6 +20,14 @@ import { OrderForm } from '../../features/orders/components/OrderForm';
 import { OrderCard } from '../../features/orders/components/OrderCard';
 import { RemindersPage } from '../../features/reminders/RemindersPage';
 import { ReminderForm } from '../../features/reminders/components/ReminderForm';
+import { FinanceDashboard } from '../../features/finance/components/FinanceDashboard';
+import { PriceList } from '../../features/finance/components/PriceList';
+import { EstimateList } from '../../features/finance/components/EstimateList';
+import { EstimateForm } from '../../features/finance/components/EstimateForm';
+import { EstimatePreview } from '../../features/finance/components/EstimatePreview';
+import { Transactions } from '../../features/finance/components/Transactions';
+import { TransactionForm } from '../../features/finance/components/TransactionForm';
+import { Reports } from '../../features/finance/components/Reports';
 
 export const router = createBrowserRouter([
   {
@@ -120,6 +128,43 @@ export const router = createBrowserRouter([
       {
         path: 'planning/pump-selection',
         element: <PumpSelectionPage />,
+      },
+      // Finance
+      {
+        path: 'finance',
+        element: <FinanceDashboard />,
+      },
+      {
+        path: 'finance/price-list',
+        element: <PriceList />,
+      },
+      {
+        path: 'finance/estimates',
+        element: <EstimateList />,
+      },
+      {
+        path: 'finance/estimates/new',
+        element: <EstimateForm />,
+      },
+      {
+        path: 'finance/estimates/:id',
+        element: <EstimateForm />,
+      },
+      {
+        path: 'finance/estimates/:id/preview',
+        element: <EstimatePreview />,
+      },
+      {
+        path: 'finance/transactions',
+        element: <Transactions />,
+      },
+      {
+        path: 'finance/transactions/new',
+        element: <TransactionForm />,
+      },
+      {
+        path: 'finance/reports',
+        element: <Reports />,
       },
       // Catch-all
       {

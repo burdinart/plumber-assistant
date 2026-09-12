@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Users, ClipboardList, Calculator, BookOpen } from 'lucide-react';
+import { Home, Users, ClipboardList, DollarSign, Menu } from 'lucide-react';
 
 export function BottomNav() {
   const location = useLocation();
@@ -8,8 +8,8 @@ export function BottomNav() {
     { path: '/', icon: Home, label: 'Главная' },
     { path: '/clients', icon: Users, label: 'Клиенты' },
     { path: '/orders', icon: ClipboardList, label: 'Заявки' },
-    { path: '/calculators/pressure', icon: Calculator, label: 'Калькуляторы' },
-    { path: '/reference/materials', icon: BookOpen, label: 'Справочник' },
+    { path: '/finance', icon: DollarSign, label: 'Финансы' },
+    { path: '/calculators/pressure', icon: Menu, label: 'Ещё' },
   ];
 
   return (
