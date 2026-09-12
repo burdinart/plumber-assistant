@@ -10,6 +10,7 @@ import { UnitsConverterPage } from '../../features/units-converter/UnitsConverte
 import { PipeLengthPage } from '../../features/pipe-length/PipeLengthPage';
 import { HeatLossPage } from '../../features/heat-loss/HeatLossPage';
 import { PumpSelectionPage } from '../../features/pump-selection/PumpSelectionPage';
+import { SlopeCalculator } from '../../features/calculators/components/SlopeCalculator';
 import { ClientsPage } from '../../features/clients/ClientsPage';
 import { ClientForm } from '../../features/clients/components/ClientForm';
 import { ClientCard } from '../../features/clients/components/ClientCard';
@@ -91,6 +92,10 @@ export const router = createBrowserRouter([
       {
         path: 'calculators/heat-loss',
         element: <HeatLossPage />,
+      },
+      {
+        path: 'calculators/slope',
+        element: <SlopeCalculator />,
       },
       // Reference
       {

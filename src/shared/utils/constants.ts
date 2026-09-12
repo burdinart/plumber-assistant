@@ -69,6 +69,15 @@ export const MODULES: Module[] = [
     category: 'calculators',
   },
   {
+    id: 'slope',
+    title: 'Уклон канализации',
+    description: 'Расчёт уклона канализационной трубы по нормативам СП 30.13330.2020',
+    icon: 'TrendingDown',
+    path: '/calculators/slope',
+    category: 'calculators',
+    isNew: true,
+  },
+  {
     id: 'pump-selection',
     title: 'Подбор насоса',
     description: 'Расчёт необходимых параметров насоса для системы',
