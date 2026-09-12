@@ -4,6 +4,7 @@ import { Camera, Save, X, ArrowLeft, Trash2, Upload } from 'lucide-react';
 import { useDocuments } from '../hooks/useDocuments';
 import { useClients } from '../../clients/hooks/useClients';
 import { useOrders } from '../../orders/hooks/useOrders';
+import { useProperties } from '../../objects/hooks/useProperties';
 import { PhotoReport as PhotoReportType, Photo } from '../types';
 import { fileToBase64 } from '../utils/documentHelpers';
 import { Toast } from '../../../shared/ui/Toast';
@@ -12,16 +13,19 @@ export function PhotoReportForm() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { createPhotoReport } = useDocuments();
-  const { getClient } = useClients();
+  const { clients, getClient } = useClients();
   const { getOrder } = useOrders();
+  const { getByClient: getPropertiesByClient } = useProperties();
 
   const orderId = searchParams.get('orderId');
   const clientId = searchParams.get('clientId');
+  const propertyId = searchParams.get('propertyId');
   const order = orderId ? getOrder(orderId) : undefined;
   const preselectedClient = clientId ? getClient(clientId) : undefined;
 
   const [formData, setFormData] = useState({
     clientId: preselectedClient?.id || order?.clientId || '',
+    propertyId: propertyId || order?.propertyId || '',
     orderId: orderId || '',
     photos: [] as Photo[],
   });
@@ -102,6 +106,7 @@ export function PhotoReportForm() {
     try {
       const reportData: Omit<PhotoReportType, 'id' | 'number' | 'createdAt' | 'type'> = {
         clientId: formData.clientId,
+        propertyId: formData.propertyId || undefined,
         orderId: formData.orderId || undefined,
         photos: formData.photos,
       };
@@ -118,6 +123,8 @@ export function PhotoReportForm() {
   };
 
   const client = formData.clientId ? getClient(formData.clientId) : null;
+  const clientProperties = formData.clientId ? getPropertiesByClient(formData.clientId) : [];
+  const selectedProperty = formData.propertyId ? clientProperties.find(p => p.id === formData.propertyId) : null;
   const beforePhotos = formData.photos.filter(p => p.type === 'before');
   const afterPhotos = formData.photos.filter(p => p.type === 'after');
 
@@ -152,14 +159,73 @@ export function PhotoReportForm() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Клиент <span className="text-red-500">*</span>
             </label>
-            <input
-              type="text"
-              value={client?.name || ''}
-              disabled
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-white"
-            />
+            <select
+              value={formData.clientId}
+              onChange={(e) => {
+                const newClientId = e.target.value;
+                setFormData(prev => ({
+                  ...prev,
+                  clientId: newClientId,
+                  propertyId: '', // Сбрасываем объект при смене клиента
+                }));
+                if (errors.clientId) {
+                  setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors.clientId;
+                    return newErrors;
+                  });
+                }
+              }}
+              className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                errors.clientId ? 'border-red-300 dark:border-red-700' : 'border-gray-300 dark:border-gray-600'
+              }`}
+            >
+              <option value="">Выберите клиента</option>
+              {clients.map(c => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
             {errors.clientId && <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.clientId}</p>}
           </div>
+
+          {/* Property */}
+          {formData.clientId && clientProperties.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Объект (опционально)
+              </label>
+              <select
+                value={formData.propertyId}
+                onChange={(e) => {
+                  setFormData(prev => ({ ...prev, propertyId: e.target.value }));
+                }}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              >
+                <option value="">Не выбран</option>
+                {clientProperties.map(property => (
+                  <option key={property.id} value={property.id}>
+                    {property.name} - {property.address}
+                  </option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Выберите объект, если фотоотчёт привязан к конкретному адресу
+              </p>
+            </div>
+          )}
+
+          {formData.clientId && clientProperties.length === 0 && (
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <p className="text-sm text-blue-700 dark:text-blue-300">
+                У этого клиента пока нет объектов.{' '}
+                <Link to={`/objects/new?clientId=${formData.clientId}`} className="underline hover:text-blue-800 dark:hover:text-blue-200">
+                  Создать объект
+                </Link>
+              </p>
+            </div>
+          )}
 
           {/* Photo upload section */}
           <div>

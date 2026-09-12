@@ -9,6 +9,7 @@ export interface BaseDocument {
   type: DocumentType;
   number: string; // АКТ-001, ДОГ-001, ГАТ-001, ФОТ-001
   clientId: string;
+  propertyId?: string; // Привязка к объекту
   orderId?: string;
   estimateId?: string;
   createdAt: string;
