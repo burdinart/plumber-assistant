@@ -4,10 +4,12 @@ import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  base: '/plumber-assistant/',
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
+      base: '/plumber-assistant/',
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon.svg", "mask-icon.svg"],
       manifest: {
@@ -18,21 +20,21 @@ export default defineConfig({
         background_color: "#ffffff",
         display: "standalone",
         orientation: "portrait-primary",
-        scope: "/",
-        start_url: "/",
+        scope: "/plumber-assistant/",
+        start_url: "/plumber-assistant/",
         icons: [
           {
-            src: "pwa-192x192.svg",
+            src: "/plumber-assistant/pwa-192x192.svg",
             sizes: "192x192",
             type: "image/svg+xml",
           },
           {
-            src: "pwa-512x512.svg",
+            src: "/plumber-assistant/pwa-512x512.svg",
             sizes: "512x512",
             type: "image/svg+xml",
           },
           {
-            src: "pwa-512x512.svg",
+            src: "/plumber-assistant/pwa-512x512.svg",
             sizes: "512x512",
             type: "image/svg+xml",
             purpose: "any maskable",
