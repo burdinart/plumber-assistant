@@ -28,6 +28,14 @@ import { EstimatePreview } from '../../features/finance/components/EstimatePrevi
 import { Transactions } from '../../features/finance/components/Transactions';
 import { TransactionForm } from '../../features/finance/components/TransactionForm';
 import { Reports } from '../../features/finance/components/Reports';
+import { DocumentsList } from '../../features/documents/components/DocumentsList';
+import { ActForm } from '../../features/documents/components/ActForm';
+import { ActPreview } from '../../features/documents/components/ActPreview';
+import { ContractForm } from '../../features/documents/components/ContractForm';
+import { ContractPreview } from '../../features/documents/components/ContractPreview';
+import { WarrantyForm } from '../../features/documents/components/WarrantyForm';
+import { WarrantyPreview } from '../../features/documents/components/WarrantyPreview';
+import { PhotoReportForm } from '../../features/documents/components/PhotoReport';
 
 export const router = createBrowserRouter([
   {
@@ -165,6 +173,39 @@ export const router = createBrowserRouter([
       {
         path: 'finance/reports',
         element: <Reports />,
+      },
+      // Documents
+      {
+        path: 'documents',
+        element: <DocumentsList />,
+      },
+      {
+        path: 'documents/acts/new',
+        element: <ActForm />,
+      },
+      {
+        path: 'documents/acts/:id',
+        element: <ActPreview />,
+      },
+      {
+        path: 'documents/contracts/new',
+        element: <ContractForm />,
+      },
+      {
+        path: 'documents/contracts/:id',
+        element: <ContractPreview />,
+      },
+      {
+        path: 'documents/warranties/new',
+        element: <WarrantyForm />,
+      },
+      {
+        path: 'documents/warranties/:id',
+        element: <WarrantyPreview />,
+      },
+      {
+        path: 'documents/photo-reports/new',
+        element: <PhotoReportForm />,
       },
       // Catch-all
       {
