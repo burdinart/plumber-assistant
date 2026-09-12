@@ -28,6 +28,7 @@ import {
   Calendar,
   AlertTriangle,
   Stethoscope,
+  Flame,
 } from 'lucide-react';
 import { useOrders } from '../orders/hooks/useOrders';
 import { useClients } from '../clients/hooks/useClients';
@@ -53,6 +54,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   ArrowLeftRight,
   Ruler,
   Zap,
+  Flame,
 };
 
 const CATEGORY_COLORS: Record<string, string> = {

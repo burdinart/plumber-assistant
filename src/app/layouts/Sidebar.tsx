@@ -28,6 +28,7 @@ import {
   FileText,
   Wallet,
   BarChart3,
+  Flame,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -47,6 +48,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   TrendingDown,
   AlertTriangle,
   Stethoscope,
+  Flame,
 };
 
 export function Sidebar() {

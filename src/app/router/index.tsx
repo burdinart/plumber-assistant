@@ -36,6 +36,11 @@ import { ContractPreview } from '../../features/documents/components/ContractPre
 import { WarrantyForm } from '../../features/documents/components/WarrantyForm';
 import { WarrantyPreview } from '../../features/documents/components/WarrantyPreview';
 import { PhotoReportForm } from '../../features/documents/components/PhotoReport';
+import { DesignHub } from '../../features/calculators/components/DesignHub';
+import { PipeDiameterCalculator } from '../../features/calculators/components/PipeDiameterCalculator';
+import { PumpCalculator } from '../../features/calculators/components/PumpCalculator';
+import { ExpansionTankCalculator } from '../../features/calculators/components/ExpansionTankCalculator';
+import { RadiatorCalculator } from '../../features/calculators/components/RadiatorCalculator';
 
 export const router = createBrowserRouter([
   {
@@ -206,6 +211,27 @@ export const router = createBrowserRouter([
       {
         path: 'documents/photo-reports/new',
         element: <PhotoReportForm />,
+      },
+      // Design - Проектирование
+      {
+        path: 'design',
+        element: <DesignHub />,
+      },
+      {
+        path: 'design/pipe-diameter',
+        element: <PipeDiameterCalculator />,
+      },
+      {
+        path: 'design/pump',
+        element: <PumpCalculator />,
+      },
+      {
+        path: 'design/expansion-tank',
+        element: <ExpansionTankCalculator />,
+      },
+      {
+        path: 'design/radiator',
+        element: <RadiatorCalculator />,
       },
       // Catch-all
       {

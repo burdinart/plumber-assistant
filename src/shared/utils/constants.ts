@@ -96,11 +96,49 @@ export const MODULES: Module[] = [
     category: 'planning',
     isNew: true,
   },
+  // Проектирование
+  {
+    id: 'design-pipe-diameter',
+    title: 'Диаметр трубы (инж.)',
+    description: 'Инженерный расчёт диаметра трубы по расходу',
+    icon: 'Droplets',
+    path: '/design/pipe-diameter',
+    category: 'design',
+    isNew: true,
+  },
+  {
+    id: 'design-pump',
+    title: 'Циркуляционный насос',
+    description: 'Подбор насоса по производительности и напору',
+    icon: 'CircleDot',
+    path: '/design/pump',
+    category: 'design',
+    isNew: true,
+  },
+  {
+    id: 'design-expansion-tank',
+    title: 'Расширительный бак',
+    description: 'Расчёт объёма расширительного бака',
+    icon: 'Gauge',
+    path: '/design/expansion-tank',
+    category: 'design',
+    isNew: true,
+  },
+  {
+    id: 'design-radiator',
+    title: 'Расчёт радиаторов',
+    description: 'Подбор мощности и количества секций',
+    icon: 'Flame',
+    path: '/design/radiator',
+    category: 'design',
+    isNew: true,
+  },
 ];
 
 export const CATEGORIES: CategoryInfo[] = [
   { id: 'calculators', title: 'Калькуляторы', icon: 'Calculator' },
   { id: 'reference', title: 'Справочники', icon: 'BookOpen' },
   { id: 'tools', title: 'Инструменты', icon: 'Wrench' },
-  { id: 'planning', title: 'Проектирование', icon: 'ClipboardList' },
+  { id: 'planning', title: 'Планирование', icon: 'ClipboardList' },
+  { id: 'design', title: 'Проектирование', icon: 'Ruler' },
 ];
