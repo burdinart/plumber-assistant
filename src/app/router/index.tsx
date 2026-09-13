@@ -254,4 +254,4 @@ export const router = createBrowserRouter([
       },
     ],
   },
-], { basename: '/plumber-assistant' });
+]);

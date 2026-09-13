@@ -4,37 +4,32 @@ import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-  base: '/plumber-assistant/',
+  base: "/",
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
-      base: '/plumber-assistant/',
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "apple-touch-icon.svg", "mask-icon.svg"],
+      includeAssets: ["favicon.ico", "apple-touch-icon.png", "masked-icon.svg"],
       manifest: {
         name: "Помощник Сантехника",
         short_name: "Сантехник",
-        description: "Профессиональные инструменты для сантехников",
-        theme_color: "#2563eb",
-        background_color: "#ffffff",
+        description:
+          "Профессиональные инструменты для сантехников: калькуляторы, справочники, CRM",
+        theme_color: "#1e293b",
+        background_color: "#0f172a",
         display: "standalone",
-        orientation: "portrait-primary",
-        scope: "/plumber-assistant/",
-        start_url: "/plumber-assistant/",
+        orientation: "portrait",
+        scope: "/",
+        start_url: "/",
         icons: [
           {
-            src: "/plumber-assistant/pwa-192x192.svg",
+            src: "icon-192x192.svg",
             sizes: "192x192",
             type: "image/svg+xml",
           },
           {
-            src: "/plumber-assistant/pwa-512x512.svg",
-            sizes: "512x512",
-            type: "image/svg+xml",
-          },
-          {
-            src: "/plumber-assistant/pwa-512x512.svg",
+            src: "icon-512x512.svg",
             sizes: "512x512",
             type: "image/svg+xml",
             purpose: "any maskable",
@@ -51,21 +46,7 @@ export default defineConfig({
               cacheName: "google-fonts-cache",
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "gstatic-fonts-cache",
-              expiration: {
-                maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                maxAgeSeconds: 60 * 60 * 24 * 365,
               },
               cacheableResponse: {
                 statuses: [0, 200],
