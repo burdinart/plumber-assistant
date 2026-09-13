@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create, StateCreator } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 type Theme = 'light' | 'dark';
@@ -11,17 +11,16 @@ interface AppState {
   setTheme: (theme: Theme) => void;
 }
 
+const store: StateCreator<AppState, [], []> = (set) => ({
+  theme: 'light',
+  sidebarCollapsed: false,
+  toggleTheme: () => set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
+  toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+  setTheme: (theme) => set({ theme }),
+});
+
 export const useAppStore = create<AppState>()(
-  persist(
-    (set) => ({
-      theme: 'light',
-      sidebarCollapsed: false,
-      toggleTheme: () => set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
-      toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
-      setTheme: (theme) => set({ theme }),
-    }),
-    {
-      name: 'plumber-assistant-settings',
-    }
-  )
+  persist(store, {
+    name: 'plumber-assistant-settings',
+  })
 );

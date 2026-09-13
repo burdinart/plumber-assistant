@@ -7,7 +7,7 @@ import { useAppStore } from '../../shared/store/useAppStore';
 import { useEffect } from 'react';
 
 export function AppLayout() {
-  const theme = useAppStore((s) => s.theme);
+  const theme = useAppStore((s: { theme: string }) => s.theme);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark');
