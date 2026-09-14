@@ -10,11 +10,19 @@ export function AppLayout() {
   const theme = useAppStore((s: { theme: string }) => s.theme);
 
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
+    console.log('Theme changed to:', theme);
+    // Устанавливаем тему при монтировании и при изменении
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      console.log('Added dark class to html');
+    } else {
+      document.documentElement.classList.remove('dark');
+      console.log('Removed dark class from html');
+    }
   }, [theme]);
 
   return (
-    <div className={`flex h-screen overflow-hidden ${theme === 'dark' ? 'dark' : ''}`}>
+    <div className="flex h-screen overflow-hidden">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header />

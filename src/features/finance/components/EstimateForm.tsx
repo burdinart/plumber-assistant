@@ -309,9 +309,7 @@ export function EstimateForm() {
                         <input
                           type="number"
                           value={item.quantity}
-                          onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value))}
-                          min="0.1"
-                          step="0.1"
+                          onChange={(e) => updateItem(item.id, 'quantity', parseFloat(e.target.value) || 0)}
                           className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
                         />
                       </td>
@@ -319,9 +317,7 @@ export function EstimateForm() {
                         <input
                           type="number"
                           value={item.price}
-                          onChange={(e) => updateItem(item.id, 'price', Number(e.target.value))}
-                          min="0"
-                          step="100"
+                          onChange={(e) => updateItem(item.id, 'price', parseFloat(e.target.value) || 0)}
                           className="w-24 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
                         />
                       </td>
@@ -376,8 +372,7 @@ export function EstimateForm() {
                 <input
                   type="number"
                   value={formData.discount}
-                  onChange={(e) => setFormData(prev => ({ ...prev, discount: Number(e.target.value) }))}
-                  min="0"
+                  onChange={(e) => setFormData(prev => ({ ...prev, discount: parseFloat(e.target.value) || 0 }))}
                   className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm"
                 />
               </div>

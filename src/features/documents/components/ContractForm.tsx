@@ -254,7 +254,7 @@ export function ContractForm() {
               value={formData.cost}
               onChange={(e) => handleChange('cost', Number(e.target.value))}
               min="0"
-              step="100"
+
               className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
                 errors.cost ? 'border-red-300 dark:border-red-700' : 'border-gray-300 dark:border-gray-600'
               }`}
@@ -364,7 +364,7 @@ export function ContractForm() {
                             value={item.quantity}
                             onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value))}
                             min="0.1"
-                            step="0.1"
+
                             className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
                           />
                         </td>
@@ -374,7 +374,7 @@ export function ContractForm() {
                             value={item.price}
                             onChange={(e) => updateItem(item.id, 'price', Number(e.target.value))}
                             min="0"
-                            step="100"
+
                             className="w-24 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
                           />
                         </td>

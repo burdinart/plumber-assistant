@@ -88,7 +88,7 @@ export function HeatLossPage() {
                 onChange={(e) => setPipeDiameter(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 min="10"
-                step="1"
+
               />
             </div>
             <div>
@@ -101,7 +101,7 @@ export function HeatLossPage() {
                 onChange={(e) => setPipeLength(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 min="1"
-                step="1"
+
               />
             </div>
             <div>
@@ -114,7 +114,7 @@ export function HeatLossPage() {
                 onChange={(e) => setWaterTemp(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 min="10"
-                step="5"
+
               />
             </div>
             <div>

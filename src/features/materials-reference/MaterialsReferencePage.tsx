@@ -353,7 +353,7 @@ export function MaterialsReferencePage() {
                             onClick={(e) => e.stopPropagation()}
                             className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
                             min="0.1"
-                            step="0.1"
+
                           />
                         </div>
                         <div>
@@ -371,7 +371,7 @@ export function MaterialsReferencePage() {
                             onClick={(e) => e.stopPropagation()}
                             className="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white"
                             min="1"
-                            step="1"
+
                           />
                         </div>
                       </div>

@@ -105,7 +105,7 @@ export function PumpSelectionPage() {
                 onChange={(e) => setGeodeticHeight(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 min="0"
-                step="0.5"
+
               />
             </div>
             <div>
@@ -118,7 +118,6 @@ export function PumpSelectionPage() {
                 onChange={(e) => setPipeLength(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 min="1"
-                step="1"
               />
             </div>
             <div>
@@ -131,7 +130,6 @@ export function PumpSelectionPage() {
                 onChange={(e) => setPipeDiameter(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 min="15"
-                step="1"
               />
             </div>
             <div>
@@ -144,7 +142,6 @@ export function PumpSelectionPage() {
                 onChange={(e) => setFlowRate(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 min="0.1"
-                step="0.1"
               />
             </div>
             <div>
@@ -157,7 +154,6 @@ export function PumpSelectionPage() {
                 onChange={(e) => setFittingsCount(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 min="0"
-                step="1"
               />
             </div>
             <div className="flex gap-3 pt-2">
