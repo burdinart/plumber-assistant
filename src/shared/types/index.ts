@@ -8,7 +8,7 @@ export interface Module {
   isNew?: boolean;
 }
 
-export type ModuleCategory = 'calculators' | 'reference' | 'tools' | 'planning' | 'design';
+export type ModuleCategory = 'calculators' | 'reference' | 'tools' | 'design';
 
 export interface CategoryInfo {
   id: ModuleCategory;
