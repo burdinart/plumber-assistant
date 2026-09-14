@@ -30,6 +30,22 @@
         overscroll-behavior-y: contain;
       }
     </style>
+    <script>
+      // Инициализация темы до загрузки React для предотвращения мерцания
+      (function() {
+        try {
+          const stored = localStorage.getItem('plumber-assistant-settings');
+          if (stored) {
+            const settings = JSON.parse(stored);
+            if (settings.state && settings.state.theme === 'dark') {
+              document.documentElement.classList.add('dark');
+            }
+          }
+        } catch (e) {
+          console.error('Error initializing theme:', e);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
