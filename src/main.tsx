@@ -8,7 +8,6 @@ import { APP_VERSION } from './version';
 console.log('%c Помощник Сантехника', 'color: #3b82f6; font-size: 20px; font-weight: bold;');
 console.log('%cВерсия: ' + APP_VERSION.version, 'color: #10b981; font-size: 14px;');
 console.log('%cСборка: ' + APP_VERSION.buildDate + ' ' + APP_VERSION.buildTime, 'color: #6b7280;');
-console.log('%c' + APP_VERSION.phase, 'color: #f59e0b; font-weight: bold;');
 console.log('%cGitHub: https://github.com/burdinart/plumber-assistant', 'color: #6b7280;');
 console.log('%cGitHub Pages: https://burdinart.github.io/plumber-assistant/', 'color: #6b7280;');
 
