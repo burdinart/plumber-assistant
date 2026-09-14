@@ -95,8 +95,28 @@ function saveTransactions(transactions: Transaction[]): void {
 }
 
 export function useTransactions() {
-  // Инициализируем state сразу из localStorage (не через useEffect!)
+  // Инициализируем state сразу из localStorage
   const [transactions, setTransactions] = useState<Transaction[]>(() => loadTransactions());
+
+  // Синхронизируем состояние с localStorage при каждом рендере
+  // Это нужно для случаев, когда данные изменились в другой вкладке/компоненте
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const freshData = loadTransactions();
+      setTransactions(freshData);
+    };
+
+    // Слушаем изменения в localStorage
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Также перечитываем при фокусе на окне
+    window.addEventListener('focus', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleStorageChange);
+    };
+  }, []);
 
   /**
    * Добавить транзакцию
@@ -221,6 +241,14 @@ export function useTransactions() {
       .slice(0, limit);
   };
 
+  /**
+   * Перечитать данные из localStorage
+   */
+  const refreshTransactions = () => {
+    const freshData = loadTransactions();
+    setTransactions(freshData);
+  };
+
   return {
     transactions,
     addTransaction,
@@ -232,5 +260,6 @@ export function useTransactions() {
     getBalance,
     search,
     getRecent,
+    refreshTransactions,
   };
 }

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Wallet, Plus, Search, TrendingUp, TrendingDown, Trash2, User, Building2 } from 'lucide-react';
 import { useTransactions } from '../hooks/useTransactions';
 import { useClients } from '../../clients/hooks/useClients';
@@ -9,14 +9,20 @@ import { Modal } from '../../../shared/ui/Modal';
 import { Toast } from '../../../shared/ui/Toast';
 
 export function Transactions() {
-  const { transactions, deleteTransaction, search, getBalance } = useTransactions();
+  const { transactions, deleteTransaction, search, getBalance, refreshTransactions } = useTransactions();
   const { clients } = useClients();
+  const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<'all' | 'income' | 'expense'>('all');
   const [clientFilter, setClientFilter] = useState<string>('all');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  // Перечитываем данные при каждом переходе на эту страницу
+  useEffect(() => {
+    refreshTransactions();
+  }, [location.pathname]);
 
   // Текущий месяц
   const now = new Date();
