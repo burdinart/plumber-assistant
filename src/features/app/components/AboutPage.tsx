@@ -43,9 +43,6 @@ export const AboutPage = () => {
               <div className="text-lg font-semibold">{APP_VERSION.buildTime}</div>
             </div>
           </div>
-          <div className="mt-4 bg-blue-900 bg-opacity-30 border border-blue-700 rounded-lg p-3">
-            <div className="text-blue-300 font-medium">{APP_VERSION.phase}</div>
-          </div>
         </div>
 
         {/* Ссылки */}
@@ -86,9 +83,6 @@ export const AboutPage = () => {
                     v{release.version}
                   </span>
                   <span className="text-gray-400 text-sm">{release.date}</span>
-                  <span className="bg-yellow-600 bg-opacity-30 text-yellow-300 px-2 py-0.5 rounded text-xs">
-                    {release.phase}
-                  </span>
                 </div>
                 <ul className="space-y-2">
                   {release.changes.map((change: string, i: number) => (

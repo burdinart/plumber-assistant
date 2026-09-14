@@ -16,9 +16,6 @@ export function Header() {
         <h1 className="text-lg font-semibold text-gray-800 dark:text-white">
           Помощник Сантехника
         </h1>
-        <span className="hidden md:inline text-xs bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full">
-          Фаза 1
-        </span>
       </div>
 
       <div className="flex items-center gap-2">
