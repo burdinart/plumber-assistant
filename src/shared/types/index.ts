@@ -78,6 +78,7 @@ export interface Reminder {
   time: string;
   priority: ReminderPriority;
   isDone: boolean;
+  notified?: boolean; // Было ли показано уведомление
   relatedClientId?: string;
   relatedOrderId?: string;
   createdAt: string;

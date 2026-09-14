@@ -30,4 +30,40 @@ const initializeTheme = () => {
 
 initializeTheme();
 
+// Регистрация Service Worker для push-уведомлений
+const registerServiceWorker = async () => {
+  if ('serviceWorker' in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.register('/sw.js', {
+        scope: '/'
+      });
+      
+      console.log('✅ Service Worker зарегистрирован:', registration.scope);
+      
+      // Проверка обновлений SW
+      registration.addEventListener('updatefound', () => {
+        console.log('🔄 Service Worker обновляется...');
+      });
+      
+    } catch (error) {
+      console.error('❌ Ошибка регистрации Service Worker:', error);
+    }
+  }
+};
+
+// Обработка сообщений от Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data.type === 'REMINDER_COMPLETED') {
+      console.log('✅ Напоминание выполнено:', event.data.reminderId);
+      // Можно обновить состояние приложения здесь
+    } else if (event.data.type === 'REMINDER_SNOOZED') {
+      console.log('⏰ Напоминание отложено:', event.data.reminderId);
+      // Можно обновить состояние приложения здесь
+    }
+  });
+}
+
+registerServiceWorker();
+
 ReactDOM.createRoot(document.getElementById("root")!).render(<App />);
