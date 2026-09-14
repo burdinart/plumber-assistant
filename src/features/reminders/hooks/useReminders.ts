@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Reminder } from '../../../shared/types';
 import { storage, generateId } from '../../../shared/utils/storage';
+import { scheduleLocalNotification, rescheduleAllNotifications } from '../utils/scheduleNotification';
 
 const STORAGE_KEY = 'plumber-assistant-reminders';
 
@@ -65,6 +66,9 @@ export function useReminders() {
     } else {
       setReminders(storedReminders);
     }
+    
+    // Перепланировать все уведомления при загрузке
+    rescheduleAllNotifications();
   }, []);
 
   // Сохранение в LocalStorage при изменении
@@ -82,10 +86,15 @@ export function useReminders() {
       ...data,
       id: generateId(),
       isDone: false,
+      notified: false,
       createdAt: new Date().toISOString(),
     };
 
     setReminders((prev) => [...prev, newReminder]);
+    
+    // Запланировать уведомление для нового напоминания
+    scheduleLocalNotification(newReminder);
+    
     return newReminder;
   };
 
