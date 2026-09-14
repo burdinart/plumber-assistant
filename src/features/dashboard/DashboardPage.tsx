@@ -61,7 +61,6 @@ const CATEGORY_COLORS: Record<string, string> = {
   calculators: 'from-blue-500 to-blue-600',
   reference: 'from-emerald-500 to-emerald-600',
   tools: 'from-amber-500 to-amber-600',
-  planning: 'from-purple-500 to-purple-600',
 };
 
 export function DashboardPage() {

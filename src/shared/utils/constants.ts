@@ -130,6 +130,5 @@ export const CATEGORIES: CategoryInfo[] = [
   { id: 'calculators', title: 'Калькуляторы', icon: 'Calculator' },
   { id: 'reference', title: 'Справочники', icon: 'BookOpen' },
   { id: 'tools', title: 'Инструменты', icon: 'Wrench' },
-  { id: 'planning', title: 'Планирование', icon: 'ClipboardList' },
   { id: 'design', title: 'Проектирование', icon: 'Ruler' },
 ];
