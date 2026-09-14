@@ -11,7 +11,7 @@ export function formatCurrency(amount: number): string {
     style: 'currency',
     currency: 'RUB',
     minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(amount);
 }
 
@@ -21,7 +21,7 @@ export function formatCurrency(amount: number): string {
  */
 export function formatPercent(value: number, showSign = true): string {
   const sign = showSign && value > 0 ? '+' : '';
-  return `${sign}${value.toFixed(1)}%`;
+  return `${sign}${value}%`;
 }
 
 /**
