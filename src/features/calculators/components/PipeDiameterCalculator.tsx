@@ -109,7 +109,7 @@ export function PipeDiameterCalculator() {
                   onChange={(e) => setFlowRate(Number(e.target.value))}
                   className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   min="0"
-                  step="0.1"
+
                 />
                 <select
                   value={flowUnit}
@@ -134,7 +134,7 @@ export function PipeDiameterCalculator() {
                 onChange={(e) => setVelocity(Number(e.target.value))}
                 className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                 min="0.1"
-                step="0.1"
+
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Формула: D = √(4Q/πv)

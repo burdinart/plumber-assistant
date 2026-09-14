@@ -361,7 +361,7 @@ export function ActForm() {
                             value={item.quantity}
                             onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value))}
                             min="0.1"
-                            step="0.1"
+
                             className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
                           />
                         </td>
@@ -371,7 +371,7 @@ export function ActForm() {
                             value={item.price}
                             onChange={(e) => updateItem(item.id, 'price', Number(e.target.value))}
                             min="0"
-                            step="100"
+
                             className="w-24 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
                           />
                         </td>

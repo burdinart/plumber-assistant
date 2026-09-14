@@ -54,7 +54,7 @@ export function WaterFlowPage() {
                 onChange={(e) => setDiameter(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 min="5"
-                step="1"
+
               />
             </div>
             <div>
@@ -67,7 +67,7 @@ export function WaterFlowPage() {
                 onChange={(e) => setVelocity(Number(e.target.value))}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
                 min="0.1"
-                step="0.1"
+
               />
             </div>
             <div className="flex gap-3 pt-2">

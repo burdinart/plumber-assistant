@@ -138,7 +138,7 @@ export function PriceItemForm({ item, onClose }: PriceItemFormProps) {
             value={formData.price}
             onChange={(e) => handleChange('price', Number(e.target.value))}
             min="0"
-            step="100"
+
             className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent ${
               errors.price ? 'border-red-300 dark:border-red-700' : 'border-gray-300 dark:border-gray-600'
             }`}
