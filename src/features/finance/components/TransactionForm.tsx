@@ -180,9 +180,7 @@ export function TransactionForm() {
             <input
               type="number"
               value={formData.amount}
-              onChange={(e) => handleChange('amount', Number(e.target.value))}
-              min="0"
-
+              onChange={(e) => handleChange('amount', parseFloat(e.target.value) || 0)}
               className={`w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-xl font-bold focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${
                 errors.amount ? 'border-red-300 dark:border-red-700' : 'border-gray-300 dark:border-gray-600'
               }`}
