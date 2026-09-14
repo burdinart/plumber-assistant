@@ -30,6 +30,7 @@ import {
   BarChart3,
   Flame,
   Building2,
+  Info,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -312,6 +313,23 @@ export function Sidebar() {
               </div>
             );
           })}
+        </div>
+
+        {/* О приложении */}
+        <div className="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+          <NavLink
+            to="/about"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg transition-colors ${
+                isActive
+                  ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+              } ${sidebarCollapsed ? 'justify-center' : ''}`
+            }
+          >
+            <Info className="w-5 h-5 flex-shrink-0" />
+            {!sidebarCollapsed && <span className="text-sm font-medium">О приложении</span>}
+          </NavLink>
         </div>
       </nav>
     </aside>

@@ -43,6 +43,7 @@ import { PipeDiameterCalculator } from '../../features/calculators/components/Pi
 import { PumpCalculator } from '../../features/calculators/components/PumpCalculator';
 import { ExpansionTankCalculator } from '../../features/calculators/components/ExpansionTankCalculator';
 import { RadiatorCalculator } from '../../features/calculators/components/RadiatorCalculator';
+import { AboutPage } from '../../features/app/components/AboutPage';
 
 export const router = createBrowserRouter([
   {
@@ -246,6 +247,11 @@ export const router = createBrowserRouter([
       {
         path: 'design/radiator',
         element: <RadiatorCalculator />,
+      },
+      // О приложении
+      {
+        path: 'about',
+        element: <AboutPage />,
       },
       // Catch-all
       {
