@@ -3,7 +3,6 @@ import {
   Act,
   Contract,
   Warranty,
-  PhotoReport,
   Documents,
   DocumentType,
 } from '../types';
@@ -81,7 +80,6 @@ const DEMO_DOCUMENTS: Documents = {
       createdAt: '2026-09-15T12:00:00Z',
     },
   ],
-  photoReports: [],
 };
 
 /**
@@ -92,7 +90,7 @@ function loadDocuments(): Documents {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      if (parsed && parsed.acts && parsed.contracts && parsed.warranties && parsed.photoReports) {
+      if (parsed && parsed.acts && parsed.contracts && parsed.warranties) {
         return parsed;
       }
     }
@@ -127,7 +125,6 @@ export function useDocuments() {
       ...documents.acts.map(a => a.number),
       ...documents.contracts.map(c => c.number),
       ...documents.warranties.map(w => w.number),
-      ...documents.photoReports.map(p => p.number),
     ];
   };
 
@@ -195,30 +192,9 @@ export function useDocuments() {
   };
 
   /**
-   * Создать фотоотчёт
-   */
-  const createPhotoReport = (data: Omit<PhotoReport, 'id' | 'number' | 'createdAt' | 'type'>): PhotoReport => {
-    const newPhotoReport: PhotoReport = {
-      ...data,
-      id: generateId(),
-      type: 'photo_report',
-      number: generateDocumentNumber('photo_report', getAllDocumentNumbers()),
-      createdAt: new Date().toISOString(),
-    };
-
-    setDocuments(prev => {
-      const updated = { ...prev, photoReports: [...prev.photoReports, newPhotoReport] };
-      saveDocuments(updated);
-      return updated;
-    });
-
-    return newPhotoReport;
-  };
-
-  /**
    * Обновить документ
    */
-  const updateDocument = (id: string, type: DocumentType, data: Partial<Act | Contract | Warranty | PhotoReport>): void => {
+  const updateDocument = (id: string, type: DocumentType, data: Partial<Act | Contract | Warranty>): void => {
     setDocuments(prev => {
       const updated = { ...prev };
 
@@ -231,9 +207,6 @@ export function useDocuments() {
           break;
         case 'warranty':
           updated.warranties = prev.warranties.map(warranty => warranty.id === id ? { ...warranty, ...data } as Warranty : warranty);
-          break;
-        case 'photo_report':
-          updated.photoReports = prev.photoReports.map(report => report.id === id ? { ...report, ...data } as PhotoReport : report);
           break;
       }
 
@@ -259,9 +232,6 @@ export function useDocuments() {
         case 'warranty':
           updated.warranties = prev.warranties.filter(warranty => warranty.id !== id);
           break;
-        case 'photo_report':
-          updated.photoReports = prev.photoReports.filter(report => report.id !== id);
-          break;
       }
 
       saveDocuments(updated);
@@ -272,24 +242,22 @@ export function useDocuments() {
   /**
    * Получить документы клиента
    */
-  const getByClient = (clientId: string): { acts: Act[]; contracts: Contract[]; warranties: Warranty[]; photoReports: PhotoReport[] } => {
+  const getByClient = (clientId: string): { acts: Act[]; contracts: Contract[]; warranties: Warranty[] } => {
     return {
       acts: documents.acts.filter(a => a.clientId === clientId),
       contracts: documents.contracts.filter(c => c.clientId === clientId),
       warranties: documents.warranties.filter(w => w.clientId === clientId),
-      photoReports: documents.photoReports.filter(p => p.clientId === clientId),
     };
   };
 
   /**
    * Получить документы заявки
    */
-  const getByOrder = (orderId: string): { acts: Act[]; contracts: Contract[]; warranties: Warranty[]; photoReports: PhotoReport[] } => {
+  const getByOrder = (orderId: string): { acts: Act[]; contracts: Contract[]; warranties: Warranty[] } => {
     return {
       acts: documents.acts.filter(a => a.orderId === orderId),
       contracts: documents.contracts.filter(c => c.orderId === orderId),
       warranties: documents.warranties.filter(w => w.orderId === orderId),
-      photoReports: documents.photoReports.filter(p => p.orderId === orderId),
     };
   };
 
@@ -321,19 +289,11 @@ export function useDocuments() {
     return documents.warranties.find(w => w.id === id);
   };
 
-  /**
-   * Получить фотоотчёт по ID
-   */
-  const getPhotoReport = (id: string): PhotoReport | undefined => {
-    return documents.photoReports.find(p => p.id === id);
-  };
-
   return {
     documents,
     createAct,
     createContract,
     createWarranty,
-    createPhotoReport,
     updateDocument,
     deleteDocument,
     getByClient,
@@ -342,6 +302,5 @@ export function useDocuments() {
     getAct,
     getContract,
     getWarranty,
-    getPhotoReport,
   };
 }
