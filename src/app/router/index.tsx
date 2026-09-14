@@ -34,7 +34,6 @@ import { ContractForm } from '../../features/documents/components/ContractForm';
 import { ContractPreview } from '../../features/documents/components/ContractPreview';
 import { WarrantyForm } from '../../features/documents/components/WarrantyForm';
 import { WarrantyPreview } from '../../features/documents/components/WarrantyPreview';
-import { PhotoReportForm } from '../../features/documents/components/PhotoReport';
 import { PropertyList } from '../../features/objects/components/PropertyList';
 import { PropertyForm } from '../../features/objects/components/PropertyForm';
 import { PropertyCard } from '../../features/objects/components/PropertyCard';
@@ -222,10 +221,6 @@ export const router = createBrowserRouter([
       {
         path: 'documents/warranties/:id',
         element: <WarrantyPreview />,
-      },
-      {
-        path: 'documents/photo-reports/new',
-        element: <PhotoReportForm />,
       },
       // Design - Проектирование
       {
