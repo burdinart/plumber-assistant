@@ -30,19 +30,35 @@ const initializeTheme = () => {
 
 initializeTheme();
 
-// Регистрация Service Worker для push-уведомлений
+// Регистрация Service Worker для PWA оффлайн-режима
 const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator) {
     try {
-      const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/'
+      // Используем BASE_URL для регистрации SW
+      const baseUrl = import.meta.env.BASE_URL || '/plumber-assistant/';
+      const swUrl = `${baseUrl}sw.js`;
+      
+      console.log('[SW] Registering Service Worker:', swUrl);
+      
+      const registration = await navigator.serviceWorker.register(swUrl, {
+        scope: baseUrl
       });
       
-      console.log('✅ Service Worker зарегистрирован:', registration.scope);
+      console.log('✅ Service Worker зарегистрирован, scope:', registration.scope);
       
-      // Проверка обновлений SW
+      // Логирование обновлений
       registration.addEventListener('updatefound', () => {
         console.log('🔄 Service Worker обновляется...');
+      });
+      
+      // Перезагрузка страницы при активации нового SW (однократно, защита от цикла)
+      let reloadTriggered = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!reloadTriggered && document.visibilityState === 'visible') {
+          reloadTriggered = true;
+          console.log('🔄 Controller changed, reloading page...');
+          window.location.reload();
+        }
       });
       
     } catch (error) {
@@ -50,19 +66,6 @@ const registerServiceWorker = async () => {
     }
   }
 };
-
-// Обработка сообщений от Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.addEventListener('message', (event) => {
-    if (event.data.type === 'REMINDER_COMPLETED') {
-      console.log('✅ Напоминание выполнено:', event.data.reminderId);
-      // Можно обновить состояние приложения здесь
-    } else if (event.data.type === 'REMINDER_SNOOZED') {
-      console.log('⏰ Напоминание отложено:', event.data.reminderId);
-      // Можно обновить состояние приложения здесь
-    }
-  });
-}
 
 registerServiceWorker();
 
