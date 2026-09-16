@@ -15,5 +15,5 @@ export interface QuickTable {
   id: string;
   title: string;
   icon: string;
-  rows: { label: string; value: string; source: string }[];
+  rows: { label: string; value: string; source: string; additional?: string }[];
 }
