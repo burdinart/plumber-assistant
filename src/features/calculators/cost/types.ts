@@ -7,7 +7,7 @@ export interface WorkType {
   basePrice: number;       // базовая цена работы, ₽
   minMultiplier: number;   // множитель для мин цены (0.9)
   maxMultiplier: number;   // множитель для макс цены (1.1)
-  unit: 'шт' | 'м' | 'точка' | 'комплект';
+  unit: 'м' | 'шт' | 'точка' | 'комплект' | 'м²';
   materials: MaterialGroup[];
 }
 

@@ -34,15 +34,31 @@ initializeTheme();
 const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator) {
     try {
-      const registration = await navigator.serviceWorker.register('/sw.js', {
-        scope: '/'
+      // Используем BASE_URL для регистрации SW
+      const baseUrl = import.meta.env.BASE_URL || '/plumber-assistant/';
+      const swUrl = `${baseUrl}sw.js`;
+      
+      console.log('[SW] Registering Service Worker:', swUrl);
+      
+      const registration = await navigator.serviceWorker.register(swUrl, {
+        scope: baseUrl
       });
       
-      console.log('✅ Service Worker зарегистрирован:', registration.scope);
+      console.log('✅ Service Worker зарегистрирован, scope:', registration.scope);
       
-      // Проверка обновлений SW
+      // Логирование обновлений
       registration.addEventListener('updatefound', () => {
         console.log('🔄 Service Worker обновляется...');
+      });
+      
+      // Перезагрузка страницы при активации нового SW (однократно, защита от цикла)
+      let reloadTriggered = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (!reloadTriggered && document.visibilityState === 'visible') {
+          reloadTriggered = true;
+          console.log('🔄 Controller changed, reloading page...');
+          window.location.reload();
+        }
       });
       
     } catch (error) {

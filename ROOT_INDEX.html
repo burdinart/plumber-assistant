@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="refresh" content="0; url=https://burdinart.github.io/plumber-assistant/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Редирект на Помощник Сантехника</title>
+    <script>
+      // Unregister всех Service Worker с корневого scope
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.getRegistrations().then((registrations) => {
+            for (const registration of registrations) {
+              console.log('[ROOT] Unregistering SW:', registration.scope);
+              registration.unregister();
+            }
+          }).catch(err => {
+            console.error('[ROOT] Error unregistering SW:', err);
+          });
+        });
+      }
+      
+      // Fallback редирект через JS
+      window.location.replace('https://burdinart.github.io/plumber-assistant/');
+    </script>
+  </head>
+  <body>
+    <p>Перенаправление на <a href="https://burdinart.github.io/plumber-assistant/">Помощник Сантехника</a>...</p>
+  </body>
+</html>
