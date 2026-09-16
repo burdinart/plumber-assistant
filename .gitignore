@@ -1,5 +1,74 @@
+```
+# Dependencies
 node_modules/
-.next/
+
+# Build outputs
 dist/
 build/
+target/
+
+# TypeScript/JavaScript
+*.tsbuildinfo
+.next/
+.nuxt/
+.un~*
+.npm/
+.yarn/
+
+# Environment variables
+.env
+.env.local
+.env.*
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
 *.log
+
+# Coverage
+coverage/
+.nyc_output/
+istanbul/
+
+# Temporary files
+*.tmp
+*~
+.DS_Store
+Thumbs.db
+
+# Python (if applicable)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git/
+!.git/
+
+# Database
+*.db
+*.db-journal
+
+# OS generated files
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+```
