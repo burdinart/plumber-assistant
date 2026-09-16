@@ -30,7 +30,7 @@ const initializeTheme = () => {
 
 initializeTheme();
 
-// Регистрация Service Worker для push-уведомлений
+// Регистрация Service Worker для PWA оффлайн-режима
 const registerServiceWorker = async () => {
   if ('serviceWorker' in navigator) {
     try {
@@ -50,19 +50,6 @@ const registerServiceWorker = async () => {
     }
   }
 };
-
-// Обработка сообщений от Service Worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.addEventListener('message', (event) => {
-    if (event.data.type === 'REMINDER_COMPLETED') {
-      console.log('✅ Напоминание выполнено:', event.data.reminderId);
-      // Можно обновить состояние приложения здесь
-    } else if (event.data.type === 'REMINDER_SNOOZED') {
-      console.log('⏰ Напоминание отложено:', event.data.reminderId);
-      // Можно обновить состояние приложения здесь
-    }
-  });
-}
 
 registerServiceWorker();
 

@@ -17,9 +17,6 @@ import { ClientCard } from '../../features/clients/components/ClientCard';
 import { OrdersPage } from '../../features/orders/OrdersPage';
 import { OrderForm } from '../../features/orders/components/OrderForm';
 import { OrderCard } from '../../features/orders/components/OrderCard';
-import { RemindersPage } from '../../features/reminders/RemindersPage';
-import { ReminderForm } from '../../features/reminders/components/ReminderForm';
-import { NotificationSettings } from '../../features/reminders/components/NotificationSettings';
 import { FinanceDashboard } from '../../features/finance/components/FinanceDashboard';
 import { PriceList } from '../../features/finance/components/PriceList';
 import { EstimateList } from '../../features/finance/components/EstimateList';
@@ -106,19 +103,6 @@ export const router = createBrowserRouter([
       {
         path: 'orders/:id/edit',
         element: <OrderForm />,
-      },
-      // CRM - Reminders
-      {
-        path: 'reminders',
-        element: <RemindersPage />,
-      },
-      {
-        path: 'reminders/new',
-        element: <ReminderForm />,
-      },
-      {
-        path: 'notification-settings',
-        element: <NotificationSettings />,
       },
       // Calculators
       {

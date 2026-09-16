@@ -1,74 +1,593 @@
-```
 # Dependencies
 node_modules/
 
-# Build outputs
+# Build artifacts
 dist/
 build/
-target/
-
-# TypeScript/JavaScript
+*.js.map
 *.tsbuildinfo
-.next/
-.nuxt/
-.un~*
-.npm/
-.yarn/
 
 # Environment variables
 .env
 .env.local
-.env.*
+*.env.*
 
-# IDE specific
+# Editor/IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*.tmp
 
 # Logs
 *.log
 
-# Coverage
-coverage/
-.nyc_output/
-istanbul/
-
-# Temporary files
-*.tmp
-*~
-.DS_Store
-Thumbs.db
-
-# Python (if applicable)
+# Python (if present)
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 .Python
-env/
-venv/
-.venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
+*.so
+
+# Coverage
+coverage/
+htmlcov/
 .coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.log
-.git/
-!.git/
 
-# Database
-*.db
-*.db-journal
-
-# OS generated files
-.DS_Store?
-ehthumbs.db
-Icon?
+# OS
+.DS_Store
 Thumbs.db
-```
+
+# Testing
+.jest/
+.nyc_output/
+coverage/
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary folders
+temp/
+tmp/
+
+# Lock files
+package-lock.json
+yarn.lock
+
+# Sensitive
+config/secrets.*
+credentials.json
+*.key
+*.pem
+
+# Distribution / packaging
+*.tar*
+*.zip
+*.rar
+*.7z
+
+# Compiled
+*.exe
+*.dll
+*.so
+*.dylib
+
+# IDE specific
+*.iml
+*.ipr
+*.iws
+.vs/
+.cache/
+.project
+.classpath
+.settings/
+
+# Bower
+bower_components/
+
+# Rails
+*.rbc
+capybara-*.html
+.rspec
+public/system/
+vendor/bundle/
+.bundle/
+.rbx/
+
+# Node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Coverage directory used by tools like istanbul
+lib-cov/
+coverage.html
+
+# Grunt intermediate storage (https://gruntjs.com/creating-plugins#storing-task-files)
+.grunt/
+
+# Git book (https://github.com/GitbookIO/gitbook)
+_gitbook/
+
+# Mocha
+ mochawesome-report/
+
+# ESLint cache
+.eslintcache
+
+# node-waf build system
+.lock-wscript
+
+# Compiled binary addons (https://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# TypeScript output
+*.tsbuildinfo
+next-env.d.ts
+
+# Next.js
+.next/
+out/
+
+# Nuxt.js
+.nuxt/
+dist/
+
+# Gatsby.js
+.cache/
+public/
+
+# Vue.js
+.vuepress/dist
+static/
+
+# Ionic
+ionic/www/
+
+# Cordova
+platforms/
+plugins/
+www/
+
+# Electron
+release/
+dist/
+
+# Phoenix
+deps/
+*.ez
+ebin/
+erl_crash.dump
+.rebar
+.rebar3
+
+# Tern
+.tern-port
+.tern-project
+
+# Flow
+.flowconfig
+.flow/
+
+# Webpack
+webpack.config.js
+
+# Jest
+jest.config.js
+
+# Protractor
+protractor.conf.js
+
+# Karma
+karma.conf.js
+
+# Sass
+.sass-cache/
+
+# Docker
+.docker/
+
+# Ansible
+.retry
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+
+# Vagrant
+.vagrant/
+
+# Puppet
+puppet/modules/
+var/
+
+# Chef
+.chef/
+cookbooks/
+site-cookbooks/
+
+# Salt
+salt/pki/
+
+# Gradle
+.gradle/
+build/
+
+# Maven
+target/
+!pom.xml
+!pom-default.xml
+
+# sbt
+target/
+lib_managed/
+src_managed/
+project/project/
+*.sbt
+
+# Leiningen
+target/
+test/resources/logback-test.xml
+
+# Clojure
+.clj-kondo/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.manifest
+install_manifest.txt
+compile_commands.json
+
+# Qt
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+*.moc.cpp
+*.qm
+
+# Visual Studio Code
+.vscode-test/
+
+# Android Studio
+*.iml
+*.ipr
+*.iws
+.gradle/
+local.properties
+.pro
+captures/
+.externalNativeBuild
+.cxx/
+
+# Xcode
+*.xcodeproj/
+*.xcworkspace/
+*.pbxuser
+*.mode1v3
+*.perspectivev3
+*.xcuserstate
+*.xcscmblueprint
+build/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# Carthage
+Carthage/Build
+
+# Nimble
+.nimble/
+
+# Julia
+.julia/
+
+# R
+.Rhistory
+.RData
+.Rproj.user/
+.packrat/
+
+# Ruby
+Gemfile.lock
+.bundle/
+vendor/bundle/
+.ruby-version
+.rbenv-vars
+.travis.yml
+server.pid
+server.lock
+.rvmrc
+*.gem
+*.rbc
+capybara-*.html
+.rspec
+/db/*.sqlite3
+/db/*.sqlite3-journal
+/public/system/
+/coverage/
+/spec/tmp/*
+*.orig
+rerun.txt
+pickle-email-*.eml
+
+# Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Rust
+*.o
+*.a
+*.so
+*.rlib
+*.dylib
+*.dSYM
+
+# Swift
+*.xcodeproj/
+*.xcworkspace/
+*.swiftpm/
+Packages/
+.swift-version
+
+# Perl
+*.pl.bak
+*.pm.bak
+*.pod.bak
+*.cgi.bak
+*.plx.bak
+blib/
+pm_to_blib/
+*.o
+*.so
+
+# PHP
+/vendor/
+composer.lock
+.php_cs.cache
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+hs_err_pid*
+replay_pid*
+
+# Scala
+*.class
+*.log
+*.lock
+.libs
+.lift
+
+# Haskell
+dist/
+dist-newstyle/
+cabal-dev/
+*.o
+*.hi
+*.chi
+*.chs.h
+*.dyn_o
+*.dyn_hi
+.cabal-sandbox/
+cabal.sandbox.config
+*.prof
+*.aux
+*.hp
+*.eventlog
+
+# Erlang
+.eunit
+.erlang.cookie
+.rebar.lock
+
+# Elixir
+*.beam
+*.ez
+.beam
+.coverdata
+.coverview
+.MIX_ENV
+mix.lock
+
+# OCaml
+*.run
+*.inferred.mli
+*.annot
+*.cmi
+*.cmo
+*.cmx
+*.cma
+*.cmxa
+*.cmxs
+*.so
+*.o
+*.a
+._build/
+*.native
+*.byte
+
+# Elm
+elm-stuff/
+*.elmi
+*.elmo
+
+# PureScript
+.output/
+psc-package.dhall
+
+# Objective-C
+*.o
+*.lo
+*.la
+*.alac
+*.dylib
+*.so
+*.sl
+*.gdb_history
+.DS_Store
+Icon?
+ehthumbs.db
+Thumbs.db
+*.xcodeproj/
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.xcuserdatad
+*.xcscmblueprint
+*.xcscheme
+*.xcschememanagement
+*.app
+*.ipa
+*.dmg
+*.pkg
+*.mpkg
+*.framework
+*.bundle
+*.lproj/
+*.nib
+*.car
+*.movpkg
+*.xarchive
+*.xcassets
+*.xcstrings
+*.xcworkspacedata
+*.xcsynonym
+*.xccurrentversion
+*.xccheckout
+*.xcschemes
+*.xcsettings
+*.xcdebuginfo
+*.xcbreakpoint
+*.xcshareddata
+*.xcscmblueprint
+*.xcschememanagement
+*.xcschemeref
+*.xcuserstate
+*.xcuserdatad
+*.xccheckout
+*.xcsynonym
+*.xccurrentversion
+*.xcarchive
+*.xcworkspace
+*.xcworkspacedata
+*.xcstrings
+*.xcassets
+*.xcrequiredlibrary
+*.xcdebuginfo
+*.xcbreakpoint
+*.xcshareddata
+*.xcscmblueprint
+*.xcschememanagement
+*.xcschemeref
+*.xcuserstate
+*.xcuserdatad
+*.xccheckout
+*.xcsynonym
+*.xccurrentversion
+*.xcarchive
+*.xcworkspace
+*.xcworkspacedata
+*.xcstrings
+*.xcassets
+*.xcrequiredlibrary
+*.xcdebuginfo
+*.xcbreakpoint
+*.xcshareddata
+*.xcscmblueprint
+*.xcschememanagement
+*.xcschemeref
+*.xcuserstate
+*.xcuserdatad
+*.xccheckout
+*.xcsynonym
+*.xccurrentversion
+*.xcarchive
+*.xcworkspace
+*.xcworkspacedata
+*.xcstrings
+*.xcassets
+*.xcrequiredlibrary
+*.xcdebuginfo
+*.xcbreakpoint
+*.xcshareddata
+*.xcscmblueprint
+*.xcschememanagement
+*.xcschemeref
+*.xcuserstate
+*.xcuserdatad
+*.xccheckout
+*.xcsynonym
+*.xccurrentversion
+*.xcarchive
+*.xcworkspace
+*.xcworkspacedata
+*.xcstrings
+*.xcassets
+*.xcrequiredlibrary
+*.xcdebuginfo
+*.xcbreakpoint
+*.xcshareddata
+*.xcscmblueprint
+*.xcschememanagement
+*.xcschemeref
+*.xcuserstate
+*.xcuserdatad
+*.xccheckout
+*.xcsynonym
+*.xccurrentversion
+*.xcarchive
+*.xcworkspace
+*.xcworkspacedata
+*.xcstrings
+*.xcassets
+*.xcrequiredlibrary
+*.xcdebuginfo
+*.xcbreakpoint
+*.xcshareddata
+*.xcscmblueprint
+*.xcschememanagement
+*.xcschemeref
+*.xcuserstate
+*.xcuserdatad
+*.xccheckout
+*.xcsynonym
+*.xccurrentversion
+*.xcarchive
+*.xcworkspace
+*.xcworkspacedata
+*.xcstrings
+*.xcassets
+*.xcrequiredlibrary
+*.xcdebuginfo
+*.xcbreakpoint
+*.xcshareddata
+*.xcscmblueprint
+*.xcschememanagement
+*.xcschemeref
+......

@@ -4,7 +4,6 @@ import { FileText, Save, X, ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useDocuments } from '../hooks/useDocuments';
 import { useClients } from '../../clients/hooks/useClients';
 import { useOrders } from '../../orders/hooks/useOrders';
-import { useReminders } from '../../reminders/hooks/useReminders';
 import { Warranty } from '../types';
 import { EstimateItem } from '../../finance/types';
 import { getTodayDate, getDateAfterDays } from '../../finance/utils/formatters';
@@ -16,7 +15,6 @@ export function WarrantyForm() {
   const { createWarranty } = useDocuments();
   const { clients, getClient } = useClients();
   const { getOrder } = useOrders();
-  const { addReminder } = useReminders();
 
   const orderId = searchParams.get('orderId');
   const clientId = searchParams.get('clientId');
@@ -141,19 +139,6 @@ export function WarrantyForm() {
       };
 
       const newWarranty = createWarranty(warrantyData);
-
-      // Создаём напоминание за месяц до окончания гарантии
-      const reminderDate = new Date(expiryDate);
-      reminderDate.setMonth(reminderDate.getMonth() - 1);
-      
-      const client = getClient(formData.clientId);
-      addReminder({
-        text: `Гарантия по талону ${newWarranty.number} для клиента ${client?.name || 'неизвестного'} истекает через месяц`,
-        date: reminderDate.toISOString().split('T')[0],
-        time: '10:00',
-        priority: 'medium',
-        relatedClientId: formData.clientId,
-      });
 
       setToast({ message: 'Гарантийный талон создан', type: 'success' });
       
