@@ -24,7 +24,6 @@ import {
   UserCheck,
   CheckCircle,
   Plus,
-  Bell,
   Calendar,
   AlertTriangle,
   Stethoscope,
@@ -32,9 +31,7 @@ import {
 } from 'lucide-react';
 import { useOrders } from '../orders/hooks/useOrders';
 import { useClients } from '../clients/hooks/useClients';
-import { useReminders } from '../reminders/hooks/useReminders';
 import { useTransactions } from '../finance/hooks/useTransactions';
-import { ReminderWidget } from '../reminders/components/ReminderWidget';
 import { formatCurrency, formatDate, getOrderStatusText, getOrderStatusColor, getOrderTypeText } from '../../shared/utils/helpers';
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -66,12 +63,10 @@ const CATEGORY_COLORS: Record<string, string> = {
 export function DashboardPage() {
   const { getTodayOrders, getMonthlyStats } = useOrders();
   const { clients } = useClients();
-  const { getTodayReminders } = useReminders();
   const { getBalance } = useTransactions();
 
   const todayOrders = getTodayOrders();
   const monthlyStats = getMonthlyStats();
-  const todayReminders = getTodayReminders();
 
   // Баланс за текущий месяц (как в разделе Финансы)
   const now = new Date();
@@ -198,21 +193,18 @@ export function DashboardPage() {
 
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center gap-2 mb-2">
-            <Bell className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-            <span className="text-xs text-gray-500 dark:text-gray-400">Напоминания</span>
+            <Calendar className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <span className="text-xs text-gray-500 dark:text-gray-400">Заявок сегодня</span>
           </div>
-          <div className="text-xl font-bold text-gray-800 dark:text-white">{todayReminders.length}</div>
+          <div className="text-xl font-bold text-gray-800 dark:text-white">{todayOrders.length}</div>
           <div className="text-xs text-gray-500 dark:text-gray-400">на сегодня</div>
         </div>
       </div>
 
       {/* Widgets */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Today's Reminders - always shown now */}
-        <ReminderWidget />
-
-        {/* Today's Orders */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+        {/* Today's Orders - Full Width Now */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 lg:col-span-2">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Calendar className="w-5 h-5 text-blue-500" />
