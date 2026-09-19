@@ -5,6 +5,7 @@ import { UserProfile, createEmptyProfile } from '../types';
 interface ProfileState {
   profile: UserProfile | null;
   isLoading: boolean;
+  hasLoaded: boolean;
   
   // Actions
   loadProfile: () => void;
@@ -19,10 +20,11 @@ export const useProfileStore = create<ProfileState>()(
     (set, get) => ({
       profile: null,
       isLoading: false,
+      hasLoaded: false,
 
       loadProfile: () => {
         // Профиль загружается автоматически через persist middleware
-        set({ isLoading: false });
+        set({ isLoading: false, hasLoaded: true });
       },
 
       updateProfile: (data: Partial<UserProfile>) => {
@@ -74,16 +76,16 @@ export const useProfileStore = create<ProfileState>()(
 
 // Хук для удобного использования
 export const useProfile = () => {
-  const { profile, isLoading, loadProfile, updateProfile, resetProfile, exportProfile, importProfile } = useProfileStore();
+  const { profile, isLoading, hasLoaded, loadProfile, updateProfile, resetProfile, exportProfile, importProfile } = useProfileStore();
 
-  // Автозагрузка при первом использовании
-  if (!profile && !isLoading) {
+  // Автозагрузка только один раз при первом использовании
+  if (!hasLoaded && !isLoading) {
     loadProfile();
   }
 
   return {
     profile: profile || createEmptyProfile(),
-    isLoading,
+    isLoading: isLoading || !hasLoaded,
     updateProfile,
     resetProfile,
     exportProfile,
