@@ -94,14 +94,14 @@ export const ProfilePage = () => {
               </button>
               <button
                 onClick={handleExport}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-2"
               >
                 <Download className="w-4 h-4" />
                 Экспорт
               </button>
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-2"
               >
                 <Upload className="w-4 h-4" />
                 Импорт
@@ -128,7 +128,7 @@ export const ProfilePage = () => {
                   setFormData(profile);
                   setIsEditing(false);
                 }}
-                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
               >
                 Отмена
               </button>
