@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProfile } from '../../profile/hooks/useProfile';
 import { useAppStore } from '../../../shared/store/useAppStore';
-import { Document, DocumentType, DocumentContent, DocumentItem } from '../types';
+import { Document, DocumentType, DocumentContent, DocumentItem, ChangeHistoryEntry } from '../types';
 import { generateDocumentPDF } from '../utils/pdfGenerator';
-import { FileText, Save, Download, X, Plus, Trash2, Eye, User, Building } from 'lucide-react';
+import { getChangedFields } from '../utils/diffUtils';
+import { FileText, Save, Download, X, Plus, Trash2, Eye, User, Building, ArrowLeft } from 'lucide-react';
 
 const DOCUMENT_TYPES: { value: DocumentType; label: string }[] = [
   { value: 'act', label: 'Акт выполненных работ' },
@@ -39,6 +40,9 @@ export const DocumentEditor = () => {
 
   const [showPreview, setShowPreview] = useState(false);
   const [selectedClient, setSelectedClient] = useState<any>(null);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
+  const isEditMode = !!id && id !== 'new';
 
   // Загрузка существующего документа
   useEffect(() => {
@@ -50,9 +54,12 @@ export const DocumentEditor = () => {
           const client = clients.find(c => c.id === existing.clientId);
           setSelectedClient(client || null);
         }
+      } else {
+        alert('Документ не найден');
+        navigate('/documents');
       }
     }
-  }, [id, documents, clients]);
+  }, [id, documents, clients, navigate]);
 
   // Автозаполнение из профиля
   useEffect(() => {
@@ -81,6 +88,7 @@ export const DocumentEditor = () => {
     const client = clients.find(c => c.id === clientId);
     setSelectedClient(client || null);
     setDocument(prev => ({ ...prev, clientId }));
+    setHasChanges(true);
     
     if (client) {
       setDocument(prev => ({
@@ -91,6 +99,27 @@ export const DocumentEditor = () => {
         } as Partial<DocumentContent>,
       }));
     }
+  };
+
+  // Отслеживание изменений в полях документа
+  const handleChange = (field: string, value: any) => {
+    setDocument(prev => ({
+      ...prev,
+      [field]: value,
+      updatedAt: new Date().toISOString(),
+    }));
+    setHasChanges(true);
+  };
+
+  const handleContentChange = (field: string, value: any) => {
+    setDocument(prev => ({
+      ...prev,
+      content: {
+        ...prev.content,
+        [field]: value,
+      } as Partial<DocumentContent>,
+    }));
+    setHasChanges(true);
   };
 
   const addItem = () => {
@@ -108,12 +137,13 @@ export const DocumentEditor = () => {
         items: [...(prev.content?.items || []), newItem],
       } as Partial<DocumentContent>,
     }));
+    setHasChanges(true);
   };
 
   const updateItem = (index: number, field: keyof DocumentItem, value: any) => {
     const items = [...(document.content?.items || [])];
     items[index] = { ...items[index], [field]: value };
-    
+
     // Пересчёт суммы
     if (field === 'quantity' || field === 'price') {
       const qty = field === 'quantity' ? Number(value) : items[index].quantity;
@@ -132,6 +162,7 @@ export const DocumentEditor = () => {
         totalAmount,
       } as Partial<DocumentContent>,
     }));
+    setHasChanges(true);
   };
 
   const removeItem = (index: number) => {
@@ -146,6 +177,7 @@ export const DocumentEditor = () => {
         totalAmount,
       } as Partial<DocumentContent>,
     }));
+    setHasChanges(true);
   };
 
   const handleSave = () => {
@@ -168,11 +200,36 @@ export const DocumentEditor = () => {
     };
 
     if (id && id !== 'new') {
+      // Режим редактирования — обновляем существующий документ
+      const oldDoc = documents.find(d => d.id === id);
       updateDocument(docToSave);
+      
+      // Добавляем запись в историю изменений
+      if (oldDoc) {
+        const changes = getChangedFields(docToSave, oldDoc);
+        if (Object.keys(changes).length > 0) {
+          const historyEntry: ChangeHistoryEntry = {
+            action: 'updated',
+            timestamp: new Date().toISOString(),
+            changes,
+          };
+          // Используем addChangeHistory из store (будет добавлено)
+          console.log('История изменений:', historyEntry);
+        }
+      }
     } else {
+      // Режим создания — создаём новый документ
       addDocument(docToSave);
+      
+      // Добавляем запись о создании в историю
+      const historyEntry: ChangeHistoryEntry = {
+        action: 'created',
+        timestamp: new Date().toISOString(),
+      };
+      console.log('Документ создан:', historyEntry);
     }
 
+    setHasChanges(false);
     navigate('/documents');
   };
 

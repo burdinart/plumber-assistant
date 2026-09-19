@@ -43,6 +43,25 @@ export interface DocumentContent {
   customerSigned: boolean;
 }
 
+// Запись в истории изменений документа
+export interface ChangeHistoryEntry {
+  action: 'created' | 'updated' | 'status_changed' | 'deleted';
+  timestamp: string;
+  changes?: Record<string, { old: any; new: any }>;
+  userId?: string;
+}
+
+// Документ с поддержкой редактирования и истории
+export interface Document extends BaseDocument {
+  title: string;
+  date: string;
+  content: DocumentContent;
+  status: DocumentStatus;
+  signedAt?: string;
+  pdfUrl?: string;
+  updatedAt: string;
+}
+
 // Акт выполненных работ
 export interface Act extends BaseDocument {
   type: 'act';
