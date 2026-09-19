@@ -50,6 +50,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
   AlertTriangle,
   Stethoscope,
   Flame,
+  DollarSign,
 };
 
 export function Sidebar() {

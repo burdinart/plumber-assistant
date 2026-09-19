@@ -12,17 +12,27 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.py.class
 .Python
 env/
 venv/
 .venv/
 .ENV
-.venv.bak/
 pip-log.txt
-pip-selfcheck.json
-
-# Logs
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
 *.log
+*.tmp
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
 
 # Environment variables
 .env
@@ -34,18 +44,25 @@ pip-selfcheck.json
 .idea/
 *.swp
 *.swo
-*.tmp
 
-# OS
-.DS_Store
-Thumbs.db
+# Logs
+*.log
 
 # Coverage
 coverage/
 htmlcov/
 .coverage
+.coverage.*
 
-# Compressed
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# PyTest
+.pytest_cache/
+
+# Compressed files
 *.zip
 *.gz
 *.tar
@@ -68,12 +85,4 @@ htmlcov/
 *.tar.bz2
 *.tar.xz
 *.tar.zst
-
-# TypeScript/JavaScript
-*.tsbuildinfo
-.next/
-nuxt dist/
-.angular/
-angular/
-webpack/
 ```

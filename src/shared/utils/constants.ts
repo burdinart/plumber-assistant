@@ -35,6 +35,32 @@ export const MODULES: Module[] = [
     category: 'calculators',
     isNew: true,
   },
+  {
+    id: 'pipe-length',
+    title: 'Длина трубопровода',
+    description: 'Расчёт длины трубы с учётом фитингов (эквивалентная длина)',
+    icon: 'Ruler',
+    path: '/calculators/pipe-length',
+    category: 'calculators',
+  },
+  {
+    id: 'slope',
+    title: 'Уклон канализации',
+    description: 'Расчёт уклона канализационной трубы по нормативам СП 30.13330.2020',
+    icon: 'TrendingDown',
+    path: '/calculators/slope',
+    category: 'calculators',
+    isNew: true,
+  },
+  {
+    id: 'cost-calculator',
+    title: 'Калькулятор стоимости работ',
+    description: 'Расчёт стоимости сантехнических работ с учётом сложности и материалов',
+    icon: 'DollarSign',
+    path: '/calculators/cost',
+    category: 'calculators',
+    isNew: true,
+  },
   // Справочники
   {
     id: 'materials',
@@ -43,6 +69,15 @@ export const MODULES: Module[] = [
     icon: 'Package',
     path: '/reference/materials',
     category: 'reference',
+  },
+  {
+    id: 'regulations',
+    title: 'Нормативные документы',
+    description: 'Справочник нормативов и быстрые таблицы по СНиП и СП',
+    icon: 'BookOpen',
+    path: '/reference/regulations',
+    category: 'reference',
+    isNew: true,
   },
   {
     id: 'boiler-errors',
@@ -62,6 +97,7 @@ export const MODULES: Module[] = [
     category: 'reference',
     isNew: true,
   },
+  // Инструменты
   {
     id: 'units-converter',
     title: 'Конвертер единиц',
@@ -69,23 +105,6 @@ export const MODULES: Module[] = [
     icon: 'ArrowLeftRight',
     path: '/tools/units-converter',
     category: 'tools',
-  },
-  {
-    id: 'pipe-length',
-    title: 'Длина трубопровода',
-    description: 'Расчёт длины трубы с учётом фитингов (эквивалентная длина)',
-    icon: 'Ruler',
-    path: '/calculators/pipe-length',
-    category: 'calculators',
-  },
-  {
-    id: 'slope',
-    title: 'Уклон канализации',
-    description: 'Расчёт уклона канализационной трубы по нормативам СП 30.13330.2020',
-    icon: 'TrendingDown',
-    path: '/calculators/slope',
-    category: 'calculators',
-    isNew: true,
   },
   // Проектирование
   {
