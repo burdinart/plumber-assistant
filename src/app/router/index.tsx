@@ -41,7 +41,6 @@ import { PumpCalculator } from '../../features/calculators/components/PumpCalcul
 import { ExpansionTankCalculator } from '../../features/calculators/components/ExpansionTankCalculator';
 import { RadiatorCalculator } from '../../features/calculators/components/RadiatorCalculator';
 import { RegulationsPage } from '../../features/reference/regulations/components/RegulationsPage';
-import { CostCalculatorPage } from '../../features/calculators/cost/components/CostCalculatorPage';
 import { AboutPage } from '../../features/app/components/AboutPage';
 
 export const router = createBrowserRouter([
@@ -145,11 +144,6 @@ export const router = createBrowserRouter([
       {
         path: 'reference/troubleshooting',
         element: <Troubleshooting />,
-      },
-      // Calculators - Cost
-      {
-        path: 'calculators/cost',
-        element: <CostCalculatorPage />,
       },
       // Tools
       {
