@@ -25,7 +25,7 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Compiled files
+# Compiled and binary files
 *.o
 *.obj
 *.exe
@@ -34,7 +34,7 @@ __pycache__/
 *.a
 *.out
 
-# Compression files
+# Compression
 *.zip
 *.gz
 *.tar
@@ -53,21 +53,32 @@ __pycache__/
 *.Z
 *.lz
 *.lzo
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.tar.zst
-
-# Coverage
-coverage/
-htmlcov/
-.coverage
-
-# Testing
-.mypy_cache/
-.pytest_cache/
 
 # System files
 .DS_Store
 Thumbs.db
+
+# Testing and coverage
+.coverage
+coverage/
+htmlcov/
+.mypy_cache/
+.pytest_cache/
+
+# Java/Maven/Gradle
+target/
+.gradle/
+
+# Go
+*.mod
+*.sum
+
+# Rust
+target/
+
+# Julia
+julia-*/
+
+# Zig
+zig*/
 ```

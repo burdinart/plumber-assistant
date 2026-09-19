@@ -4,6 +4,7 @@ import { ReminderForm } from './ReminderForm';
 import { ReminderList } from './ReminderList';
 import { Bell, Plus } from 'lucide-react';
 import { Reminder } from '../types';
+import { getRemindersWord } from '../utils/dateUtils';
 
 export const RemindersPage = () => {
   const { reminders, toggleReminder, deleteReminder, updateReminder } = useAppStore();
