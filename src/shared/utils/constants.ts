@@ -52,15 +52,6 @@ export const MODULES: Module[] = [
     category: 'calculators',
     isNew: true,
   },
-  {
-    id: 'cost-calculator',
-    title: 'Калькулятор стоимости работ',
-    description: 'Расчёт стоимости сантехнических работ с учётом сложности и материалов',
-    icon: 'DollarSign',
-    path: '/calculators/cost',
-    category: 'calculators',
-    isNew: true,
-  },
   // Справочники
   {
     id: 'materials',
