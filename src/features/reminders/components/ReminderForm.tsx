@@ -3,6 +3,7 @@ import { useAppStore } from '../../../shared/store/useAppStore';
 import { useNotifications } from '../../../shared/hooks/useNotifications';
 import { Bell, Clock, Calendar, X, AlertCircle } from 'lucide-react';
 import { Reminder } from '../types';
+import { getTimeUntil, getNextFireDate, formatDate } from '../utils/dateUtils';
 
 interface ReminderFormData {
   title: string;
@@ -302,6 +303,46 @@ export const ReminderForm = ({ onClose, existingReminder }: ReminderFormProps) =
                 />
               </div>
             )}
+
+            {/* Превью уведомления */}
+            <div className="p-4 bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <Bell className="w-4 h-4 text-blue-400" />
+                <span className="text-sm font-medium text-gray-300">Уведомление придёт:</span>
+              </div>
+              
+              {formData.repeat ? (
+                <div className="space-y-1">
+                  <p className="text-white text-sm">
+                    Каждый {formData.daysOfWeek.length > 0 
+                      ? formData.daysOfWeek.map(d => daysOfWeekNames[d]).join(', ')
+                      : 'выбранный день'}
+                  </p>
+                  <p className="text-white text-sm">
+                    ⏰ В {formData.time}
+                  </p>
+                  <p className="text-gray-400 text-xs mt-2">
+                    Ближайшее уведомление: {getNextFireDate(formData.time, formData.daysOfWeek)}
+                  </p>
+                </div>
+              ) : formData.date ? (
+                <div className="space-y-1">
+                  <p className="text-white text-sm">
+                    📅 {formatDate(formData.date)}
+                  </p>
+                  <p className="text-white text-sm">
+                    ⏰ В {formData.time}
+                  </p>
+                  <p className="text-gray-400 text-xs mt-2">
+                    Через {getTimeUntil(formData.date, formData.time)}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-gray-400 text-sm">
+                  Выберите дату или дни недели
+                </p>
+              )}
+            </div>
 
             {/* Информация об уведомлениях */}
             {permission === 'granted' && (

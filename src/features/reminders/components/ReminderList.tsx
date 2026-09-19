@@ -1,5 +1,6 @@
 import { Bell, Check, Trash2, Clock, Calendar, Edit } from 'lucide-react';
 import { Reminder } from '../types';
+import { getTimeUntil } from '../utils/dateUtils';
 
 interface ReminderListProps {
   reminders: Reminder[];
@@ -106,6 +107,44 @@ export const ReminderList = ({ reminders, onToggleComplete, onDelete, onEdit }: 
                   </span>
                 )}
               </div>
+
+              {/* Строка с информацией об уведомлении */}
+              {!reminder.completed && (
+                <div className="mt-3 pt-3 border-t border-gray-700">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Bell className={`w-4 h-4 ${
+                      reminder.completed ? 'text-gray-500' : 'text-blue-400'
+                    }`} />
+                    <span className="text-gray-400">Уведомление:</span>
+                    
+                    {reminder.repeat ? (
+                      <span className="text-white">
+                        каждый {formatDaysOfWeek(reminder.daysOfWeek)} в {reminder.time}
+                      </span>
+                    ) : reminder.date ? (
+                      <span className="text-white">
+                        {new Date(reminder.date).toLocaleDateString('ru-RU')} в {reminder.time}
+                      </span>
+                    ) : (
+                      <span className="text-gray-500">не запланировано</span>
+                    )}
+                    
+                    {!reminder.completed && reminder.date && (
+                      <span className="ml-auto text-xs text-gray-500">
+                        {getTimeUntil(reminder.date, reminder.time)}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {/* Статус уведомления */}
+                  {reminder.notified && (
+                    <div className="flex items-center gap-1 mt-2 text-xs text-green-400">
+                      <Check className="w-3 h-3" />
+                      <span>Уведомление отправлено</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Действия */}
