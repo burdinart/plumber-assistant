@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ClipboardList, Edit, Trash2, ArrowLeft, User, MapPin, Calendar, Clock, FileText, DollarSign } from 'lucide-react';
+import { ClipboardList, Edit, Trash2, ArrowLeft, User, MapPin, Calendar, Clock, FileText, DollarSign, FileCheck } from 'lucide-react';
 import { useOrders } from '../hooks/useOrders';
 import { useClients } from '../../clients/hooks/useClients';
 import { Modal } from '../../../shared/ui/Modal';
@@ -19,6 +19,21 @@ export function OrderCard() {
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const handleCreateAct = () => {
+    // Переход к созданию акта с предзаполненными данными
+    const actData = {
+      orderId: order?.id,
+      clientId: order?.clientId,
+      workCost: order?.workCost || 0,
+      materialsCost: order?.materialsCost || 0,
+      total: order?.total || 0,
+      description: order?.description || '',
+    };
+    // Сохраняем данные в sessionStorage для передачи в редактор
+    sessionStorage.setItem('actFromOrder', JSON.stringify(actData));
+    navigate('/documents/new?type=act&orderId=' + order?.id);
+  };
 
   if (!order) {
     return (
@@ -205,6 +220,13 @@ export function OrderCard() {
             <Edit className="w-4 h-4" />
             Редактировать
           </Link>
+          <button
+            onClick={handleCreateAct}
+            className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+          >
+            <FileCheck className="w-4 h-4" />
+            Создать акт
+          </button>
           <button
             onClick={() => setShowDeleteModal(true)}
             className="flex items-center justify-center gap-2 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 font-medium py-2.5 px-4 rounded-lg transition-colors"

@@ -23,6 +23,8 @@ export function DocumentsList() {
     ...documents.acts.map(act => ({ ...act, documentType: 'act' as const })),
     ...documents.contracts.map(contract => ({ ...contract, documentType: 'contract' as const })),
     ...documents.warranties.map(warranty => ({ ...warranty, documentType: 'warranty' as const })),
+    ...(documents.estimates || []).map(estimate => ({ ...estimate, documentType: 'estimate' as const })),
+    ...(documents.handovers || []).map(handover => ({ ...handover, documentType: 'handover' as const })),
   ];
 
   // Фильтрация и поиск
@@ -59,6 +61,10 @@ export function DocumentsList() {
         return `/documents/contracts/${doc.id}`;
       case 'warranty':
         return `/documents/warranties/${doc.id}`;
+      case 'estimate':
+        return `/documents/estimates/${doc.id}`;
+      case 'handover':
+        return `/documents/handovers/${doc.id}`;
     }
   };
 
@@ -70,6 +76,10 @@ export function DocumentsList() {
         return 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300';
       case 'warranty':
         return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300';
+      case 'estimate':
+        return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300';
+      case 'handover':
+        return 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300';
     }
   };
 
