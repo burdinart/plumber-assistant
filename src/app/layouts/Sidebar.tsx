@@ -30,6 +30,8 @@ import {
   Flame,
   Building2,
   Info,
+  Settings,
+  User,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -51,6 +53,8 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Stethoscope,
   Flame,
   DollarSign,
+  Settings,
+  User,
 };
 
 export function Sidebar() {
@@ -301,7 +305,7 @@ export function Sidebar() {
           })}
         </div>
 
-        {/* О приложении */}
+        {/* О приложении и Настройки */}
         <div className="mt-4 border-t border-gray-200 dark:border-gray-700 pt-4">
           <NavLink
             to="/about"
@@ -315,6 +319,20 @@ export function Sidebar() {
           >
             <Info className="w-5 h-5 flex-shrink-0" />
             {!sidebarCollapsed && <span className="text-sm font-medium">О приложении</span>}
+          </NavLink>
+
+          <NavLink
+            to="/settings/profile"
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg transition-colors ${
+                isActive || location.pathname.startsWith('/settings/')
+                  ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+              } ${sidebarCollapsed ? 'justify-center' : ''}`
+            }
+          >
+            <Settings className="w-5 h-5 flex-shrink-0" />
+            {!sidebarCollapsed && <span className="text-sm font-medium">Настройки</span>}
           </NavLink>
         </div>
       </nav>
