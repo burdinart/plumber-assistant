@@ -3,6 +3,9 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
 
+// Версия кэша - обновляется при каждом релизе
+const CACHE_VERSION = 'v1.0.2';
+
 export default defineConfig({
   base: "/plumber-assistant/",
   plugins: [
@@ -38,7 +41,33 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+        // Добавляем версию в имя кэша для принудительного обновления
+        cacheId: `plumber-assistant-${CACHE_VERSION.replace(/\./g, '-')}`,
+        // Очищаем старые кэши при активации
+        cleanupOutdatedCaches: true,
+        // Используем networkFirst для навигации
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/.*\//i,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: `plumber-assistant-runtime-${CACHE_VERSION.replace(/\./g, '-')}`,
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 дней
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          }
+        ]
       },
+      // Принудительная перерегистрация SW при изменении
+      devOptions: {
+        enabled: false,
+        type: 'module'
+      }
     }),
   ],
   server: {

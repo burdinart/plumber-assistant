@@ -1,10 +1,13 @@
 // Service Worker с правильной логикой кэширования для GitHub Pages
-const CACHE_NAME = 'plumber-assistant-v1';
+// ВЕРСИЯ КЭША ОБНОВЛЯЕТСЯ ПРИ КАЖДОЙ СБОРКЕ
+const CACHE_VERSION = 'v1'; // Обновлять вручную при изменении структуры кэша
+const CACHE_NAME = `plumber-assistant-${CACHE_VERSION}`;
 const BASE_URL = '/plumber-assistant/';
 
 // Установка SW - пропускаем ожидание
 self.addEventListener('install', (event) => {
   console.log('[SW] Installing Service Worker with scope:', self.registration.scope);
+  // Пропускаем ожидание для быстрой активации
   self.skipWaiting();
 });
 
@@ -15,10 +18,14 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames
           .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+          .map((name) => {
+            console.log('[SW] Deleting old cache:', name);
+            return caches.delete(name);
+          })
       );
     }).then(() => {
       console.log('[SW] Service Worker activated, scope:', self.registration.scope);
+      console.log('[SW] Cache name:', CACHE_NAME);
       return self.clients.claim();
     })
   );
