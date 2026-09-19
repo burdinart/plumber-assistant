@@ -78,3 +78,56 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
+// Обработка показа уведомления
+self.addEventListener('push', (event) => {
+  if (event.data) {
+    const data = event.data.json();
+    
+    const options = {
+      body: data.body || 'У вас есть напоминание',
+      icon: '/plumber-assistant/icon-192x192.svg',
+      badge: '/plumber-assistant/icon-192x192.svg',
+      vibrate: [200, 100, 200],
+      tag: data.tag || 'reminder',
+      requireInteraction: true,
+      data: {
+        url: data.url || '/plumber-assistant/#/reminders',
+        reminderId: data.reminderId
+      },
+      actions: [
+        { action: 'open', title: 'Открыть' },
+        { action: 'dismiss', title: 'Закрыть' }
+      ]
+    };
+
+    event.waitUntil(
+      self.registration.showNotification(data.title || 'Помощник Сантехника', options)
+    );
+  }
+});
+
+// Обработка клика по уведомлению
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  if (event.action === 'dismiss') {
+    return;
+  }
+
+  const urlToOpen = event.notification.data?.url || '/plumber-assistant/#/reminders';
+  
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((windowClients) => {
+        for (let client of windowClients) {
+          if (client.url.includes('plumber-assistant') && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        if (clients.openWindow) {
+          return clients.openWindow(urlToOpen);
+        }
+      })
+  );
+});
