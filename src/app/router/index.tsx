@@ -32,6 +32,7 @@ import { ContractForm } from '../../features/documents/components/ContractForm';
 import { ContractPreview } from '../../features/documents/components/ContractPreview';
 import { WarrantyForm } from '../../features/documents/components/WarrantyForm';
 import { WarrantyPreview } from '../../features/documents/components/WarrantyPreview';
+import { ProfilePage } from '../../features/profile/components/ProfilePage';
 import { PropertyList } from '../../features/objects/components/PropertyList';
 import { PropertyForm } from '../../features/objects/components/PropertyForm';
 import { PropertyCard } from '../../features/objects/components/PropertyCard';
@@ -247,6 +248,11 @@ export const router = createBrowserRouter([
       {
         path: 'reminders',
         element: <RemindersPage />,
+      },
+      // Настройки и Профиль
+      {
+        path: 'settings/profile',
+        element: <ProfilePage />,
       },
       // Catch-all
       {

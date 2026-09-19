@@ -42,6 +42,9 @@ export function formatDocumentDate(dateString: string): string {
   });
 }
 
+// Алиас для formatDateForDocument
+export const formatDateForDocument = formatDocumentDate;
+
 /**
  * Получение даты окончания гарантии
  * @param issueDate - дата выдачи
@@ -94,3 +97,6 @@ export function formatDocumentAmount(amount: number): string {
     maximumFractionDigits: 2,
   }).format(amount);
 }
+
+// Алиас для formatAmount
+export const formatAmount = formatDocumentAmount;

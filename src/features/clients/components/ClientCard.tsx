@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { User, Building2, Phone, MapPin, Mail, FileText, Star, Edit, Trash2, Plus, ArrowLeft, Copy, DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
+import { User, Building2, Phone, MapPin, Mail, FileText, Star, Edit, Trash2, Plus, ArrowLeft, Copy, DollarSign, TrendingUp, TrendingDown, FileCheck } from 'lucide-react';
 import { useClients } from '../hooks/useClients';
 import { useOrders } from '../../orders/hooks/useOrders';
 import { useTransactions } from '../../finance/hooks/useTransactions';
@@ -26,6 +26,17 @@ export function ClientCard() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'orders' | 'finance'>('orders');
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const handleCreateContract = () => {
+    // Переход к созданию договора с предзаполненными данными клиента
+    sessionStorage.setItem('contractFromClient', JSON.stringify({
+      clientId: client?.id,
+      customerName: client?.name,
+      customerPhone: client?.phone,
+      customerAddress: client?.address,
+    }));
+    navigate('/documents/new?type=contract&clientId=' + client?.id);
+  };
 
   if (!client) {
     return (
@@ -266,6 +277,13 @@ export function ClientCard() {
             <Edit className="w-4 h-4" />
             Редактировать
           </Link>
+          <button
+            onClick={handleCreateContract}
+            className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+          >
+            <FileCheck className="w-4 h-4" />
+            Создать договор
+          </button>
           <button
             onClick={() => setShowDeleteModal(true)}
             className="flex items-center justify-center gap-2 bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 font-medium py-2.5 px-4 rounded-lg transition-colors"
