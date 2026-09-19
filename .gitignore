@@ -1,66 +1,54 @@
-```
+```gitignore
 # Dependencies
 node_modules/
 
-# Build artifacts
+# Build outputs
 dist/
 build/
 target/
 
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.py.class
-.Python
-env/
-venv/
-.venv/
-.ENV
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
+# Logs
 *.log
-*.tmp
-*.swp
-*.swo
-.DS_Store
-Thumbs.db
 
 # Environment variables
 .env
 .env.local
-.env.*
+*.env.*
 
-# IDE
+# Editor/IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
+*.tmp
 
-# Logs
-*.log
+# Python specific
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Compiled files
+*.o
+*.obj
+*.so
+*.a
+*.dll
+*.exe
 
 # Coverage
 coverage/
 htmlcov/
 .coverage
-.coverage.*
 
-# MyPy
+# Cache directories
 .mypy_cache/
-.dmypy.json
-dmypy.json
-
-# PyTest
 .pytest_cache/
+.gradle/
+
+# System files
+.DS_Store
+Thumbs.db
 
 # Compressed files
 *.zip
