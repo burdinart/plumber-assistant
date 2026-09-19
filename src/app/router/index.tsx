@@ -42,6 +42,7 @@ import { ExpansionTankCalculator } from '../../features/calculators/components/E
 import { RadiatorCalculator } from '../../features/calculators/components/RadiatorCalculator';
 import { RegulationsPage } from '../../features/reference/regulations/components/RegulationsPage';
 import { AboutPage } from '../../features/app/components/AboutPage';
+import { RemindersPage } from '../../features/reminders/components/RemindersPage';
 
 export const router = createBrowserRouter([
   {
@@ -241,6 +242,11 @@ export const router = createBrowserRouter([
       {
         path: 'about',
         element: <AboutPage />,
+      },
+      // Напоминания
+      {
+        path: 'reminders',
+        element: <RemindersPage />,
       },
       // Catch-all
       {
