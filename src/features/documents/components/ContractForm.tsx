@@ -363,8 +363,8 @@ export function ContractForm() {
                             type="number"
                             value={item.quantity}
                             onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value))}
-                            min="0.1"
-
+                            step="any"
+                            min="0"
                             className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
                           />
                         </td>
