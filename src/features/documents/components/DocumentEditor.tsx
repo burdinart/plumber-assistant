@@ -476,6 +476,8 @@ export const DocumentEditor = () => {
                       type="number"
                       value={item.quantity}
                       onChange={(e) => updateItem(index, 'quantity', Number(e.target.value))}
+                      step="any"
+                      min="0"
                       className="col-span-2 px-2 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-center"
                       placeholder="Кол-во"
                     />
