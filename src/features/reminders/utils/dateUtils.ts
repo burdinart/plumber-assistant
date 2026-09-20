@@ -87,4 +87,24 @@ export const getRemindersWord = (count: number): string => {
   return 'напоминаний';
 };
 
+/**
+ * Форматирует время до события для напоминаний (За 30 минут, За 1 час и т.д.)
+ */
+export const formatNotifyBefore = (minutes: number): string => {
+  if (minutes === 0) return 'В момент события';
+  if (minutes < 60) return `За ${minutes} мин.`;
+  if (minutes === 60) return 'За 1 час';
+  if (minutes < 1440) {
+    const hours = Math.floor(minutes / 60);
+    return `За ${hours} ч.`;
+  }
+  if (minutes === 1440) return 'За 1 день';
+  if (minutes < 10080) {
+    const days = Math.floor(minutes / 1440);
+    return `За ${days} дн.`;
+  }
+  const weeks = Math.floor(minutes / 10080);
+  return `За ${weeks} нед.`;
+};
+
 export { daysOfWeekNames, daysOfWeekFull };
