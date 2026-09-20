@@ -84,70 +84,71 @@ export const ProfilePage = () => {
               <User className="w-8 h-8 text-blue-600 dark:text-blue-400" />
               Профиль пользователя
             </h1>
-        <div className="flex gap-2">
-          {!isEditing ? (
-            <>
-              <button
-                onClick={() => setIsEditing(true)}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
-              >
-                <FileText className="w-4 h-4" />
-                Редактировать
-              </button>
-              <button
-                onClick={handleExport}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                Экспорт
-              </button>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-2"
-              >
-                <Upload className="w-4 h-4" />
-                Импорт
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".json"
-                onChange={handleImport}
-                className="hidden"
-              />
-            </>
-          ) : (
-            <>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
-              >
-                <Save className="w-4 h-4" />
-                Сохранить
-              </button>
-              <button
-                onClick={() => {
-                  setFormData(profile);
-                  setIsEditing(false);
-                }}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-              >
-                Отмена
-              </button>
-            </>
-          )}
+            <div className="flex gap-2">
+              {!isEditing ? (
+                <>
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Редактировать
+                  </button>
+                  <button
+                    onClick={handleExport}
+                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Экспорт
+                  </button>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                  >
+                    <Upload className="w-4 h-4" />
+                    Импорт
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".json"
+                    onChange={handleImport}
+                    className="hidden"
+                  />
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={handleSave}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors flex items-center gap-2"
+                  >
+                    <Save className="w-4 h-4" />
+                    Сохранить
+                  </button>
+                  <button
+                    onClick={() => {
+                      setFormData(profile);
+                      setIsEditing(false);
+                    }}
+                    className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                  >
+                    Отмена
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
         </div>
-      </div>
 
-      {importError && (
-        <div className="p-4 bg-red-900 bg-opacity-30 border border-red-700 rounded-lg flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 text-red-400" />
-          <span className="text-red-300">{importError}</span>
-        </div>
-      )}
+        {importError && (
+          <div className="p-4 bg-red-900 bg-opacity-30 border border-red-700 rounded-lg flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 text-red-400" />
+            <span className="text-red-300">{importError}</span>
+          </div>
+        )}
 
-      {/* Секция 1: Личные данные */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+        {/* Секция 1: Личные данные */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
           <User className="w-5 h-5 text-blue-400" />
           Личные данные
@@ -221,8 +222,8 @@ export const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Секция 2: Реквизиты */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+        {/* Секция 2: Реквизиты */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
           <Building className="w-5 h-5 text-blue-400" />
           Реквизиты (для ИП/ООО)
@@ -348,8 +349,8 @@ export const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Секция 3: Печать и подпись */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+        {/* Секция 3: Печать и подпись */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
           <FileText className="w-5 h-5 text-blue-400" />
           Печать и подпись для документов
@@ -447,8 +448,8 @@ export const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Секция 4: Шаблоны документов */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+        {/* Секция 4: Шаблоны документов */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
         <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
           <FileText className="w-5 h-5 text-blue-400" />
           Шаблоны документов
@@ -471,9 +472,10 @@ export const ProfilePage = () => {
         </div>
       </div>
 
-      {/* Информация о последнем обновлении */}
-      <div className="text-center text-gray-400 text-sm">
-        Последнее обновление: {new Date(profile.updatedAt).toLocaleString('ru-RU')}
+        {/* Информация о последнем обновлении */}
+        <div className="text-center text-gray-400 text-sm">
+          Последнее обновление: {new Date(profile.updatedAt).toLocaleString('ru-RU')}
+        </div>
       </div>
     </div>
   );
