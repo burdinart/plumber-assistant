@@ -75,13 +75,15 @@ export const ProfilePage = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4 space-y-6">
-      {/* Заголовок */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-          <User className="w-8 h-8 text-blue-400" />
-          Профиль пользователя
-        </h1>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
+      <div className="max-w-4xl mx-auto p-4 space-y-6">
+        {/* Заголовок */}
+        <div className="bg-white dark:bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm shadow-sm">
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
+              <User className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+              Профиль пользователя
+            </h1>
         <div className="flex gap-2">
           {!isEditing ? (
             <>
@@ -145,8 +147,8 @@ export const ProfilePage = () => {
       )}
 
       {/* Секция 1: Личные данные */}
-      <div className="bg-gray-800 rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
           <User className="w-5 h-5 text-blue-400" />
           Личные данные
         </h2>
@@ -160,7 +162,7 @@ export const ProfilePage = () => {
               value={formData.fullName}
               onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               placeholder="Иванов Иван Иванович"
             />
           </div>
@@ -173,7 +175,7 @@ export const ProfilePage = () => {
               value={formData.position}
               onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               placeholder="Индивидуальный предприниматель"
             />
           </div>
@@ -186,7 +188,7 @@ export const ProfilePage = () => {
               value={formData.phone}
               onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               placeholder="+7 (999) 000-00-00"
             />
           </div>
@@ -199,7 +201,7 @@ export const ProfilePage = () => {
               value={formData.email}
               onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               placeholder="email@example.com"
             />
           </div>
@@ -211,7 +213,7 @@ export const ProfilePage = () => {
               value={formData.address}
               onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 resize-none"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 resize-none"
               rows={2}
               placeholder="г. Москва, ул. Примерная, д. 1, кв. 1"
             />
@@ -220,8 +222,8 @@ export const ProfilePage = () => {
       </div>
 
       {/* Секция 2: Реквизиты */}
-      <div className="bg-gray-800 rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
           <Building className="w-5 h-5 text-blue-400" />
           Реквизиты (для ИП/ООО)
         </h2>
@@ -235,7 +237,7 @@ export const ProfilePage = () => {
               value={formData.companyName}
               onChange={(e) => setFormData(prev => ({ ...prev, companyName: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               placeholder="ИП Иванов И.И."
             />
           </div>
@@ -248,7 +250,7 @@ export const ProfilePage = () => {
               value={formData.inn}
               onChange={(e) => setFormData(prev => ({ ...prev, inn: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               placeholder="123456789012"
             />
           </div>
@@ -261,7 +263,7 @@ export const ProfilePage = () => {
               value={formData.ogrn}
               onChange={(e) => setFormData(prev => ({ ...prev, ogrn: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               placeholder="1234567890123"
             />
           </div>
@@ -274,7 +276,7 @@ export const ProfilePage = () => {
               value={formData.kpp}
               onChange={(e) => setFormData(prev => ({ ...prev, kpp: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               placeholder="123456789"
             />
           </div>
@@ -286,7 +288,7 @@ export const ProfilePage = () => {
               value={formData.legalAddress}
               onChange={(e) => setFormData(prev => ({ ...prev, legalAddress: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 resize-none"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 resize-none"
               rows={2}
               placeholder="г. Москва, ул. Юридическая, д. 1"
             />
@@ -300,7 +302,7 @@ export const ProfilePage = () => {
               value={formData.bankAccount}
               onChange={(e) => setFormData(prev => ({ ...prev, bankAccount: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               placeholder="40802810000000000000"
             />
           </div>
@@ -313,7 +315,7 @@ export const ProfilePage = () => {
               value={formData.bankName}
               onChange={(e) => setFormData(prev => ({ ...prev, bankName: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               placeholder="ПАО Сбербанк"
             />
           </div>
@@ -326,7 +328,7 @@ export const ProfilePage = () => {
               value={formData.bik}
               onChange={(e) => setFormData(prev => ({ ...prev, bik: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               placeholder="044525225"
             />
           </div>
@@ -339,7 +341,7 @@ export const ProfilePage = () => {
               value={formData.corrAccount}
               onChange={(e) => setFormData(prev => ({ ...prev, corrAccount: e.target.value }))}
               disabled={!isEditing}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
               placeholder="30101810400000000225"
             />
           </div>
@@ -347,8 +349,8 @@ export const ProfilePage = () => {
       </div>
 
       {/* Секция 3: Печать и подпись */}
-      <div className="bg-gray-800 rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
           <FileText className="w-5 h-5 text-blue-400" />
           Печать и подпись для документов
         </h2>
@@ -446,8 +448,8 @@ export const ProfilePage = () => {
       </div>
 
       {/* Секция 4: Шаблоны документов */}
-      <div className="bg-gray-800 rounded-xl p-6">
-        <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+        <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
           <FileText className="w-5 h-5 text-blue-400" />
           Шаблоны документов
         </h2>
@@ -460,7 +462,7 @@ export const ProfilePage = () => {
             value={formData.contractNumberTemplate}
             onChange={(e) => setFormData(prev => ({ ...prev, contractNumberTemplate: e.target.value }))}
             disabled={!isEditing}
-            className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            className="w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-600 rounded-lg text-gray-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
             placeholder="№ {number} от {date}"
           />
           <p className="text-gray-400 text-sm mt-2">

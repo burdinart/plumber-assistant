@@ -36,15 +36,15 @@ export const RemindersPage = () => {
   const completedReminders = reminders.filter(r => r.completed);
 
   return (
-    <div className="min-h-screen bg-gray-900 pb-20">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
       {/* Заголовок */}
-      <div className="bg-gray-800 border-b border-gray-700 sticky top-0 z-10">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Bell className="w-6 h-6 text-blue-400" />
-              <h1 className="text-xl font-bold text-white">Напоминания</h1>
-              <span className="text-sm text-gray-400">
+              <Bell className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              <h1 className="text-xl font-bold text-gray-800 dark:text-white">Напоминания</h1>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
                 ({activeReminders.length})
               </span>
             </div>
@@ -64,7 +64,7 @@ export const RemindersPage = () => {
         {/* Активные напоминания */}
         {activeReminders.length > 0 && (
           <section className="mb-8">
-            <h2 className="text-lg font-semibold text-white mb-4">Активные</h2>
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Активные</h2>
             <ReminderList
               reminders={activeReminders}
               onToggleComplete={handleToggleComplete}
@@ -77,7 +77,7 @@ export const RemindersPage = () => {
         {/* Завершённые напоминания */}
         {completedReminders.length > 0 && (
           <section>
-            <h2 className="text-lg font-semibold text-white mb-4 text-gray-400">
+            <h2 className="text-lg font-semibold text-gray-500 dark:text-gray-400 mb-4">
               Завершённые ({completedReminders.length})
             </h2>
             <ReminderList
@@ -92,9 +92,9 @@ export const RemindersPage = () => {
         {/* Пустое состояние */}
         {reminders.length === 0 && (
           <div className="text-center py-12">
-            <Bell className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-400 mb-2">Нет напоминаний</h3>
-            <p className="text-gray-500 text-sm mb-4">
+            <Bell className="w-16 h-16 text-gray-400 dark:text-gray-600 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-600 dark:text-gray-400 mb-2">Нет напоминаний</h3>
+            <p className="text-gray-500 dark:text-gray-500 text-sm mb-4">
               Создайте первое напоминание, чтобы не забыть о важном
             </p>
             <button

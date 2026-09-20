@@ -32,7 +32,6 @@ import { ContractForm } from '../../features/documents/components/ContractForm';
 import { ContractPreview } from '../../features/documents/components/ContractPreview';
 import { WarrantyForm } from '../../features/documents/components/WarrantyForm';
 import { WarrantyPreview } from '../../features/documents/components/WarrantyPreview';
-import { ProfilePage } from '../../features/profile/components/ProfilePage';
 import { PropertyList } from '../../features/objects/components/PropertyList';
 import { PropertyForm } from '../../features/objects/components/PropertyForm';
 import { PropertyCard } from '../../features/objects/components/PropertyCard';
@@ -43,6 +42,7 @@ import { ExpansionTankCalculator } from '../../features/calculators/components/E
 import { RadiatorCalculator } from '../../features/calculators/components/RadiatorCalculator';
 import { RegulationsPage } from '../../features/reference/regulations/components/RegulationsPage';
 import { AboutPage } from '../../features/app/components/AboutPage';
+import { ProfilePage } from '../../features/profile/components/ProfilePage';
 import { RemindersPage } from '../../features/reminders/components/RemindersPage';
 
 export const router = createBrowserRouter([
@@ -104,6 +104,11 @@ export const router = createBrowserRouter([
       {
         path: 'orders/:id/edit',
         element: <OrderForm />,
+      },
+      // CRM - Reminders (Напоминания)
+      {
+        path: 'reminders',
+        element: <RemindersPage />,
       },
       // Calculators
       {
@@ -243,11 +248,6 @@ export const router = createBrowserRouter([
       {
         path: 'about',
         element: <AboutPage />,
-      },
-      // Напоминания
-      {
-        path: 'reminders',
-        element: <RemindersPage />,
       },
       // Настройки и Профиль
       {
