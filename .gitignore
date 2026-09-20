@@ -2,51 +2,30 @@
 # Build artifacts
 dist/
 build/
-*.css
-*.js
-*.ts
-*.tsx
 
 # Dependencies
 node_modules/
 
+# Logs and temp files
+*.log
+*.tmp
+
 # Environment
 .env
 .env.local
-*.env.*
+.env.*
 
 # Editors
 .vscode/
 .idea/
-*.swp
-*.swo
-
-# Logs
-*.log
-
-# Coverage
-coverage/
-htmlcov/
-.coverage
 
 # Python
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-.Python
-env/
-venv/
-.venv/
-pip-log.txt
-pip-delete-this-directory.txt
-.tox/
-.coverage*
-.nox/
-.pytest_cache/
-.mypy_cache/
 
-# Compiled and binary
+# Compiled files
 *.o
 *.obj
 *.exe
@@ -55,12 +34,7 @@ pip-delete-this-directory.txt
 *.a
 *.out
 
-# System files
-.DS_Store
-Thumbs.db
-*.tmp
-
-# Compressed files
+# Archives
 *.zip
 *.gz
 *.tar
@@ -79,8 +53,8 @@ Thumbs.db
 *.Z
 *.lz
 *.lzo
-*.tar.gz
-*.tar.bz2
-*.tar.xz
-*.tar.zst
+
+# System files
+.DS_Store
+Thumbs.db
 ```
