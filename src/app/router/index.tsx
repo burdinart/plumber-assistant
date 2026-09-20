@@ -208,6 +208,10 @@ export const router = createBrowserRouter([
         element: <ActPreview />,
       },
       {
+        path: 'documents/acts/:id/edit',
+        element: <ActForm />,
+      },
+      {
         path: 'documents/contracts/new',
         element: <ContractForm />,
       },
@@ -216,12 +220,20 @@ export const router = createBrowserRouter([
         element: <ContractPreview />,
       },
       {
+        path: 'documents/contracts/:id/edit',
+        element: <ContractForm />,
+      },
+      {
         path: 'documents/warranties/new',
         element: <WarrantyForm />,
       },
       {
         path: 'documents/warranties/:id',
         element: <WarrantyPreview />,
+      },
+      {
+        path: 'documents/warranties/:id/edit',
+        element: <WarrantyForm />,
       },
       // Design - Проектирование
       {
