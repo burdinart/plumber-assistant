@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, useParams, Link } from 'react-router-dom';
 import { FileText, Save, X, ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import { useDocuments } from '../hooks/useDocuments';
 import { useClients } from '../../clients/hooks/useClients';
@@ -12,32 +12,35 @@ import { Toast } from '../../../shared/ui/Toast';
 
 export function ActForm() {
   const navigate = useNavigate();
+  const { id } = useParams<{ id: string }>();
   const [searchParams] = useSearchParams();
-  const { createAct } = useDocuments();
+  const { createAct, updateDocument, getAct } = useDocuments();
   const { clients, getClient } = useClients();
   const { getEstimate } = useEstimates();
   const { getOrder } = useOrders();
 
+  const isEditMode = !!id && id !== 'new';
   const estimateId = searchParams.get('estimateId');
   const orderId = searchParams.get('orderId');
   const clientId = searchParams.get('clientId');
 
+  const existingAct = isEditMode ? getAct(id!) : undefined;
   const estimate = estimateId ? getEstimate(estimateId) : undefined;
   const order = orderId ? getOrder(orderId) : undefined;
   const preselectedClient = clientId ? getClient(clientId) : undefined;
 
   const [formData, setFormData] = useState({
-    clientId: preselectedClient?.id || estimate?.clientId || order?.clientId || '',
-    orderId: orderId || '',
-    estimateId: estimateId || '',
-    completionDate: getTodayDate(),
-    performerSignature: '',
-    customerSignature: '',
-    complaints: '',
-    items: estimate?.items || [],
-    totalWork: estimate?.totalWork || 0,
-    totalMaterials: estimate?.totalMaterials || 0,
-    total: estimate?.total || 0,
+    clientId: existingAct?.clientId || preselectedClient?.id || estimate?.clientId || order?.clientId || '',
+    orderId: existingAct?.orderId || orderId || '',
+    estimateId: existingAct?.estimateId || estimateId || '',
+    completionDate: existingAct?.completionDate || getTodayDate(),
+    performerSignature: existingAct?.performerSignature || '',
+    customerSignature: existingAct?.customerSignature || '',
+    complaints: existingAct?.complaints || '',
+    items: existingAct?.items || estimate?.items || [],
+    totalWork: existingAct?.totalWork || estimate?.totalWork || 0,
+    totalMaterials: existingAct?.totalMaterials || estimate?.totalMaterials || 0,
+    total: existingAct?.total || estimate?.total || 0,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -209,9 +212,15 @@ export function ActForm() {
           <FileText className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-gray-800 dark:text-white">Новый акт</h1>
+          <h1 className="text-xl font-bold text-gray-800 dark:text-white">
+            {isEditMode ? 'Редактирование акта' : 'Новый акт'}
+          </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {estimate ? `Создание акта на основе сметы ${estimate.number}` : 'Создание акта выполненных работ'}
+            {estimate 
+              ? `Создание акта на основе сметы ${estimate.number}` 
+              : isEditMode 
+                ? 'Изменение данных акта выполненных работ'
+                : 'Создание акта выполненных работ'}
           </p>
         </div>
       </div>

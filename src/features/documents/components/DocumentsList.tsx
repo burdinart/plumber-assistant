@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { FileText, Plus, Search, Filter, Eye, Printer, Trash2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { FileText, Plus, Search, Filter, Eye, Printer, Trash2, Edit2 } from 'lucide-react';
 import { useDocuments } from '../hooks/useDocuments';
 import { useClients } from '../../clients/hooks/useClients';
 import { DocumentType, DOCUMENT_TYPE_NAMES } from '../types';
@@ -11,6 +11,7 @@ import { Toast } from '../../../shared/ui/Toast';
 export function DocumentsList() {
   const { documents, deleteDocument } = useDocuments();
   const { getClient } = useClients();
+  const navigate = useNavigate();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [typeFilter, setTypeFilter] = useState<DocumentType | 'all'>('all');
@@ -50,6 +51,21 @@ export function DocumentsList() {
       setToast({ message: 'Документ удалён', type: 'success' });
       setShowDeleteModal(false);
       setDocumentToDelete(null);
+    }
+  };
+
+  const getEditLink = (doc: typeof allDocuments[0]): string => {
+    switch (doc.documentType) {
+      case 'act':
+        return `/documents/acts/${doc.id}/edit`;
+      case 'contract':
+        return `/documents/contracts/${doc.id}/edit`;
+      case 'warranty':
+        return `/documents/warranties/${doc.id}/edit`;
+      case 'estimate':
+        return `/finance/estimates/${doc.id}/edit`;
+      case 'handover':
+        return `/documents/handovers/${doc.id}/edit`;
     }
   };
 
@@ -205,6 +221,13 @@ export function DocumentsList() {
                       title="Печать"
                     >
                       <Printer className="w-4 h-4" />
+                    </Link>
+                    <Link
+                      to={getEditLink(doc)}
+                      className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                      title="Редактировать"
+                    >
+                      <Edit2 className="w-4 h-4" />
                     </Link>
                     <button
                       onClick={() => handleDelete(doc.id, doc.documentType)}
