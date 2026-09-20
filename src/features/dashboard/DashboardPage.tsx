@@ -28,11 +28,13 @@ import {
   AlertTriangle,
   Stethoscope,
   Flame,
+  Bell,
 } from 'lucide-react';
 import { useOrders } from '../orders/hooks/useOrders';
 import { useClients } from '../clients/hooks/useClients';
 import { useTransactions } from '../finance/hooks/useTransactions';
 import { formatCurrency, formatDate, getOrderStatusText, getOrderStatusColor, getOrderTypeText } from '../../shared/utils/helpers';
+import { RemindersWidget } from '../reminders/components/RemindersWidget';
 
 const ICON_MAP: Record<string, React.ElementType> = {
   Calculator,
@@ -202,61 +204,69 @@ export function DashboardPage() {
       </div>
 
       {/* Widgets */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        {/* Today's Orders - Full Width Now */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 lg:col-span-2">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-5 h-5 text-blue-500" />
-              <h3 className="font-semibold text-gray-800 dark:text-white">
-                Заявки на сегодня
-              </h3>
-              <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full">
-                {todayOrders.length}
-              </span>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        {/* Left Column - Orders */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Today's Orders */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-5 h-5 text-blue-500" />
+                <h3 className="font-semibold text-gray-800 dark:text-white">
+                  Заявки на сегодня
+                </h3>
+                <span className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded-full">
+                  {todayOrders.length}
+                </span>
+              </div>
+              <Link
+                to="/orders"
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+              >
+                Все <ArrowRight className="w-3 h-3" />
+              </Link>
             </div>
-            <Link
-              to="/orders"
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
-            >
-              Все <ArrowRight className="w-3 h-3" />
-            </Link>
-          </div>
 
-          {todayOrders.length > 0 ? (
-            <div className="space-y-2">
-              {todayOrders.slice(0, 3).map((order) => (
-                <Link
-                  key={order.id}
-                  to={`/orders/${order.id}`}
-                  className="block p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="text-sm font-medium text-gray-800 dark:text-white">
-                        {getOrderTypeText(order.type)}
+            {todayOrders.length > 0 ? (
+              <div className="space-y-2">
+                {todayOrders.slice(0, 3).map((order) => (
+                  <Link
+                    key={order.id}
+                    to={`/orders/${order.id}`}
+                    className="block p-2 rounded-lg bg-gray-50 dark:bg-gray-700/50 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-sm font-medium text-gray-800 dark:text-white">
+                          {getOrderTypeText(order.type)}
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                          {order.time} • {formatCurrency(order.total)}
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {order.time} • {formatCurrency(order.total)}
-                      </div>
+                      <span className={`text-xs px-2 py-0.5 rounded bg-${getOrderStatusColor(order.status)}-100 dark:bg-${getOrderStatusColor(order.status)}-900/30 text-${getOrderStatusColor(order.status)}-700 dark:text-${getOrderStatusColor(order.status)}-300`}>
+                        {getOrderStatusText(order.status)}
+                      </span>
                     </div>
-                    <span className={`text-xs px-2 py-0.5 rounded bg-${getOrderStatusColor(order.status)}-100 dark:bg-${getOrderStatusColor(order.status)}-900/30 text-${getOrderStatusColor(order.status)}-700 dark:text-${getOrderStatusColor(order.status)}-300`}>
-                      {getOrderStatusText(order.status)}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-              {todayOrders.length > 3 && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 text-center pt-1">
-                  + ещё {todayOrders.length - 3}
-                </p>
-              )}
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
-              Нет заявок на сегодня
-            </p>
-          )}
+                  </Link>
+                ))}
+                {todayOrders.length > 3 && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 text-center pt-1">
+                    + ещё {todayOrders.length - 3}
+                  </p>
+                )}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                Нет заявок на сегодня
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Right Column - Reminders Widget */}
+        <div className="lg:col-span-1">
+          <RemindersWidget />
         </div>
       </div>
 

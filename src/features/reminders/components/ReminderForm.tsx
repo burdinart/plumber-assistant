@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useAppStore } from '../../../shared/store/useAppStore';
 import { useNotifications } from '../../../shared/hooks/useNotifications';
-import { Bell, Clock, Calendar, X, AlertCircle } from 'lucide-react';
-import { Reminder } from '../types';
-import { getTimeUntil, getNextFireDate, formatDate } from '../utils/dateUtils';
+import { Bell, Clock, Calendar, X, AlertCircle, Plus, Flag, Repeat } from 'lucide-react';
+import { Reminder, ReminderFormData, Priority, RepeatType } from '../types';
+import { getTimeUntil, getNextFireDate, formatDate, formatNotifyBefore } from '../utils/dateUtils';
 
 interface ReminderFormData {
   title: string;
@@ -12,6 +12,10 @@ interface ReminderFormData {
   daysOfWeek: number[];
   date?: string;
   repeat: boolean;
+  repeatType?: RepeatType;
+  repeatInterval?: number;
+  reminders: { before: number }[];
+  priority?: Priority;
 }
 
 interface ReminderFormProps {
@@ -29,7 +33,11 @@ export const ReminderForm = ({ onClose, existingReminder }: ReminderFormProps) =
     time: existingReminder?.time || '09:00',
     daysOfWeek: existingReminder?.daysOfWeek || [],
     date: existingReminder?.date || '',
-    repeat: existingReminder?.repeat || false
+    repeat: existingReminder?.repeat || false,
+    repeatType: existingReminder?.repeatType,
+    repeatInterval: existingReminder?.repeatInterval,
+    reminders: existingReminder?.reminders || [{ before: 30 }], // по умолчанию за 30 минут
+    priority: existingReminder?.priority || 'none'
   });
 
   const [showPermissionRequest, setShowPermissionRequest] = useState(false);
@@ -50,6 +58,34 @@ export const ReminderForm = ({ onClose, existingReminder }: ReminderFormProps) =
       daysOfWeek: prev.daysOfWeek.includes(dayIndex)
         ? prev.daysOfWeek.filter(d => d !== dayIndex)
         : [...prev.daysOfWeek, dayIndex]
+    }));
+  };
+
+  // Добавление напоминания
+  const addReminderItem = () => {
+    setFormData(prev => ({
+      ...prev,
+      reminders: [...prev.reminders, { before: 0 }]
+    }));
+  };
+
+  // Удаление напоминания
+  const removeReminderItem = (index: number) => {
+    if (formData.reminders.length > 1) {
+      setFormData(prev => ({
+        ...prev,
+        reminders: prev.reminders.filter((_, i) => i !== index)
+      }));
+    }
+  };
+
+  // Обновление напоминания
+  const updateReminderItem = (index: number, before: number) => {
+    setFormData(prev => ({
+      ...prev,
+      reminders: prev.reminders.map((r, i) => 
+        i === index ? { ...r, before } : r
+      )
     }));
   };
 
@@ -121,6 +157,10 @@ export const ReminderForm = ({ onClose, existingReminder }: ReminderFormProps) =
       daysOfWeek: formData.daysOfWeek,
       date: formData.date,
       repeat: formData.repeat,
+      repeatType: formData.repeatType,
+      repeatInterval: formData.repeatInterval,
+      reminders: formData.reminders,
+      priority: formData.priority,
       completed: existingReminder?.completed || false,
       notified: existingReminder?.notified || false,
       createdAt: existingReminder?.createdAt || new Date().toISOString()
@@ -234,8 +274,8 @@ export const ReminderForm = ({ onClose, existingReminder }: ReminderFormProps) =
             {/* Время */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                Время *
+                <Clock className="w-4 h-4 text-blue-400" />
+                Время события *
               </label>
               <input
                 type="time"
@@ -244,54 +284,32 @@ export const ReminderForm = ({ onClose, existingReminder }: ReminderFormProps) =
                 className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
-            </div>
-
-            {/* Повтор */}
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="repeat"
-                checked={formData.repeat}
-                onChange={(e) => setFormData(prev => ({ ...prev, repeat: e.target.checked }))}
-                className="w-5 h-5 rounded bg-gray-700 border-gray-600 text-blue-600 focus:ring-blue-500"
-              />
-              <label htmlFor="repeat" className="text-gray-300">
-                Повторять еженедельно
-              </label>
-            </div>
-
-            {/* Дни недели (если повтор) */}
-            {formData.repeat && (
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  Дни недели *
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {daysOfWeekNames.map((day, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => handleDayToggle(index)}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                        formData.daysOfWeek.includes(index)
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                      }`}
-                    >
-                      {day}
-                    </button>
-                  ))}
-                </div>
+              
+              {/* Быстрый выбор времени */}
+              <div className="flex gap-2 mt-2 flex-wrap">
+                {['08:00', '09:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'].map(time => (
+                  <button
+                    key={time}
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, time }))}
+                    className={`px-3 py-1.5 rounded text-xs transition-colors ${
+                      formData.time === time
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                    }`}
+                  >
+                    {time}
+                  </button>
+                ))}
               </div>
-            )}
+            </div>
 
-            {/* Конкретная дата (если не повтор) */}
+            {/* Дата */}
             {!formData.repeat && (
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  Дата *
+                  <Calendar className="w-4 h-4 text-blue-400" />
+                  Дата события *
                 </label>
                 <input
                   type="date"
@@ -301,48 +319,307 @@ export const ReminderForm = ({ onClose, existingReminder }: ReminderFormProps) =
                   required
                   min={new Date().toISOString().split('T')[0]}
                 />
+                
+                {/* Быстрый выбор даты */}
+                <div className="flex gap-2 mt-2 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const today = new Date();
+                      setFormData(prev => ({ ...prev, date: today.toISOString().split('T')[0] }));
+                    }}
+                    className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-xs transition-colors"
+                  >
+                    Сегодня
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const tomorrow = new Date();
+                      tomorrow.setDate(tomorrow.getDate() + 1);
+                      setFormData(prev => ({ ...prev, date: tomorrow.toISOString().split('T')[0] }));
+                    }}
+                    className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-xs transition-colors"
+                  >
+                    Завтра
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const nextWeek = new Date();
+                      nextWeek.setDate(nextWeek.getDate() + 7);
+                      setFormData(prev => ({ ...prev, date: nextWeek.toISOString().split('T')[0] }));
+                    }}
+                    className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-xs transition-colors"
+                  >
+                    Через неделю
+                  </button>
+                </div>
               </div>
             )}
 
-            {/* Превью уведомления */}
-            <div className="p-4 bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg">
-              <div className="flex items-center gap-2 mb-2">
-                <Bell className="w-4 h-4 text-blue-400" />
-                <span className="text-sm font-medium text-gray-300">Уведомление придёт:</span>
+            {/* Приоритет */}
+            <div className="mt-4">
+              <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                <Flag className="w-4 h-4 text-blue-400" />
+                Приоритет
+              </label>
+              <div className="grid grid-cols-4 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, priority: 'high' }))}
+                  className={`py-2 rounded-lg text-sm font-medium transition-colors ${
+                    formData.priority === 'high'
+                      ? 'bg-red-600 text-white'
+                      : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                  }`}
+                >
+                  🔴 Высокий
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, priority: 'medium' }))}
+                  className={`py-2 rounded-lg text-sm font-medium transition-colors ${
+                    formData.priority === 'medium'
+                      ? 'bg-orange-600 text-white'
+                      : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                  }`}
+                >
+                  🟠 Средний
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, priority: 'low' }))}
+                  className={`py-2 rounded-lg text-sm font-medium transition-colors ${
+                    formData.priority === 'low'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                  }`}
+                >
+                  🔵 Низкий
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, priority: 'none' }))}
+                  className={`py-2 rounded-lg text-sm font-medium transition-colors ${
+                    formData.priority === 'none' || !formData.priority
+                      ? 'bg-gray-600 text-white'
+                      : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                  }`}
+                >
+                  ⚪ Нет
+                </button>
               </div>
-              
-              {formData.repeat ? (
-                <div className="space-y-1">
-                  <p className="text-white text-sm">
-                    Каждый {formData.daysOfWeek.length > 0 
-                      ? formData.daysOfWeek.map(d => daysOfWeekNames[d]).join(', ')
-                      : 'выбранный день'}
-                  </p>
-                  <p className="text-white text-sm">
-                    ⏰ В {formData.time}
-                  </p>
-                  <p className="text-gray-400 text-xs mt-2">
-                    Ближайшее уведомление: {getNextFireDate(formData.time, formData.daysOfWeek)}
-                  </p>
+            </div>
+
+            {/* Напоминания */}
+            <div className="mt-4">
+              <div className="flex items-center justify-between mb-3">
+                <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                  <Bell className="w-4 h-4 text-blue-400" />
+                  Напоминания
+                </label>
+                <button
+                  type="button"
+                  onClick={addReminderItem}
+                  className="text-xs text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                >
+                  <Plus className="w-3 h-3" />
+                  Добавить
+                </button>
+              </div>
+
+              <div className="space-y-2">
+                {formData.reminders.map((reminder, index) => (
+                  <div key={index} className="flex items-center gap-2 p-2 bg-gray-700 rounded-lg">
+                    <Bell className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <select
+                      value={reminder.before}
+                      onChange={(e) => updateReminderItem(index, parseInt(e.target.value))}
+                      className="flex-1 bg-transparent text-white text-sm focus:outline-none"
+                    >
+                      <option value={0}>В момент события</option>
+                      <option value={5}>За 5 минут</option>
+                      <option value={15}>За 15 минут</option>
+                      <option value={30}>За 30 минут</option>
+                      <option value={60}>За 1 час</option>
+                      <option value={120}>За 2 часа</option>
+                      <option value={1440}>За 1 день</option>
+                      <option value={2880}>За 2 дня</option>
+                      <option value={10080}>За 1 неделю</option>
+                    </select>
+                    {formData.reminders.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeReminderItem(index)}
+                        className="text-gray-400 hover:text-red-400 p-1"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Повторение с расширенными настройками */}
+            <div className="mt-4">
+              <div className="flex items-center gap-3 mb-3">
+                <input
+                  type="checkbox"
+                  id="repeat"
+                  checked={formData.repeat}
+                  onChange={(e) => setFormData(prev => ({ ...prev, repeat: e.target.checked }))}
+                  className="w-5 h-5 rounded bg-gray-700 border-gray-600 text-blue-600"
+                />
+                <label htmlFor="repeat" className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                  <Repeat className="w-4 h-4 text-blue-400" />
+                  Повторять
+                </label>
+              </div>
+
+              {formData.repeat && (
+                <div className="p-4 bg-gray-700 bg-opacity-50 border border-gray-600 rounded-lg space-y-4">
+                  {/* Тип повторения */}
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, repeatType: 'daily' }))}
+                      className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                        formData.repeatType === 'daily'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      Каждый день
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, repeatType: 'weekly' }))}
+                      className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                        formData.repeatType === 'weekly'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      Каждую неделю
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, repeatType: 'monthly' }))}
+                      className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                        formData.repeatType === 'monthly'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      Каждый месяц
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFormData(prev => ({ ...prev, repeatType: 'yearly' }))}
+                      className={`px-3 py-2 rounded-lg text-sm transition-colors ${
+                        formData.repeatType === 'yearly'
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                      }`}
+                    >
+                      Каждый год
+                    </button>
+                  </div>
+
+                  {/* Дни недели для weekly */}
+                  {formData.repeatType === 'weekly' && (
+                    <div>
+                      <p className="text-xs text-gray-400 mb-2">Выберите дни:</p>
+                      <div className="flex gap-1 flex-wrap">
+                        {['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map((day, index) => {
+                          const dayIndex = (index + 1) % 7; // Пн=1, Вт=2, ..., Вс=0
+                          const isSelected = formData.daysOfWeek.includes(dayIndex);
+                          return (
+                            <button
+                              key={index}
+                              type="button"
+                              onClick={() => {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  daysOfWeek: isSelected
+                                    ? prev.daysOfWeek.filter(d => d !== dayIndex)
+                                    : [...prev.daysOfWeek, dayIndex]
+                                }));
+                              }}
+                              className={`w-10 h-10 rounded-full text-sm font-medium transition-colors ${
+                                isSelected
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                              }`}
+                            >
+                              {day}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              ) : formData.date ? (
-                <div className="space-y-1">
-                  <p className="text-white text-sm">
-                    📅 {formatDate(formData.date)}
-                  </p>
-                  <p className="text-white text-sm">
-                    ⏰ В {formData.time}
-                  </p>
-                  <p className="text-gray-400 text-xs mt-2">
-                    Через {getTimeUntil(formData.date, formData.time)}
-                  </p>
-                </div>
-              ) : (
-                <p className="text-gray-400 text-sm">
-                  Выберите дату или дни недели
-                </p>
               )}
             </div>
+
+            {/* Конкретная дата (если не повтор) - удалено, перенесено выше */}
+
+            {/* Предпросмотр напоминания */}
+            {formData.date && formData.time && (
+              <div className="mt-6 p-4 bg-gradient-to-br from-blue-900 to-blue-800 rounded-xl border border-blue-700">
+                <div className="flex items-center gap-2 mb-3">
+                  <Bell className="w-5 h-5 text-blue-300" />
+                  <span className="text-sm font-semibold text-blue-100">Предпросмотр</span>
+                </div>
+
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-blue-300" />
+                    <span className="text-white text-sm">
+                      {new Date(formData.date).toLocaleDateString('ru-RU', {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long'
+                      })}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-blue-300" />
+                    <span className="text-white text-sm">В {formData.time}</span>
+                  </div>
+
+                  {formData.reminders.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-blue-700">
+                      <p className="text-xs text-blue-300 mb-2">Напоминания:</p>
+                      {formData.reminders.map((reminder, index) => (
+                        <div key={index} className="flex items-center gap-2 text-sm text-blue-100 mb-1">
+                          <Bell className="w-3 h-3" />
+                          <span>{formatNotifyBefore(reminder.before)} до события</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {formData.priority && formData.priority !== 'none' && (
+                    <div className="mt-2">
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        formData.priority === 'high' ? 'bg-red-600 text-white' :
+                        formData.priority === 'medium' ? 'bg-orange-600 text-white' :
+                        'bg-blue-600 text-white'
+                      }`}>
+                        {formData.priority === 'high' ? '🔴 Высокий приоритет' :
+                         formData.priority === 'medium' ? '🟠 Средний приоритет' :
+                         '🔵 Низкий приоритет'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Информация об уведомлениях */}
             {permission === 'granted' && (
