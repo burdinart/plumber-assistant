@@ -78,7 +78,7 @@ export const ProfilePage = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
       <div className="max-w-4xl mx-auto p-4 space-y-6">
         {/* Заголовок */}
-        <div className="bg-white dark:bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm shadow-sm">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center gap-3">
               <User className="w-8 h-8 text-blue-600 dark:text-blue-400" />
