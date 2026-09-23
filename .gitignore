@@ -2,6 +2,10 @@
 # Build artifacts
 dist/
 build/
+*.js
+*.svg
+*.html
+*.css
 
 # Dependencies
 node_modules/
@@ -10,7 +14,16 @@ node_modules/
 *.log
 *.tmp
 
+# Environment
+.env
+.env.local
+*.env.*
+
 # Editors
 .vscode/
 .idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
 ```

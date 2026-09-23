@@ -1,4 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
-  <rect width="192" height="192" fill="#1e293b"/>
-  <text x="96" y="130" font-size="100" font-family="Arial, sans-serif" fill="white" text-anchor="middle" font-weight="bold">С</text>
+  <!-- Фон -->
+  <rect width="192" height="192" fill="#2563eb" rx="24"/>
+  
+  <!-- Гаечный ключ (белый) -->
+  <g fill="white" transform="translate(96, 96) scale(0.15) translate(-96, -96)">
+    <!-- Головка ключа -->
+    <circle cx="96" cy="96" r="30" fill="none" stroke="white" stroke-width="15"/>
+    <circle cx="96" cy="96" r="15" fill="white"/>
+    <!-- Ручка ключа -->
+    <rect x="81" y="40" width="30" height="100" fill="white" rx="5"/>
+    <rect x="81" y="96" width="30" height="80" fill="white" rx="5" transform="rotate(45 96 96)"/>
+  </g>
 </svg>
