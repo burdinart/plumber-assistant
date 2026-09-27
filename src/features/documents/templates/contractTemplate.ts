@@ -1,5 +1,7 @@
 import { Contract } from '../types';
+import { UserProfile } from '../../profile/types';
 import { formatDocumentDate, formatDocumentAmount } from '../utils/documentHelpers';
+import { getContractorHeaderLine, DASH } from '../utils/autoFillProfile';
 
 /**
  * Генерация HTML для печати договора
@@ -7,13 +9,15 @@ import { formatDocumentDate, formatDocumentAmount } from '../utils/documentHelpe
  * @param clientName - имя клиента
  * @param clientAddress - адрес клиента
  * @param clientPhone - телефон клиента
+ * @param profile - профиль исполнителя (Настройки → Профиль)
  * @returns HTML строка для печати
  */
 export function generateContractHtml(
   contract: Contract,
   clientName: string,
   clientAddress: string,
-  clientPhone: string
+  clientPhone: string,
+  profile?: UserProfile | null
 ): string {
   return `
 <!DOCTYPE html>
@@ -89,7 +93,7 @@ export function generateContractHtml(
   </div>
 
   <div class="info-block">
-    <p><strong>Исполнитель:</strong> Помощник Сантехника, ИНН 7712345678, тел: +7 (999) 123-45-67</p>
+    <p><strong>Исполнитель:</strong> ${getContractorHeaderLine(profile)}</p>
     <p><strong>Заказчик:</strong> ${clientName}, тел: ${clientPhone}</p>
     <p><strong>Адрес объекта:</strong> ${clientAddress}</p>
   </div>
@@ -142,9 +146,10 @@ export function generateContractHtml(
   <div class="signatures">
     <div class="signature-block">
       <p><strong>ИСПОЛНИТЕЛЬ:</strong></p>
-      <p>Помощник Сантехника</p>
-      <p>ИНН: 7712345678</p>
-      <p>Тел: +7 (999) 123-45-67</p>
+      <p>${profile?.companyName || profile?.fullName || DASH}</p>
+      <p>ИНН: ${profile?.inn || DASH}</p>
+      <p>Тел: ${profile?.phone || DASH}</p>
+      <p>Адрес: ${profile?.address || DASH}</p>
       <div class="signature-line"></div>
       <p style="font-size: 10pt; margin-top: 5px;">(подпись)</p>
     </div>

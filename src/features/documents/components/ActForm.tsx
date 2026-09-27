@@ -5,6 +5,7 @@ import { useDocuments } from '../hooks/useDocuments';
 import { useClients } from '../../clients/hooks/useClients';
 import { useEstimates } from '../../finance/hooks/useEstimates';
 import { useOrders } from '../../orders/hooks/useOrders';
+import { useProfile } from '../../profile/hooks/useProfile';
 import { Act } from '../types';
 import { EstimateItem } from '../../finance/types';
 import { getTodayDate } from '../../finance/utils/formatters';
@@ -18,6 +19,7 @@ export function ActForm() {
   const { clients, getClient } = useClients();
   const { getEstimate } = useEstimates();
   const { getOrder } = useOrders();
+  const { profile } = useProfile();
 
   const isEditMode = !!id && id !== 'new';
   const estimateId = searchParams.get('estimateId');
@@ -34,7 +36,8 @@ export function ActForm() {
     orderId: existingAct?.orderId || orderId || '',
     estimateId: existingAct?.estimateId || estimateId || '',
     completionDate: existingAct?.completionDate || getTodayDate(),
-    performerSignature: existingAct?.performerSignature || '',
+    // Автоподстановка ФИО исполнителя из профиля (Настройки → Профиль), поле остаётся редактируемым
+    performerSignature: existingAct?.performerSignature || profile.fullName || '',
     customerSignature: existingAct?.customerSignature || '',
     complaints: existingAct?.complaints || '',
     items: existingAct?.items || estimate?.items || [],

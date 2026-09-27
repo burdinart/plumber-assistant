@@ -8,6 +8,8 @@ import { Contract } from '../types';
 import { EstimateItem } from '../../finance/types';
 import { getTodayDate, getDateAfterDays } from '../../finance/utils/formatters';
 import { Toast } from '../../../shared/ui/Toast';
+import { useProfile } from '../../profile/hooks/useProfile';
+import { ProfileWarningBanner, shouldShowProfileWarning } from './ContractorBlock';
 
 export function ContractForm() {
   const navigate = useNavigate();
@@ -15,6 +17,7 @@ export function ContractForm() {
   const { createContract } = useDocuments();
   const { clients, getClient } = useClients();
   const { getOrder } = useOrders();
+  const { profile } = useProfile();
 
   const orderId = searchParams.get('orderId');
   const clientId = searchParams.get('clientId');
@@ -189,6 +192,7 @@ export function ContractForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        {shouldShowProfileWarning(profile) && <ProfileWarningBanner />}
         <div className="space-y-4">
           {/* Client */}
           <div>

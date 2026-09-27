@@ -3,7 +3,9 @@ import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Printer } from 'lucide-react';
 import { useDocuments } from '../hooks/useDocuments';
 import { useClients } from '../../clients/hooks/useClients';
+import { useProfile } from '../../profile/hooks/useProfile';
 import { generateActHtml } from '../templates/actTemplate';
+import { ContractorBlock, ProfileWarningBanner, shouldShowProfileWarning } from './ContractorBlock';
 
 export function ActPreview() {
   const { id } = useParams<{ id: string }>();
@@ -11,6 +13,7 @@ export function ActPreview() {
   const [searchParams] = useSearchParams();
   const { getAct } = useDocuments();
   const { getClient } = useClients();
+  const { profile } = useProfile();
 
   const act = id ? getAct(id) : undefined;
   const client = act ? getClient(act.clientId) : undefined;
@@ -18,7 +21,7 @@ export function ActPreview() {
 
   useEffect(() => {
     if (shouldPrint && act && client) {
-      const html = generateActHtml(act, client.name, client.address);
+      const html = generateActHtml(act, client.name, client.address, profile);
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(html);
@@ -35,7 +38,7 @@ export function ActPreview() {
 
   const handlePrint = () => {
     if (act && client) {
-      const html = generateActHtml(act, client.name, client.address);
+      const html = generateActHtml(act, client.name, client.address, profile);
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(html);
@@ -88,6 +91,7 @@ export function ActPreview() {
 
       {/* Preview */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
+        {shouldShowProfileWarning(profile) && <ProfileWarningBanner />}
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
             АКТ ВЫПОЛНЕННЫХ РАБОТ
@@ -103,8 +107,7 @@ export function ActPreview() {
         </div>
 
         <div className="mb-6">
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Исполнитель:</p>
-          <p className="text-gray-800 dark:text-white">Помощник Сантехника</p>
+          <ContractorBlock profile={profile} />
         </div>
 
         <div className="mb-6">

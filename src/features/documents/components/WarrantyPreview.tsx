@@ -3,7 +3,10 @@ import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Printer } from 'lucide-react';
 import { useDocuments } from '../hooks/useDocuments';
 import { useClients } from '../../clients/hooks/useClients';
+import { useProfile } from '../../profile/hooks/useProfile';
 import { generateWarrantyHtml } from '../templates/warrantyTemplate';
+import { ProfileWarningBanner, shouldShowProfileWarning } from './ContractorBlock';
+import { DASH } from '../utils/autoFillProfile';
 
 export function WarrantyPreview() {
   const { id } = useParams<{ id: string }>();
@@ -11,6 +14,7 @@ export function WarrantyPreview() {
   const [searchParams] = useSearchParams();
   const { getWarranty } = useDocuments();
   const { getClient } = useClients();
+  const { profile } = useProfile();
 
   const warranty = id ? getWarranty(id) : undefined;
   const client = warranty ? getClient(warranty.clientId) : undefined;
@@ -18,7 +22,7 @@ export function WarrantyPreview() {
 
   useEffect(() => {
     if (shouldPrint && warranty && client) {
-      const html = generateWarrantyHtml(warranty, client.name, client.address, client.phone);
+      const html = generateWarrantyHtml(warranty, client.name, client.address, client.phone, profile);
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(html);
@@ -34,7 +38,7 @@ export function WarrantyPreview() {
 
   const handlePrint = () => {
     if (warranty && client) {
-      const html = generateWarrantyHtml(warranty, client.name, client.address, client.phone);
+      const html = generateWarrantyHtml(warranty, client.name, client.address, client.phone, profile);
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(html);
@@ -106,6 +110,7 @@ export function WarrantyPreview() {
 
       {/* Preview */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
+        {shouldShowProfileWarning(profile) && <ProfileWarningBanner />}
         <div className="text-center mb-6 border-b-4 border-double border-gray-300 dark:border-gray-600 pb-6">
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2 uppercase">
             Гарантийный талон
@@ -204,7 +209,9 @@ export function WarrantyPreview() {
         <div className="grid grid-cols-2 gap-8 mt-12">
           <div>
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Исполнитель:</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Помощник Сантехника</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{profile.companyName || profile.fullName || DASH}</p>
+            {profile.inn ? <p className="text-sm text-gray-600 dark:text-gray-400">ИНН: {profile.inn}</p> : null}
+            {profile.phone ? <p className="text-sm text-gray-600 dark:text-gray-400">Тел: {profile.phone}</p> : null}
             <div className="border-b border-gray-400 dark:border-gray-500 mt-8 mb-1"></div>
             <p className="text-xs text-gray-500 dark:text-gray-500">М.П. / Подпись</p>
           </div>

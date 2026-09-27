@@ -2,13 +2,16 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, Printer } from 'lucide-react';
 import { useEstimates } from '../hooks/useEstimates';
 import { useClients } from '../../clients/hooks/useClients';
+import { useProfile } from '../../profile/hooks/useProfile';
 import { formatCurrency, formatDate } from '../utils/formatters';
+import { ContractorBlock, ProfileWarningBanner, shouldShowProfileWarning } from '../../documents/components/ContractorBlock';
 
 export function EstimatePreview() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getEstimate } = useEstimates();
   const { getClient } = useClients();
+  const { profile } = useProfile();
 
   const estimate = id ? getEstimate(id) : undefined;
   const client = estimate ? getClient(estimate.clientId) : undefined;
@@ -198,6 +201,10 @@ export function EstimatePreview() {
 
         {/* Подписи */}
         <div className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-700">
+          {shouldShowProfileWarning(profile) && <ProfileWarningBanner />}
+          <div className="mb-6">
+            <ContractorBlock profile={profile} />
+          </div>
           <div className="grid grid-cols-2 gap-8">
             <div>
               <div className="text-sm text-gray-500 dark:text-gray-400 mb-8">Исполнитель</div>

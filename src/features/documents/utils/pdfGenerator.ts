@@ -40,23 +40,36 @@ export const generateDocumentPDF = (
   pdf.setFontSize(10);
   let yPos = 55;
 
-  // Исполнитель
+  // Исполнитель: приоритет у данных, отредактированных вручную в документе (content.contractor),
+  // недостающие поля берутся из профиля пользователя (Настройки → Профиль)
   pdf.setFont('helvetica', 'bold');
   pdf.text('ИСПОЛНИТЕЛЬ:', 20, yPos);
   yPos += 6;
   pdf.setFont('helvetica', 'normal');
-  pdf.text(profile.companyName || profile.fullName, 20, yPos);
+
+  const contractor = ((document as any).content?.contractor || {}) as Partial<UserProfile>;
+  const cName = contractor.companyName || profile.companyName || contractor.fullName || profile.fullName;
+  const cInn = contractor.inn || profile.inn;
+  const cPhone = contractor.phone || profile.phone;
+  const cEmail = contractor.email || profile.email;
+  const cAddress = contractor.address || profile.address;
+
+  pdf.text(cName || '_______________', 20, yPos);
   yPos += 5;
-  if (profile.inn) {
-    pdf.text(`ИНН: ${profile.inn}`, 20, yPos);
+  if (cInn) {
+    pdf.text(`ИНН: ${cInn}`, 20, yPos);
     yPos += 5;
   }
-  if (profile.phone) {
-    pdf.text(`Тел: ${profile.phone}`, 20, yPos);
+  if (cPhone) {
+    pdf.text(`Тел: ${cPhone}`, 20, yPos);
     yPos += 5;
   }
-  if (profile.email) {
-    pdf.text(`Email: ${profile.email}`, 20, yPos);
+  if (cEmail) {
+    pdf.text(`Email: ${cEmail}`, 20, yPos);
+    yPos += 5;
+  }
+  if (cAddress) {
+    pdf.text(`Адрес: ${cAddress}`, 20, yPos);
     yPos += 5;
   }
 
