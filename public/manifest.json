@@ -5,7 +5,7 @@
   "start_url": "/plumber-assistant/",
   "scope": "/plumber-assistant/",
   "display": "standalone",
-  "background_color": "#0f172a",
+  "background_color": "#1e40af",
   "theme_color": "#2563eb",
   "orientation": "portrait-primary",
   "icons": [
