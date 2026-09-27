@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProfile } from '../../profile/hooks/useProfile';
 import { useAppStore } from '../../../shared/store/useAppStore';
-import { Document, DocumentType, DocumentContent, DocumentItem, ChangeHistoryEntry } from '../types';
+import { hydrateClientsFromStorage } from '../../clients/hooks/useClients';
+import { useDocuments } from '../hooks/useDocuments';
+import { Document, DocumentType, DocumentContent, DocumentItem, ChangeHistoryEntry, isEditableDocument } from '../types';
 import { generateDocumentPDF } from '../utils/pdfGenerator';
 import { getChangedFields } from '../utils/diffUtils';
 import { FileText, Save, Download, X, Plus, Trash2, Eye, User, Building, ArrowLeft } from 'lucide-react';
@@ -35,7 +37,7 @@ export const DocumentEditor = () => {
       totalAmount: 0,
       contractorSigned: false,
       customerSigned: false,
-    } as Partial<DocumentContent>,
+    },
   });
 
   const [showPreview, setShowPreview] = useState(false);
@@ -79,7 +81,7 @@ export const DocumentEditor = () => {
         content: {
           ...prev.content,
           contractor: profile,
-        } as Partial<DocumentContent>,
+        },
       }));
     }
   }, [profile, document.type, documents, id]);
@@ -96,7 +98,7 @@ export const DocumentEditor = () => {
         content: {
           ...prev.content,
           customer: client,
-        } as Partial<DocumentContent>,
+        },
       }));
     }
   };
@@ -117,13 +119,14 @@ export const DocumentEditor = () => {
       content: {
         ...prev.content,
         [field]: value,
-      } as Partial<DocumentContent>,
+      },
     }));
     setHasChanges(true);
   };
 
   const addItem = () => {
     const newItem: DocumentItem = {
+      id: `${Date.now()}`,
       name: '',
       unit: 'шт',
       quantity: 1,
@@ -135,7 +138,7 @@ export const DocumentEditor = () => {
       content: {
         ...prev.content,
         items: [...(prev.content?.items || []), newItem],
-      } as Partial<DocumentContent>,
+      },
     }));
     setHasChanges(true);
   };
@@ -160,7 +163,7 @@ export const DocumentEditor = () => {
         ...prev.content,
         items,
         totalAmount,
-      } as Partial<DocumentContent>,
+      },
     }));
     setHasChanges(true);
   };
@@ -175,7 +178,7 @@ export const DocumentEditor = () => {
         ...prev.content,
         items,
         totalAmount,
-      } as Partial<DocumentContent>,
+      },
     }));
     setHasChanges(true);
   };
@@ -242,8 +245,8 @@ export const DocumentEditor = () => {
     const docToExport: Document = {
       id: document.id || 'temp',
       type: document.type as DocumentType,
-      title: document.title,
-      number: document.number,
+      title: document.title || '',
+      number: document.number || '',
       date: document.date || new Date().toISOString(),
       clientId: document.clientId || '',
       content: {
@@ -313,7 +316,7 @@ export const DocumentEditor = () => {
               value={document.type}
               onChange={(e) => setDocument(prev => ({ ...prev, type: e.target.value as DocumentType }))}
               className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={id && id !== 'new'}
+              disabled={!!id && id !== 'new'}
             >
               {DOCUMENT_TYPES.map(type => (
                 <option key={type.value} value={type.value}>{type.label}</option>
@@ -418,7 +421,7 @@ export const DocumentEditor = () => {
                 value={document.content?.subject || ''}
                 onChange={(e) => setDocument(prev => ({
                   ...prev,
-                  content: { ...prev.content, subject: e.target.value } as Partial<DocumentContent>
+                  content: { ...prev.content, subject: e.target.value }
                 }))}
                 className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Например: Монтаж системы отопления"
@@ -430,7 +433,7 @@ export const DocumentEditor = () => {
                 value={document.content?.description || ''}
                 onChange={(e) => setDocument(prev => ({
                   ...prev,
-                  content: { ...prev.content, description: e.target.value } as Partial<DocumentContent>
+                  content: { ...prev.content, description: e.target.value }
                 }))}
                 className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 rows={3}
@@ -520,7 +523,7 @@ export const DocumentEditor = () => {
                 value={document.content?.warrantyPeriod || ''}
                 onChange={(e) => setDocument(prev => ({
                   ...prev,
-                  content: { ...prev.content, warrantyPeriod: e.target.value } as Partial<DocumentContent>
+                  content: { ...prev.content, warrantyPeriod: e.target.value }
                 }))}
                 className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Например: 12 месяцев"
@@ -532,7 +535,7 @@ export const DocumentEditor = () => {
                 value={document.content?.paymentTerms || ''}
                 onChange={(e) => setDocument(prev => ({
                   ...prev,
-                  content: { ...prev.content, paymentTerms: e.target.value } as Partial<DocumentContent>
+                  content: { ...prev.content, paymentTerms: e.target.value }
                 }))}
                 className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 rows={2}

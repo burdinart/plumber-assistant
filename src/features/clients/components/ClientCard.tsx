@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { User, Building2, Phone, MapPin, Mail, FileText, Star, Edit, Trash2, Plus, ArrowLeft, Copy, DollarSign, TrendingUp, TrendingDown, FileCheck } from 'lucide-react';
-import { useClients } from '../hooks/useClients';
+import { useClients, hydrateClientsFromStorage } from '../hooks/useClients';
 import { useOrders } from '../../orders/hooks/useOrders';
 import { useTransactions } from '../../finance/hooks/useTransactions';
 import { useEstimates } from '../../finance/hooks/useEstimates';
@@ -11,6 +11,10 @@ import { formatPhone, formatDate, formatCurrency, getOrderStatusText, getOrderSt
 import { TRANSACTION_CATEGORY_NAMES } from '../../finance/types';
 
 export function ClientCard() {
+  // Гидрация CRM-клиентов в глобальный стор при монтировании
+  useEffect(() => {
+    hydrateClientsFromStorage();
+  }, []);
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getClient, deleteClient, toggleFavorite } = useClients();

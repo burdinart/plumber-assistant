@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAppStore } from '../../../shared/store/useAppStore';
 import { useNotifications } from '../../../shared/hooks/useNotifications';
 import { Bell, Clock, Calendar, X, AlertCircle, Plus, Flag, Repeat } from 'lucide-react';
-import { Reminder, ReminderFormData, Priority, RepeatType } from '../types';
+import { Reminder, Priority, RepeatType } from '../types';
 import { getTimeUntil, getNextFireDate, formatDate, formatNotifyBefore } from '../utils/dateUtils';
 
 interface ReminderFormData {

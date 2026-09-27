@@ -29,18 +29,19 @@ export interface DocumentItem {
 }
 
 // Расширенный документ с контентом для генерации PDF
+// Поля опциональны, чтобы черновик документа можно было заполнять постепенно
 export interface DocumentContent {
-  contractor: UserProfile; // из профиля
-  customer: any; // из CRM (Client)
-  subject: string; // предмет договора/акта
-  description: string; // описание работ
-  items: DocumentItem[]; // позиции (работы/материалы)
-  totalAmount: number;
+  contractor?: UserProfile; // из профиля
+  customer?: any; // из CRM (Client)
+  subject?: string; // предмет договора/акта
+  description?: string; // описание работ
+  items?: DocumentItem[]; // позиции (работы/материалы)
+  totalAmount?: number;
   warrantyPeriod?: string; // "12 месяцев"
   paymentTerms?: string; // условия оплаты
   additionalTerms?: string; // доп. условия
-  contractorSigned: boolean;
-  customerSigned: boolean;
+  contractorSigned?: boolean;
+  customerSigned?: boolean;
 }
 
 // Запись в истории изменений документа
@@ -127,8 +128,8 @@ export interface HandoverDocument extends BaseDocument {
   updatedAt?: string;
 }
 
-// Объединённый тип
-export type Document = Act | Contract | Warranty | EstimateDocument | HandoverDocument;
+// Объединённый тип (legacy-документы: акты, договоры, гарантийные талоны)
+export type AnyDocument = Act | Contract | Warranty | EstimateDocument | HandoverDocument;
 
 // Структура хранения всех документов
 export interface Documents {
@@ -137,6 +138,15 @@ export interface Documents {
   warranties: Warranty[];
   estimates?: EstimateDocument[];
   handovers?: HandoverDocument[];
+}
+
+/**
+ * Проверка: является ли документ расширенным редактируемым документом
+ * (создан через DocumentEditor и хранится в zustand-store).
+ * Legacy-документы (акты/договоры/талончики из useDocuments) поля `title` не имеют.
+ */
+export function isEditableDocument(doc: AnyDocument | Document): doc is Document {
+  return typeof (doc as Document).title === 'string';
 }
 
 // Названия типов документов

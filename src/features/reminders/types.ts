@@ -5,6 +5,20 @@ export interface ReminderItem {
   before: number; // минуты до события
 }
 
+// Данные формы создания/редактирования напоминания
+export interface ReminderFormData {
+  title: string;
+  description?: string;
+  time: string;
+  daysOfWeek: number[];
+  date?: string;
+  repeat: boolean;
+  repeatType?: RepeatType;
+  repeatInterval?: number;
+  reminders: ReminderItem[];
+  priority?: Priority;
+}
+
 export interface Reminder {
   id: string;
   title: string;
