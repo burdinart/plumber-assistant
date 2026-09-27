@@ -1,17 +1,21 @@
 import { Act } from '../types';
+import { UserProfile } from '../../profile/types';
 import { formatDocumentDate, formatDocumentAmount } from '../utils/documentHelpers';
+import { getContractorHeaderLine } from '../utils/autoFillProfile';
 
 /**
  * Генерация HTML для печати акта выполненных работ
  * @param act - данные акта
  * @param clientName - имя клиента
  * @param clientAddress - адрес клиента
+ * @param profile - профиль исполнителя (Настройки → Профиль)
  * @returns HTML строка для печати
  */
 export function generateActHtml(
   act: Act,
   clientName: string,
-  clientAddress: string
+  clientAddress: string,
+  profile?: UserProfile | null
 ): string {
   const workItems = act.items.filter(item => item.type === 'work');
   const materialItems = act.items.filter(item => item.type === 'material');
@@ -108,7 +112,7 @@ export function generateActHtml(
   </div>
 
   <div class="info">
-    <p><strong>Исполнитель:</strong> Помощник Сантехника</p>
+    <p><strong>Исполнитель:</strong> ${getContractorHeaderLine(profile)}</p>
     <p><strong>Заказчик:</strong> ${clientName}</p>
     <p><strong>Адрес объекта:</strong> ${clientAddress}</p>
   </div>

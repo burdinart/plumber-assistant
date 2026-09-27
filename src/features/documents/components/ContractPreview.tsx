@@ -3,7 +3,9 @@ import { useParams, useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, Printer } from 'lucide-react';
 import { useDocuments } from '../hooks/useDocuments';
 import { useClients } from '../../clients/hooks/useClients';
+import { useProfile } from '../../profile/hooks/useProfile';
 import { generateContractHtml } from '../templates/contractTemplate';
+import { ContractorBlock, ProfileWarningBanner, shouldShowProfileWarning } from './ContractorBlock';
 
 export function ContractPreview() {
   const { id } = useParams<{ id: string }>();
@@ -11,6 +13,7 @@ export function ContractPreview() {
   const [searchParams] = useSearchParams();
   const { getContract } = useDocuments();
   const { getClient } = useClients();
+  const { profile } = useProfile();
 
   const contract = id ? getContract(id) : undefined;
   const client = contract ? getClient(contract.clientId) : undefined;
@@ -18,7 +21,7 @@ export function ContractPreview() {
 
   useEffect(() => {
     if (shouldPrint && contract && client) {
-      const html = generateContractHtml(contract, client.name, client.address, client.phone);
+      const html = generateContractHtml(contract, client.name, client.address, client.phone, profile);
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(html);
@@ -34,7 +37,7 @@ export function ContractPreview() {
 
   const handlePrint = () => {
     if (contract && client) {
-      const html = generateContractHtml(contract, client.name, client.address, client.phone);
+      const html = generateContractHtml(contract, client.name, client.address, client.phone, profile);
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(html);
@@ -87,6 +90,7 @@ export function ContractPreview() {
 
       {/* Preview */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
+        {shouldShowProfileWarning(profile) && <ProfileWarningBanner />}
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
             ДОГОВОР ПОДРЯДА
@@ -105,9 +109,8 @@ export function ContractPreview() {
         </div>
 
         <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Исполнитель:</p>
-          <p className="text-gray-800 dark:text-white">Помощник Сантехника, ИНН 7712345678</p>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-2 mb-1">Заказчик:</p>
+          <ContractorBlock profile={profile} />
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-3 mb-1">Заказчик:</p>
           <p className="text-gray-800 dark:text-white">{client.name}</p>
           <p className="text-sm text-gray-600 dark:text-gray-400">Тел: {client.phone}</p>
           <p className="text-sm text-gray-600 dark:text-gray-400">Адрес: {client.address}</p>
@@ -189,9 +192,10 @@ export function ContractPreview() {
         <div className="grid grid-cols-2 gap-8 mt-12">
           <div>
             <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">ИСПОЛНИТЕЛЬ:</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Помощник Сантехника</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">ИНН: 7712345678</p>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Тел: +7 (999) 123-45-67</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{profile.companyName || profile.fullName || '_______________'}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">ИНН: {profile.inn || '_______________'}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Тел: {profile.phone || '_______________'}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Адрес: {profile.address || '_______________'}</p>
             <div className="border-b border-gray-400 dark:border-gray-500 mt-8 mb-1"></div>
             <p className="text-xs text-gray-500 dark:text-gray-500">(подпись)</p>
           </div>

@@ -1,5 +1,7 @@
 import { Warranty } from '../types';
+import { UserProfile } from '../../profile/types';
 import { formatDocumentDate } from '../utils/documentHelpers';
+import { DASH } from '../utils/autoFillProfile';
 
 /**
  * Генерация HTML для печати гарантийного талона
@@ -7,13 +9,15 @@ import { formatDocumentDate } from '../utils/documentHelpers';
  * @param clientName - имя клиента
  * @param clientAddress - адрес клиента
  * @param clientPhone - телефон клиента
+ * @param profile - профиль исполнителя (Настройки → Профиль)
  * @returns HTML строка для печати
  */
 export function generateWarrantyHtml(
   warranty: Warranty,
   clientName: string,
   clientAddress: string,
-  clientPhone: string
+  clientPhone: string,
+  profile?: UserProfile | null
 ): string {
   return `
 <!DOCTYPE html>
@@ -186,7 +190,9 @@ export function generateWarrantyHtml(
   <div class="signatures">
     <div class="signature-block">
       <p><strong>Исполнитель:</strong></p>
-      <p>Помощник Сантехника</p>
+      <p>${profile?.companyName || profile?.fullName || DASH}</p>
+      ${profile?.inn ? `<p>ИНН: ${profile.inn}</p>` : ''}
+      ${profile?.phone ? `<p>Тел: ${profile.phone}</p>` : ''}
       <div class="signature-line"></div>
       <p style="font-size: 10pt; margin-top: 5px;">М.П. / Подпись</p>
     </div>

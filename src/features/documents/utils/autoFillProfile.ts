@@ -10,6 +10,37 @@ export interface ContractorFields {
   address: string;  // Адрес
 }
 
+/** Заглушка для пустых полей в печатных формах */
+export const DASH = '_______________';
+
+/**
+ * Строки блока «Исполнитель» из профиля пользователя.
+ * Пустые поля заменяются прочерками "_______".
+ */
+export const getContractorLines = (profile: UserProfile | null | undefined): string[] => {
+  const name = profile?.companyName || profile?.fullName;
+  return [
+    name ? `${name}, ИНН ${profile?.inn || DASH}` : `_______________, ИНН _______________`,
+    `${profile?.position || '_______________'}: ${profile?.fullName || DASH}`,
+    `Тел: ${profile?.phone || DASH}`,
+    `Адрес: ${profile?.address || DASH}`,
+  ];
+};
+
+/**
+ * Однострочное представление исполнителя для шапки документов/печатных форм:
+ * "ИП Иванов И.И., ИНН 123456789012, тел: +7..., адрес: ..."
+ */
+export const getContractorHeaderLine = (profile: UserProfile | null | undefined): string => {
+  const parts = [
+    profile?.companyName || profile?.fullName || DASH,
+    `ИНН ${profile?.inn || DASH}`,
+  ];
+  if (profile?.phone) parts.push(`тел: ${profile.phone}`);
+  if (profile?.address) parts.push(`адрес: ${profile.address}`);
+  return parts.join(', ');
+};
+
 /**
  * Проверка: заполнен ли профиль хотя бы частично
  * (используется для показа подсказки «Заполните профиль» в редакторе).
