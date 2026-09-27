@@ -134,15 +134,6 @@ export const MODULES: Module[] = [
     category: 'design',
     isNew: true,
   },
-  // Напоминания
-  {
-    id: 'reminders',
-    title: 'Напоминания',
-    description: 'Управление напоминаниями и уведомлениями',
-    icon: 'Bell',
-    path: '/reminders',
-    category: 'tools',
-  },
 ];
 
 export const CATEGORIES: CategoryInfo[] = [
