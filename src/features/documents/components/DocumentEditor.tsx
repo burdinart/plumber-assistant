@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { UserProfile, createEmptyProfile } from '../../profile/types';
 import { useProfile } from '../../profile/hooks/useProfile';
 import { useAppStore } from '../../../shared/store/useAppStore';
 import { hydrateClientsFromStorage } from '../../clients/hooks/useClients';
@@ -7,6 +8,7 @@ import { useDocuments } from '../hooks/useDocuments';
 import { Document, DocumentType, DocumentContent, DocumentItem, ChangeHistoryEntry, isEditableDocument } from '../types';
 import { generateDocumentPDF } from '../utils/pdfGenerator';
 import { getChangedFields } from '../utils/diffUtils';
+import { buildContractorAutoFill, hasContractorData } from '../utils/autoFillProfile';
 import { FileText, Save, Download, X, Plus, Trash2, Eye, User, Building, ArrowLeft } from 'lucide-react';
 
 const DOCUMENT_TYPES: { value: DocumentType; label: string }[] = [
@@ -46,6 +48,11 @@ export const DocumentEditor = () => {
   const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const isEditMode = !!id && id !== 'new';
 
+  // Гидрация CRM-клиентов из localStorage в стор при прямом заходе на редактор
+  useEffect(() => {
+    hydrateClientsFromStorage();
+  }, []);
+
   // Загрузка существующего документа
   useEffect(() => {
     if (id && id !== 'new') {
@@ -63,14 +70,28 @@ export const DocumentEditor = () => {
     }
   }, [id, documents, clients, navigate]);
 
-  // Автозаполнение из профиля
+  // Автозаполнение нового документа данными из профиля (ФИО / телефон / адрес исполнителя).
+  // Ручные правки уже открытого документа не перезаписываются (см. buildContractorAutoFill).
   useEffect(() => {
-    if (profile && !id) {
-      // Генерация номера по шаблону
-      const template = profile.contractNumberTemplate || '№ {number} от {date}';
+    if (!isEditMode && hasContractorData(profile)) {
+      setDocument(prev => ({
+        ...prev,
+        content: {
+          ...prev.content,
+          ...buildContractorAutoFill(profile, prev.content),
+        },
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile, id]);
+
+  // Генерация номера по шаблону профиля для новых документов
+  useEffect(() => {
+    if (!isEditMode) {
+      const template = profile?.contractNumberTemplate || '№ {number} от {date}';
       const nextNumber = (documents.filter(d => d.type === document.type).length + 1).toString();
       const dateStr = new Date().toLocaleDateString('ru-RU');
-      
+
       const generatedNumber = template
         .replace('{number}', nextNumber)
         .replace('{date}', dateStr);
@@ -78,13 +99,11 @@ export const DocumentEditor = () => {
       setDocument(prev => ({
         ...prev,
         number: generatedNumber,
-        content: {
-          ...prev.content,
-          contractor: profile,
-        },
+        date: new Date().toISOString().split('T')[0],
       }));
     }
-  }, [profile, document.type, documents, id]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [document.type, isEditMode]);
 
   const handleClientSelect = (clientId: string) => {
     const client = clients.find(c => c.id === clientId);
@@ -119,6 +138,23 @@ export const DocumentEditor = () => {
       content: {
         ...prev.content,
         [field]: value,
+      },
+    }));
+    setHasChanges(true);
+  };
+
+  // Ручное редактирование полей исполнителя внутри документа
+  // (значения по умолчанию приходят из профиля, но могут быть переопределены)
+  const handleContractorChange = (field: 'fullName' | 'phone' | 'address', value: string) => {
+    setDocument(prev => ({
+      ...prev,
+      content: {
+        ...prev.content,
+        contractor: {
+          ...createEmptyProfile(),
+          ...(prev.content?.contractor || {}),
+          [field]: value,
+        },
       },
     }));
     setHasChanges(true);
@@ -373,21 +409,15 @@ export const DocumentEditor = () => {
             )}
           </div>
 
-          {/* Исполнитель (из профиля) */}
+          {/* Исполнитель (автозаполнение из профиля, можно править вручную) */}
           <div className="bg-gray-800 rounded-xl p-4">
             <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
               <Building className="w-5 h-5" />
               Исполнитель
             </h3>
-            {profile ? (
-              <div className="p-3 bg-gray-700 rounded-lg text-sm text-gray-300">
-                <p><strong>{profile.companyName}</strong></p>
-                <p>ИНН: {profile.inn || 'Не указан'}</p>
-                <p>Телефон: {profile.phone}</p>
-              </div>
-            ) : (
-              <div className="p-3 bg-yellow-900 bg-opacity-30 border border-yellow-700 rounded-lg text-sm text-yellow-300">
-                <p>⚠️ Заполните профиль в настройках для автозаполнения</p>
+            {!hasContractorData(profile) && (
+              <div className="mb-3 p-3 bg-yellow-900 bg-opacity-30 border border-yellow-700 rounded-lg text-sm text-yellow-300">
+                <p>💡 Заполните данные в Настройки → Профиль, чтобы они подставлялись в документы автоматически</p>
                 <button
                   onClick={() => navigate('/settings/profile')}
                   className="mt-2 text-blue-400 hover:text-blue-300 underline"
@@ -396,6 +426,38 @@ export const DocumentEditor = () => {
                 </button>
               </div>
             )}
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">ФИО исполнителя</label>
+                <input
+                  type="text"
+                  value={document.content?.contractor?.fullName ?? profile.fullName}
+                  onChange={(e) => handleContractorChange('fullName', e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Иванов Иван Иванович"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Номер телефона</label>
+                <input
+                  type="tel"
+                  value={document.content?.contractor?.phone ?? profile.phone}
+                  onChange={(e) => handleContractorChange('phone', e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="+7 (999) 123-45-67"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1">Адрес</label>
+                <input
+                  type="text"
+                  value={document.content?.contractor?.address ?? profile.address}
+                  onChange={(e) => handleContractorChange('address', e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="г. Москва, ул. Примерная, д. 1"
+                />
+              </div>
+            </div>
           </div>
         </div>
 
