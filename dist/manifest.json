@@ -1,0 +1,40 @@
+{
+  "name": "Помощник Сантехника",
+  "short_name": "Сантехник",
+  "description": "Профессиональные инструменты для сантехников: калькуляторы, справочники, CRM",
+  "start_url": "/plumber-assistant/",
+  "scope": "/plumber-assistant/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/plumber-assistant/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/plumber-assistant/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/plumber-assistant/icon-192x192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/plumber-assistant/icon-512x512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "lang": "ru-RU",
+  "dir": "ltr"
+}

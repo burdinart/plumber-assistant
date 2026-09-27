@@ -140,6 +140,15 @@ export interface Documents {
   handovers?: HandoverDocument[];
 }
 
+/**
+ * Проверка: является ли документ расширенным редактируемым документом
+ * (создан через DocumentEditor и хранится в zustand-store).
+ * Legacy-документы (акты/договоры/талончики из useDocuments) поля `title` не имеют.
+ */
+export function isEditableDocument(doc: AnyDocument | Document): doc is Document {
+  return typeof (doc as Document).title === 'string';
+}
+
 // Названия типов документов
 export const DOCUMENT_TYPE_NAMES: Record<DocumentType, string> = {
   act: 'Акт выполненных работ',

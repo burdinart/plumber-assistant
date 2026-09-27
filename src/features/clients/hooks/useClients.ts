@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Client } from '../../../shared/types';
 import { storage, generateId } from '../../../shared/utils/storage';
+import { useAppStore } from '../../../shared/store/useAppStore';
 
-const STORAGE_KEY = 'plumber-assistant-clients';
+export const CLIENTS_STORAGE_KEY = 'plumber-assistant-clients';
 
 // Демо-данные клиентов
-const DEMO_CLIENTS: Client[] = [
+export const DEMO_CLIENTS: Client[] = [
   // Физические лица
   {
     id: 'client-1',
@@ -79,17 +80,28 @@ const DEMO_CLIENTS: Client[] = [
   },
 ];
 
+/**
+ * Гидрация CRM-клиентов из LocalStorage в глобальный стор (useAppStore).
+ * Вызывается при монтировании DocumentEditor, чтобы выбор заказчика
+ * наполнялся реальными данными даже без посещения страницы «Клиенты».
+ */
+export function hydrateClientsFromStorage(): void {
+  const stored = storage.get<Client[]>(CLIENTS_STORAGE_KEY, []);
+  useAppStore.getState().setClients(stored.length > 0 ? stored : DEMO_CLIENTS);
+}
+
 export function useClients() {
   const [clients, setClients] = useState<Client[]>([]);
+  const setStoreClients = useAppStore((s) => s.setClients);
 
   // Загрузка клиентов из LocalStorage при первом рендере
   useEffect(() => {
-    const storedClients = storage.get<Client[]>(STORAGE_KEY, []);
+    const storedClients = storage.get<Client[]>(CLIENTS_STORAGE_KEY, []);
     
     // Если данных нет, загружаем демо-данные
     if (storedClients.length === 0) {
       setClients(DEMO_CLIENTS);
-      storage.set(STORAGE_KEY, DEMO_CLIENTS);
+      storage.set(CLIENTS_STORAGE_KEY, DEMO_CLIENTS);
     } else {
       setClients(storedClients);
     }
@@ -98,9 +110,33 @@ export function useClients() {
   // Сохранение в LocalStorage при изменении
   useEffect(() => {
     if (clients.length > 0) {
-      storage.set(STORAGE_KEY, clients);
+      storage.set(CLIENTS_STORAGE_KEY, clients);
     }
   }, [clients]);
+
+  // Синхронизация CRM-клиентов с глобальным стором
+  // (DocumentEditor и другие компоненты читают clients из useAppStore)
+  useEffect(() => {
+    setStoreClients(clients);
+  }, [clients, setStoreClients]);
+
+  // Синхронизация между вкладками: при изменении ключа в другой вкладке перечитываем данные
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === CLIENTS_STORAGE_KEY && e.newValue) {
+        try {
+          const parsed = JSON.parse(e.newValue) as Client[];
+          if (Array.isArray(parsed)) {
+            setClients(parsed);
+          }
+        } catch (error) {
+          console.error('Ошибка синхронизации клиентов между вкладками:', error);
+        }
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
 
   /**
    * Получить клиента по ID

@@ -22,6 +22,7 @@ interface AppState {
   addDocument: (document: Document) => void;
   updateDocument: (document: Document) => void;
   deleteDocument: (id: string) => void;
+  setClients: (clients: Client[]) => void;
 }
 
 const store: StateCreator<AppState, [], []> = (set, get) => ({
@@ -66,7 +67,11 @@ const store: StateCreator<AppState, [], []> = (set, get) => ({
 
   deleteDocument: (id) => set((state) => ({
     documents: state.documents.filter(d => d.id !== id)
-  }))
+  })),
+
+  // CRM-клиенты — зеркало данных из localStorage (ключ plumber-assistant-clients,
+  // см. useClients). Не персистится в persist-стор: единственный источник — localStorage.
+  setClients: (clients) => set({ clients })
 });
 
 export const useAppStore = create<AppState>()(

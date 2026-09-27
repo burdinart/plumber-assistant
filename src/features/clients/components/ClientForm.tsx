@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { UserPlus, Save, X, User, Building2, ChevronDown, ChevronUp } from 'lucide-react';
-import { useClients } from '../hooks/useClients';
+import { useClients, hydrateClientsFromStorage } from '../hooks/useClients';
 import { PhoneInput } from '../../../shared/ui/PhoneInput';
 import { Toast } from '../../../shared/ui/Toast';
 import { validatePhone, validateEmail } from '../../../shared/utils/helpers';
 import { ClientType } from '../../../shared/types';
 
 export function ClientForm() {
+  // Гидрация CRM-клиентов в глобальный стор при монтировании
+  useEffect(() => {
+    hydrateClientsFromStorage();
+  }, []);
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { getClient, addClient, updateClient } = useClients();

@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
 import { Users, Plus, Search, Star, Phone, MapPin, User, Building2 } from 'lucide-react';
-import { useClients } from '../hooks/useClients';
+import { useClients, hydrateClientsFromStorage } from '../hooks/useClients';
 import { formatPhone, getInitials } from '../../../shared/utils/helpers';
 
 export function ClientList() {
+  // Гидрация CRM-клиентов в глобальный стор при монтировании
+  useEffect(() => {
+    hydrateClientsFromStorage();
+  }, []);
   const { clients, searchClients, toggleFavorite } = useClients();
   const [searchQuery, setSearchQuery] = useState('');
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
