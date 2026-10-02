@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { VitePWA } from "vite-plugin-pwa";
+import { spa404Plugin } from "./scripts/generate-404.mjs";
 
 // Версия кэша - обновляется при каждом релизе
 const CACHE_VERSION = 'v1.0.2';
@@ -11,6 +12,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    spa404Plugin(), // dist/404.html — SPA-fallback для GitHub Pages (см. scripts/generate-404.mjs)
     VitePWA({
       // 'prompt' — новый Service Worker НЕ подменяет страницу сам:
       // UpdatePrompt (src/shared/ui) показывает баннер и обновляет по кнопке.
