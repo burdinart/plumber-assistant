@@ -1,14 +1,27 @@
 // Service Worker с правильной логикой кэширования для GitHub Pages
-// ВЕРСИЯ КЭША ОБНОВЛЯЕТСЯ ПРИ КАЖДОЙ СБОРКЕ
-const CACHE_VERSION = 'v1'; // Обновлять вручную при изменении структуры кэша
+// ⚠️ ВЕРСИЯ КЭША: увеличивается автоматически при каждой сборке
+// (vite-plugin-pwa подставляет хэш сборки в dist/sw.js).
+// При ручной правке структуры кэша — меняйте базовую версию ниже.
+// Workbox при сборке заменяет __BUILD_HASH__ на хэш прекешируемых файлов,
+// поэтому sw.js (и имя кэша) гарантированно меняется при каждом релизе.
+const CACHE_VERSION = 'v2-__BUILD_HASH__';
 const CACHE_NAME = `plumber-assistant-${CACHE_VERSION}`;
 const BASE_URL = '/plumber-assistant/';
 
-// Установка SW - пропускаем ожидание
+// Установка SW: НЕ вызываем skipWaiting() автоматически — новый воркер
+// должен «подождать», пока пользователь не нажмёт «Обновить» в баннере
+// UpdatePrompt (иначе страница перезагрузится посреди работы пользователя).
 self.addEventListener('install', (event) => {
   console.log('[SW] Installing Service Worker with scope:', self.registration.scope);
-  // Пропускаем ожидание для быстрой активации
-  self.skipWaiting();
+  // самопроизвольный skipWaiting здесь НЕ вызывается
+});
+
+// Обработчик сообщений от страницы (компонент UpdatePrompt):
+// { type: 'SKIP_WAITING' } — активировать новую версию немедленно.
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // Активация - очищаем старые кэши и захватываем клиентов

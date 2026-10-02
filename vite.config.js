@@ -12,7 +12,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: "autoUpdate",
+      // 'prompt' — новый Service Worker НЕ подменяет страницу сам:
+      // UpdatePrompt (src/shared/ui) показывает баннер и обновляет по кнопке.
+      registerType: "prompt",
+      injectRegister: false, // регистрацию выполняет src/main.tsx (public/sw.js)
       includeAssets: ["icon-192x192.svg", "icon-512x512.svg"],
       manifest: {
         name: "Помощник Сантехника",
@@ -43,6 +46,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+        // Имя кэша Workbox содержит хэш сборки → sw.js меняется при каждом
+        // релизе, браузер детектирует обновление и воркер становится waiting.
         // Добавляем версию в имя кэша для принудительного обновления
         cacheId: `plumber-assistant-${CACHE_VERSION.replace(/\./g, '-')}`,
         // Очищаем старые кэши при активации

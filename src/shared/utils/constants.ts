@@ -157,4 +157,7 @@ export const STORAGE_KEYS = {
   transactions: 'plumber-assistant-transactions',
   priceList: 'plumber-assistant-price-list',
   dashboardWidgets: 'plumber-assistant-dashboard-widgets',
+  /** Дата последнего «отложенного» обновления — чтобы не показывать
+   * одно и то же уведомление об обновлении после нажатия «Позже». */
+  updateDismissedAt: 'plumber-assistant-update-dismissed-at',
 } as const;
