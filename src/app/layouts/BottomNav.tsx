@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Users, ClipboardList, DollarSign, Building2, Bell, MoreHorizontal, FileText, Calculator, Settings } from 'lucide-react';
+import { Home, Users, ClipboardList, DollarSign, Building2, Bell, MoreHorizontal, FileText, Calculator, Settings, Info } from 'lucide-react';
 import { useState } from 'react';
 
 export function BottomNav() {
@@ -21,6 +21,7 @@ export function BottomNav() {
     { path: '/documents', icon: FileText, label: 'Документы' },
     { path: '/calculators/pressure', icon: Calculator, label: 'Калькуляторы' },
     { path: '/settings/profile', icon: Settings, label: 'Настройки' },
+    { path: '/about', icon: Info, label: 'О приложении' },
   ];
   
   return (
