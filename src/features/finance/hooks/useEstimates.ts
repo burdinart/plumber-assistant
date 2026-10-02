@@ -1,23 +1,54 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Estimate, EstimateStatus } from '../types';
 import { storage, generateId } from '../../../shared/utils/storage';
 import { STORAGE_KEYS } from '../../../shared/utils/constants';
 
 const STORAGE_KEY = STORAGE_KEYS.estimates;
 
-export function useEstimates() {
-  const [estimates, setEstimates] = useState<Estimate[]>([]);
+// Общее состояние для всех экземпляров хука: раньше каждый компонент
+// держал копию смет в локальном useState и перезаписывал localStorage
+// своей (пустой на первом рендере) копией — из-за этого при переходе
+// «Редактировать» (список размонтируется → редактор монтируется) все
+// сметы сбрасывались и форма показывала режим создания новой сметы.
+let globalEstimates: Estimate[] | null = null;
+const listeners = new Set<(list: Estimate[]) => void>();
 
-  // Загрузка из LocalStorage
+function loadEstimates(): Estimate[] {
+  if (globalEstimates === null) {
+    globalEstimates = storage.get<Estimate[]>(STORAGE_KEY, []);
+  }
+  return globalEstimates;
+}
+
+function commitEstimates(next: Estimate[]): void {
+  globalEstimates = next;
+  storage.set(STORAGE_KEY, next);
+  listeners.forEach((l) => l(next));
+}
+
+export function useEstimates() {
+  const [estimates, setEstimatesState] = useState<Estimate[]>(loadEstimates);
+
   useEffect(() => {
-    const stored = storage.get<Estimate[]>(STORAGE_KEY, []);
-    setEstimates(stored);
+    const listener = (list: Estimate[]) => setEstimatesState(list);
+    listeners.add(listener);
+    // Синхронизация с актуальным состоянием (на случай изменений между render и subscribe)
+    setEstimatesState(loadEstimates());
+    return () => {
+      listeners.delete(listener);
+    };
   }, []);
 
-  // Сохранение в LocalStorage
-  useEffect(() => {
-    storage.set(STORAGE_KEY, estimates);
-  }, [estimates]);
+  const setEstimates = useCallback(
+    (updater: Estimate[] | ((prev: Estimate[]) => Estimate[])) => {
+      const next =
+        typeof updater === 'function'
+          ? (updater as (prev: Estimate[]) => Estimate[])(loadEstimates())
+          : updater;
+      commitEstimates(next);
+    },
+    []
+  );
 
   /**
    * Генерация номера сметы (СМ-001, СМ-002, ...)
