@@ -3,6 +3,7 @@ import { Save, X } from 'lucide-react';
 import { usePriceList } from '../hooks/usePriceList';
 import { PriceItem, PriceCategory, PriceUnit, PRICE_CATEGORY_NAMES } from '../types';
 import { Toast } from '../../../shared/ui/Toast';
+import { UNITS_OF_MEASURE } from '../../documents/utils/units';
 
 interface PriceItemFormProps {
   item: PriceItem | null;
@@ -87,7 +88,8 @@ export function PriceItemForm({ item, onClose }: PriceItemFormProps) {
     }
   };
 
-  const units: PriceUnit[] = ['шт', 'м', 'точка', 'час'];
+  // Единицы из единого справочника (все входят в тип PriceUnit)
+  const units = UNITS_OF_MEASURE.map(u => u.shortName) as PriceUnit[];
   const categories: PriceCategory[] = ['plumbing', 'heating', 'sewage', 'boilers'];
 
   return (

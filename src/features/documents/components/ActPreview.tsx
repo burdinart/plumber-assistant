@@ -137,7 +137,7 @@ export function ActPreview() {
                 <tr key={item.id} className="border-b border-gray-200 dark:border-gray-700">
                   <td className="py-2 px-2 text-gray-800 dark:text-white">{index + 1}</td>
                   <td className="py-2 px-2 text-gray-800 dark:text-white">{item.name}</td>
-                  <td className="py-2 px-2 text-center text-gray-800 dark:text-white">{item.unit}</td>
+                  <td className="py-2 px-2 text-center text-gray-800 dark:text-white">{item.unit || 'шт'}</td>
                   <td className="py-2 px-2 text-center text-gray-800 dark:text-white">{item.quantity}</td>
                   <td className="py-2 px-2 text-right text-gray-800 dark:text-white">
                     {item.price.toLocaleString('ru-RU')} ₽

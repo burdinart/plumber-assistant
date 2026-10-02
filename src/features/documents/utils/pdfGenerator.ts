@@ -3,6 +3,7 @@ import autoTable from 'jspdf-autotable';
 import { Document } from '../types';
 import { UserProfile } from '../../profile/types';
 import { formatDateForDocument, formatAmount } from './documentHelpers';
+import { DEFAULT_UNIT } from './units';
 
 interface PDFOptions {
   includeSignature?: boolean;
@@ -107,7 +108,7 @@ export const generateDocumentPDF = (
       body: items.map((item: any, index: number) => [
         String(index + 1),
         item.name,
-        item.unit,
+        item.unit || DEFAULT_UNIT,
         String(item.quantity),
         formatAmount(item.price).replace(' руб.', ''),
         formatAmount(item.total).replace(' руб.', '')
