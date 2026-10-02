@@ -52,15 +52,10 @@ const registerServiceWorker = async () => {
         console.log('🔄 Service Worker обновляется...');
       });
       
-      // Перезагрузка страницы при активации нового SW (однократно, защита от цикла)
-      let reloadTriggered = false;
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
-        if (!reloadTriggered && document.visibilityState === 'visible') {
-          reloadTriggered = true;
-          console.log('🔄 Controller changed, reloading page...');
-          window.location.reload();
-        }
-      });
+      // ВАЖНО: здесь НЕ слушаем controllerchange и НЕ перезагружаем страницу
+      // автоматически — иначе новый SW «подменял» бы версию без ведома
+      // пользователя прямо во время работы. Перезагрузку по кнопке
+      // «Обновить» выполняет компонент UpdatePrompt (src/shared/ui).
       
     } catch (error) {
       console.error('❌ Ошибка регистрации Service Worker:', error);

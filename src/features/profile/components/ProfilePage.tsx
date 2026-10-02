@@ -1,16 +1,49 @@
 import { useState, useRef } from 'react';
 import { useProfile } from '../hooks/useProfile';
 import { UserProfile } from '../types';
-import { User, Building, FileText, Upload, Save, Download, Trash2, AlertCircle } from 'lucide-react';
+import { User, Building, FileText, Upload, Save, Download, Trash2, AlertCircle, RefreshCw } from 'lucide-react';
+import { APP_VERSION } from '../../../version';
 
 export const ProfilePage = () => {
   const { profile, updateProfile, resetProfile, exportProfile, importProfile, isLoading } = useProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<UserProfile>(profile);
   const [importError, setImportError] = useState('');
+  const [checkingUpdates, setCheckingUpdates] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const stampInputRef = useRef<HTMLInputElement>(null);
   const signatureInputRef = useRef<HTMLInputElement>(null);
+
+  // Принудительная проверка обновлений Service Worker (кнопка «О приложении»).
+  const checkForUpdates = async () => {
+    if (!('serviceWorker' in navigator)) {
+      setUpdateMessage('Service Worker недоступен в этом браузере.');
+      return;
+    }
+    setCheckingUpdates(true);
+    setUpdateMessage('');
+    try {
+      const registration = await navigator.serviceWorker.getRegistration();
+      if (!registration) {
+        setUpdateMessage('Приложение ещё не готово к оффлайн-режиму — попробуйте позже.');
+        return;
+      }
+      await registration.update(); // заставляем браузер заново проверить sw.js
+      // Даем воркеру секунду перейти в waiting
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      if (registration.waiting) {
+        setUpdateMessage('Есть новая версия — баннер «Доступно обновление» внизу экрана.');
+      } else {
+        setUpdateMessage(`У вас уже установлена последняя версия (v${APP_VERSION.version}).`);
+      }
+    } catch (error) {
+      console.warn('[ProfilePage] Ошибка проверки обновлений:', error);
+      setUpdateMessage('Не удалось проверить обновления. Попробуйте позже.');
+    } finally {
+      setCheckingUpdates(false);
+    }
+  };
 
   // Обработка загрузки изображений
   const handleImageUpload = (
@@ -471,6 +504,29 @@ export const ProfilePage = () => {
           </p>
         </div>
       </div>
+
+        {/* Секция: О приложении / обновления */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
+            <RefreshCw className="w-5 h-5 text-blue-400" />
+            О приложении
+          </h2>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+            <div className="text-sm text-gray-400">
+              Помощник Сантехника v{APP_VERSION.version} • сборка {APP_VERSION.buildDate} {APP_VERSION.buildTime}
+            </div>
+            <button
+              onClick={checkForUpdates}
+              className="min-h-[44px] px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-white rounded-lg flex items-center gap-2 justify-center transition-colors"
+            >
+              <RefreshCw className={`w-4 h-4 ${checkingUpdates ? 'animate-spin' : ''}`} />
+              {checkingUpdates ? 'Проверяем…' : 'Проверить обновления'}
+            </button>
+          </div>
+          {updateMessage && (
+            <p className="text-sm mt-3 text-blue-400" role="status">{updateMessage}</p>
+          )}
+        </div>
 
         {/* Информация о последнем обновлении */}
         <div className="text-center text-gray-400 text-sm">
