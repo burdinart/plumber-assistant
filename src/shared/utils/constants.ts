@@ -156,4 +156,5 @@ export const STORAGE_KEYS = {
   estimates: 'plumber-assistant-estimates',
   transactions: 'plumber-assistant-transactions',
   priceList: 'plumber-assistant-price-list',
+  dashboardWidgets: 'plumber-assistant-dashboard-widgets',
 } as const;
