@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { FileText, Plus, Search, Filter, Trash2 } from 'lucide-react';
+import { FileText, Plus, Search, Filter, Trash2, Pencil } from 'lucide-react';
 import { useEstimates } from '../hooks/useEstimates';
 import { useClients } from '../../clients/hooks/useClients';
 import { EstimateStatus, ESTIMATE_STATUS_NAMES, ESTIMATE_STATUS_COLORS } from '../types';
@@ -139,6 +139,14 @@ export function EstimateList() {
                     <span>Материалы: {formatCurrency(estimate.totalMaterials)}</span>
                   </div>
                   <div className="flex gap-2">
+                    <Link
+                      to={`/finance/estimates/${estimate.id}/edit`}
+                      className="px-3 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors text-xs font-medium flex items-center gap-1"
+                      title="Редактировать смету"
+                    >
+                      <Pencil className="w-3 h-3" />
+                      <span className="hidden sm:inline">Редактировать</span>
+                    </Link>
                     <Link
                       to={`/finance/estimates/${estimate.id}/preview`}
                       className="px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-xs font-medium"

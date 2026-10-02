@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FileText, Save, Plus, Trash2, X } from 'lucide-react';
+import { FileText, Save, Plus, Trash2, X, AlertTriangle } from 'lucide-react';
 import { useEstimates } from '../hooks/useEstimates';
 import { usePriceList } from '../hooks/usePriceList';
 import { useClients } from '../../clients/hooks/useClients';
@@ -18,7 +18,17 @@ export function EstimateForm() {
   const { clients } = useClients();
 
   const isEditing = Boolean(id);
+  // Данные из localStorage синхронны (useEstimates читает storage при монтировании),
+  // поэтому отсутствие сметы сразу означает «не найдена»
   const existingEstimate = id ? getEstimate(id) : undefined;
+  const notFound = isEditing && !existingEstimate;
+
+  // Если смета не найдена — редирект на список
+  useEffect(() => {
+    if (notFound) {
+      navigate('/finance/estimates', { replace: true });
+    }
+  }, [notFound, navigate]);
 
   const [formData, setFormData] = useState({
     clientId: '',
@@ -167,6 +177,15 @@ export function EstimateForm() {
 
   return (
     <div className="max-w-4xl mx-auto">
+      {/* Смета не найдена — показываем состояние до завершения редиректа */}
+      {notFound ? (
+        <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-12 text-center">
+          <AlertTriangle className="w-16 h-16 mx-auto mb-4 text-yellow-400" />
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">Смета не найдена</h3>
+          <p className="text-gray-500 dark:text-gray-400">Возвращаемся к списку смет…</p>
+        </div>
+      ) : (
+      <>
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center">
@@ -465,6 +484,8 @@ export function EstimateForm() {
 
       {/* Toast */}
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      </>
+      )}
     </div>
   );
 }

@@ -138,6 +138,11 @@ export const router = createBrowserRouter([
         element: <P.EstimateForm />,
       },
       {
+        // Явный маршрут редактирования сметы (тот же редактор, режим правки)
+        path: 'finance/estimates/:id/edit',
+        element: <P.EstimateForm />,
+      },
+      {
         path: 'finance/estimates/:id/preview',
         element: <P.EstimatePreview />,
       },
