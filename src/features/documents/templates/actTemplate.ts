@@ -135,7 +135,7 @@ export function generateActHtml(
         <tr>
           <td class="text-center">${index + 1}</td>
           <td>${item.name}</td>
-          <td class="text-center">${item.unit}</td>
+          <td class="text-center">${item.unit || 'шт'}</td>
           <td class="text-center">${item.quantity}</td>
           <td class="text-right">${formatDocumentAmount(item.price)}</td>
           <td class="text-right">${formatDocumentAmount(item.quantity * item.price)}</td>
@@ -151,7 +151,7 @@ export function generateActHtml(
           <tr>
             <td class="text-center">${workItems.length + index + 1}</td>
             <td>${item.name}</td>
-            <td class="text-center">${item.unit}</td>
+            <td class="text-center">${item.unit || 'шт'}</td>
             <td class="text-center">${item.quantity}</td>
             <td class="text-right">${formatDocumentAmount(item.price)}</td>
             <td class="text-right">${formatDocumentAmount(item.quantity * item.price)}</td>

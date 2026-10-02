@@ -9,6 +9,7 @@ import { Document, DocumentType, DocumentContent, DocumentItem, ChangeHistoryEnt
 import { generateDocumentPDF } from '../utils/pdfGenerator';
 import { getChangedFields } from '../utils/diffUtils';
 import { buildContractorAutoFill, hasContractorData } from '../utils/autoFillProfile';
+import { DEFAULT_UNIT, unitOptionsFor } from '../utils/units';
 import { FileText, Save, Download, X, Plus, Trash2, Eye, User, Building, ArrowLeft, RotateCcw, Maximize2 } from 'lucide-react';
 import { useScreenOrientation } from '../../../shared/hooks/useScreenOrientation';
 
@@ -557,13 +558,16 @@ export const DocumentEditor = () => {
                       className="col-span-5 px-2 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                       placeholder="Наименование"
                     />
-                    <input
-                      type="text"
-                      value={item.unit}
+                    <select
+                      value={item.unit || DEFAULT_UNIT}
                       onChange={(e) => updateItem(index, 'unit', e.target.value)}
                       className="col-span-1 px-2 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-center"
-                      placeholder="Ед."
-                    />
+                      title="Единица измерения"
+                    >
+                      {unitOptionsFor(item.unit).map((opt) => (
+                        <option key={opt.value} value={opt.value}>{opt.value}</option>
+                      ))}
+                    </select>
                     <input
                       type="number"
                       value={item.quantity}

@@ -128,7 +128,7 @@ export function EstimatePreview() {
                         ({item.type === 'work' ? 'работа' : 'материал'})
                       </span>
                     </td>
-                    <td className="py-3 px-2 text-center text-gray-600 dark:text-gray-400">{item.unit}</td>
+                    <td className="py-3 px-2 text-center text-gray-600 dark:text-gray-400">{item.unit || 'шт'}</td>
                     <td className="py-3 px-2 text-center text-gray-800 dark:text-white">{item.quantity}</td>
                     <td className="py-3 px-2 text-right text-gray-800 dark:text-white">
                       {formatCurrency(item.price)}

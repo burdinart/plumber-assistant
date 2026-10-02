@@ -9,6 +9,7 @@ import { formatCurrency } from '../utils/formatters';
 import { getTodayDate, getDateAfterDays } from '../utils/dateUtils';
 import { Modal } from '../../../shared/ui/Modal';
 import { Toast } from '../../../shared/ui/Toast';
+import { DEFAULT_UNIT, unitOptionsFor, withUnitFallback } from '../../documents/utils/units';
 
 export function EstimateForm() {
   const { id } = useParams<{ id: string }>();
@@ -51,7 +52,7 @@ export function EstimateForm() {
         clientId: existingEstimate.clientId,
         address: existingEstimate.address,
         validUntil: existingEstimate.validUntil,
-        items: existingEstimate.items,
+        items: existingEstimate.items.map(withUnitFallback),
         discount: existingEstimate.discount,
         discountType: existingEstimate.discountType,
         notes: existingEstimate.notes || '',
@@ -125,7 +126,7 @@ export function EstimateForm() {
     const newItem: EstimateItem = {
       id: `item-${Date.now()}`,
       name: 'Новая позиция',
-      unit: 'шт',
+      unit: DEFAULT_UNIT,
       quantity: 1,
       price: 0,
       type: 'work',
@@ -298,6 +299,7 @@ export function EstimateForm() {
                   <tr className="border-b border-gray-200 dark:border-gray-700">
                     <th className="text-left py-2 px-2 text-gray-600 dark:text-gray-300 font-medium">Наименование</th>
                     <th className="text-left py-2 px-2 text-gray-600 dark:text-gray-300 font-medium">Тип</th>
+                    <th className="text-center py-2 px-2 text-gray-600 dark:text-gray-300 font-medium">Ед.изм</th>
                     <th className="text-center py-2 px-2 text-gray-600 dark:text-gray-300 font-medium">Кол-во</th>
                     <th className="text-center py-2 px-2 text-gray-600 dark:text-gray-300 font-medium">Цена</th>
                     <th className="text-right py-2 px-2 text-gray-600 dark:text-gray-300 font-medium">Сумма</th>
@@ -323,6 +325,18 @@ export function EstimateForm() {
                         >
                           <option value="work">Работа</option>
                           <option value="material">Материал</option>
+                        </select>
+                      </td>
+                      <td className="py-2 px-2">
+                        <select
+                          value={item.unit || DEFAULT_UNIT}
+                          onChange={(e) => updateItem(item.id, 'unit' as keyof EstimateItem, e.target.value as any)}
+                          className="w-20 px-2 py-1 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-800 dark:text-white text-sm text-center"
+                          title="Единица измерения"
+                        >
+                          {unitOptionsFor(item.unit).map((opt) => (
+                            <option key={opt.value} value={opt.value}>{opt.value}</option>
+                          ))}
                         </select>
                       </td>
                       <td className="py-2 px-2">
