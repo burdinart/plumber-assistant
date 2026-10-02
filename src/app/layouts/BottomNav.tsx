@@ -27,7 +27,7 @@ export function BottomNav() {
   return (
     <>
       {/* Нижняя панель */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-gray-800 dark:bg-gray-800 border-t border-gray-700 md:hidden z-40">
+      <nav className="fixed bottom-0 left-0 right-0 bg-gray-800 dark:bg-gray-800 border-t border-gray-700 md:hidden z-40" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
         <div className="flex items-center justify-around h-16">
           {mainItems.map((item) => {
             const Icon = item.icon;
@@ -39,7 +39,7 @@ export function BottomNav() {
               <NavLink
                 key={item.path}
                 to={item.path}
-                className={`flex flex-col items-center gap-1 py-2 px-2 min-w-0 flex-1 transition-colors ${
+                className={`flex flex-col items-center justify-center gap-1 py-2 px-2 min-w-0 min-h-[48px] flex-1 transition-colors ${
                   isActive
                     ? 'text-blue-400'
                     : 'text-gray-400 hover:text-gray-300'
@@ -54,7 +54,7 @@ export function BottomNav() {
           {/* Кнопка "Ещё" */}
           <button
             onClick={() => setShowMore(true)}
-            className={`flex flex-col items-center gap-1 py-2 px-2 min-w-0 flex-1 transition-colors ${
+            className={`flex flex-col items-center justify-center gap-1 py-2 px-2 min-w-0 min-h-[48px] flex-1 transition-colors ${
               location.pathname === '/settings/profile' || 
               moreItems.some(item => location.pathname.startsWith(item.path))
                 ? 'text-blue-400'
@@ -70,7 +70,7 @@ export function BottomNav() {
       {/* Модальное меню "Ещё" */}
       {showMore && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end md:hidden">
-          <div className="bg-gray-800 dark:bg-gray-800 rounded-t-2xl w-full max-h-[70vh] overflow-y-auto">
+          <div className="bg-gray-800 dark:bg-gray-800 rounded-t-2xl w-full max-h-[70vh] overflow-y-auto" style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}>
             {/* Заголовок */}
             <div className="sticky top-0 bg-gray-800 dark:bg-gray-800 p-4 border-b border-gray-700 flex items-center justify-between">
               <h3 className="text-lg font-semibold text-white">Меню</h3>
