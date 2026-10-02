@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAppStore } from '../../shared/store/useAppStore';
 import { MODULES, CATEGORIES } from '../../shared/utils/constants';
@@ -31,6 +32,7 @@ import {
   Building2,
   Info,
   Settings,
+  X,
   User,
   Bell,
 } from 'lucide-react';
@@ -59,35 +61,71 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Bell,
 };
 
-export function Sidebar() {
+export function Sidebar({ mobileOpen = false, onCloseMobile }: {
+  mobileOpen?: boolean;
+  onCloseMobile?: () => void;
+} = {}) {
   const { sidebarCollapsed, toggleSidebar } = useAppStore();
   const location = useLocation();
 
+  // Закрываем мобильный drawer при переходе по ссылке.
+  useEffect(() => {
+    onCloseMobile?.();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
   return (
-    <aside
-      className={`hidden sm:flex ${
-        sidebarCollapsed ? 'w-16' : 'w-64'
-      } flex-col shrink-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300`}
-    >
-      {/* Logo */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-        {!sidebarCollapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+    <>
+      {/* Backdrop для мобильного drawer (только < sm) */}
+      <div
+        className={`fixed inset-0 z-40 bg-black/50 sm:hidden transition-opacity duration-200 ${
+          mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={onCloseMobile}
+        aria-hidden="true"
+      />
+
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-col transition-transform duration-300 ease-in-out ${
+          mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
+        } sm:transform-none sm:transition-all sm:static sm:z-auto sm:flex sm:shrink-0 ${sidebarCollapsed ? 'sm:w-16' : 'sm:w-64'} lg:!w-64`}
+        style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+        aria-label="Боковая навигация"
+      >
+        {/* Кнопка закрытия мобильного drawer */}
+        <button
+          onClick={onCloseMobile}
+          className="absolute top-3 right-3 p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 sm:hidden"
+          aria-label="Закрыть меню"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {/* Logo */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+          {/* Мобильный drawer всегда полный (с подписями), независимо от sidebarCollapsed */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
               <Wrench className="w-5 h-5 text-white" />
             </div>
-            <span className="font-bold text-gray-800 dark:text-white text-sm">
+            <span className="font-bold text-gray-800 dark:text-white text-sm">Помощник Сантехника</span>
+          </div>
+          <div className={`lg:flex lg:items-center lg:gap-2 ${sidebarCollapsed ? 'hidden' : 'hidden'}`}>
+            <div className="w-8 h-8 bg-blue-600 rounded-lg hidden lg:flex items-center justify-center shrink-0">
+              <Wrench className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-bold text-gray-800 dark:text-white text-sm hidden lg:inline">
               Помощник Сантехника
             </span>
           </div>
-        )}
-        <button
-          onClick={toggleSidebar}
-          className="p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500"
-        >
-          {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-        </button>
-      </div>
+          <button
+            onClick={toggleSidebar}
+            className="hidden lg:block p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500"
+            aria-label={sidebarCollapsed ? 'Развернуть меню' : 'Свернуть меню'}
+          >
+            {sidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </button>
+        </div>
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4">
@@ -99,21 +137,19 @@ export function Sidebar() {
               isActive
                 ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            } ${sidebarCollapsed ? 'justify-center' : ''}`
+            } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
           }
         >
           <Home className="w-5 h-5 flex-shrink-0" />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Главная</span>}
+          <span className={`text-sm font-medium ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>Главная</span>
         </NavLink>
 
         {/* CRM Section */}
-        {!sidebarCollapsed && (
-          <div className="mt-4 mb-2 px-4">
+        <div className={`mt-4 mb-2 px-4 ${sidebarCollapsed ? 'hidden' : 'block'} lg:block`}>
             <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
               CRM
             </div>
           </div>
-        )}
 
         <NavLink
           to="/clients"
@@ -122,11 +158,11 @@ export function Sidebar() {
               isActive || location.pathname.startsWith('/clients/')
                 ? 'bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            } ${sidebarCollapsed ? 'justify-center' : ''}`
+            } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
           }
         >
           <Users className="w-5 h-5 flex-shrink-0" />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Клиенты</span>}
+          <span className={`text-sm font-medium ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>Клиенты</span>
         </NavLink>
 
         <NavLink
@@ -136,11 +172,11 @@ export function Sidebar() {
               isActive || location.pathname.startsWith('/orders/')
                 ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            } ${sidebarCollapsed ? 'justify-center' : ''}`
+            } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
           }
         >
           <ClipboardList className="w-5 h-5 flex-shrink-0" />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Заявки</span>}
+          <span className={`text-sm font-medium ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>Заявки</span>
         </NavLink>
 
         <NavLink
@@ -150,11 +186,11 @@ export function Sidebar() {
               isActive || location.pathname.startsWith('/objects/')
                 ? 'bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            } ${sidebarCollapsed ? 'justify-center' : ''}`
+            } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
           }
         >
           <Building2 className="w-5 h-5 flex-shrink-0" />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Объекты</span>}
+          <span className={`text-sm font-medium ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>Объекты</span>
         </NavLink>
 
         <NavLink
@@ -164,21 +200,19 @@ export function Sidebar() {
               isActive || location.pathname.startsWith('/reminders')
                 ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            } ${sidebarCollapsed ? 'justify-center' : ''}`
+            } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
           }
         >
           <Bell className="w-5 h-5 flex-shrink-0" />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Напоминания</span>}
+          <span className={`text-sm font-medium ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>Напоминания</span>
         </NavLink>
 
         {/* Finance Section */}
-        {!sidebarCollapsed && (
-          <div className="mt-4 mb-2 px-4">
+        <div className={`mt-4 mb-2 px-4 ${sidebarCollapsed ? 'hidden' : 'block'} lg:block`}>
             <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
               Финансы
             </div>
           </div>
-        )}
 
         <NavLink
           to="/finance"
@@ -187,11 +221,11 @@ export function Sidebar() {
               isActive || location.pathname.startsWith('/finance')
                 ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            } ${sidebarCollapsed ? 'justify-center' : ''}`
+            } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
           }
         >
           <DollarSign className="w-5 h-5 flex-shrink-0" />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Главная</span>}
+          <span className={`text-sm font-medium ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>Главная</span>
         </NavLink>
 
         <NavLink
@@ -201,11 +235,11 @@ export function Sidebar() {
               isActive
                 ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            } ${sidebarCollapsed ? 'justify-center' : ''}`
+            } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
           }
         >
           <FileText className="w-5 h-5 flex-shrink-0" />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Прайс-лист</span>}
+          <span className={`text-sm font-medium ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>Прайс-лист</span>
         </NavLink>
 
         <NavLink
@@ -215,11 +249,11 @@ export function Sidebar() {
               isActive || location.pathname.startsWith('/finance/estimates')
                 ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            } ${sidebarCollapsed ? 'justify-center' : ''}`
+            } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
           }
         >
           <ClipboardList className="w-5 h-5 flex-shrink-0" />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Сметы</span>}
+          <span className={`text-sm font-medium ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>Сметы</span>
         </NavLink>
 
         <NavLink
@@ -229,11 +263,11 @@ export function Sidebar() {
               isActive || location.pathname.startsWith('/finance/transactions')
                 ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            } ${sidebarCollapsed ? 'justify-center' : ''}`
+            } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
           }
         >
           <Wallet className="w-5 h-5 flex-shrink-0" />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Транзакции</span>}
+          <span className={`text-sm font-medium ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>Транзакции</span>
         </NavLink>
 
         <NavLink
@@ -243,21 +277,19 @@ export function Sidebar() {
               isActive
                 ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            } ${sidebarCollapsed ? 'justify-center' : ''}`
+            } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
           }
         >
           <BarChart3 className="w-5 h-5 flex-shrink-0" />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Отчёты</span>}
+          <span className={`text-sm font-medium ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>Отчёты</span>
         </NavLink>
 
         {/* Documents Section */}
-        {!sidebarCollapsed && (
-          <div className="mt-4 mb-2 px-4">
+        <div className={`mt-4 mb-2 px-4 ${sidebarCollapsed ? 'hidden' : 'block'} lg:block`}>
             <div className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
               Документы
             </div>
           </div>
-        )}
 
         <NavLink
           to="/documents"
@@ -266,11 +298,11 @@ export function Sidebar() {
               isActive || location.pathname.startsWith('/documents')
                 ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-            } ${sidebarCollapsed ? 'justify-center' : ''}`
+            } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
           }
         >
           <FileText className="w-5 h-5 flex-shrink-0" />
-          {!sidebarCollapsed && <span className="text-sm font-medium">Все документы</span>}
+          <span className={`text-sm font-medium ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>Все документы</span>
         </NavLink>
 
         {/* Tools Section */}
@@ -281,12 +313,10 @@ export function Sidebar() {
 
             return (
               <div key={category.id} className="mb-2">
-                {!sidebarCollapsed && (
-                  <div className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                <div className={`flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider ${sidebarCollapsed ? 'hidden' : 'flex'} lg:flex`}>
                     <CategoryIcon className="w-3 h-3" />
                     {category.title}
                   </div>
-                )}
                 {categoryModules.map((module) => {
                   const ModuleIcon = ICON_MAP[module.icon] || Wrench;
                   const isActive = location.pathname === module.path;
@@ -295,21 +325,19 @@ export function Sidebar() {
                     <NavLink
                       key={module.id}
                       to={module.path}
-                      title={sidebarCollapsed ? module.title : undefined}
+                      title={module.title}
                       className={({ isActive: active }) =>
                         `flex items-center gap-3 px-4 py-2 mx-2 rounded-lg transition-colors ${
                           active
                             ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
                             : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                        } ${sidebarCollapsed ? 'justify-center' : ''}`
+                        } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
                       }
                     >
                       <ModuleIcon className="w-4 h-4 flex-shrink-0" />
-                      {!sidebarCollapsed && (
-                        <span className="text-sm truncate">{module.title}</span>
-                      )}
-                      {!sidebarCollapsed && module.isNew && (
-                        <span className="ml-auto text-[10px] bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-1.5 py-0.5 rounded">
+                      <span className={`text-sm truncate ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>{module.title}</span>
+                      {module.isNew && (
+                        <span className={`ml-auto text-[10px] bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-1.5 py-0.5 rounded ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>
                           NEW
                         </span>
                       )}
@@ -330,11 +358,11 @@ export function Sidebar() {
                 isActive
                   ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
                   : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-              } ${sidebarCollapsed ? 'justify-center' : ''}`
+              } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
             }
           >
             <Info className="w-5 h-5 flex-shrink-0" />
-            {!sidebarCollapsed && <span className="text-sm font-medium">О приложении</span>}
+            <span className={`text-sm font-medium ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>О приложении</span>
           </NavLink>
 
           <NavLink
@@ -344,14 +372,15 @@ export function Sidebar() {
                 isActive || location.pathname.startsWith('/settings/')
                   ? 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                   : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-              } ${sidebarCollapsed ? 'justify-center' : ''}`
+              } ${sidebarCollapsed ? 'sm:justify-center' : ''}`
             }
           >
             <Settings className="w-5 h-5 flex-shrink-0" />
-            {!sidebarCollapsed && <span className="text-sm font-medium">Настройки</span>}
+            <span className={`text-sm font-medium ${sidebarCollapsed ? 'hidden lg:inline' : 'inline'}`}>Настройки</span>
           </NavLink>
         </div>
       </nav>
     </aside>
+    </>
   );
 }

@@ -1,7 +1,7 @@
 import { Moon, Sun, Menu } from 'lucide-react';
 import { useAppStore } from '../../shared/store/useAppStore';
 
-export function Header() {
+export function Header({ onOpenSidebar }: { onOpenSidebar?: () => void }) {
   const { theme, toggleTheme } = useAppStore();
 
   const handleToggleTheme = () => {
@@ -13,6 +13,14 @@ export function Header() {
   return (
     <header className="h-14 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-between px-4 md:px-6">
       <div className="flex items-center gap-3">
+        {/* Бургер для мобильного drawer сайдбара */}
+        <button
+          onClick={onOpenSidebar}
+          className="sm:hidden p-2 -ml-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
+          aria-label="Открыть меню"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
         <h1 className="text-lg font-semibold text-gray-800 dark:text-white">
           Помощник Сантехника
         </h1>
