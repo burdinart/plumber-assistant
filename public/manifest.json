@@ -7,7 +7,7 @@
   "display": "standalone",
   "background_color": "#1e40af",
   "theme_color": "#2563eb",
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "icons": [
     {
       "src": "/plumber-assistant/icon-192x192.png",
