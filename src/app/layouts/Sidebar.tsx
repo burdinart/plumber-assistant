@@ -65,9 +65,9 @@ export function Sidebar() {
 
   return (
     <aside
-      className={`${
+      className={`hidden md:flex ${
         sidebarCollapsed ? 'w-16' : 'w-64'
-      } flex flex-col border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300`}
+      } flex-col shrink-0 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 transition-all duration-300`}
     >
       {/* Logo */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
