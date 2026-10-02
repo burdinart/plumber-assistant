@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { PriceItem, PriceCategory } from '../types';
 import { DEFAULT_PRICE_LIST } from '../data/defaultPriceList';
 import { storage, generateId } from '../../../shared/utils/storage';
+import { STORAGE_KEYS } from '../../../shared/utils/constants';
 
-const STORAGE_KEY = 'plumber-assistant-price-list';
+const STORAGE_KEY = STORAGE_KEYS.priceList;
 
 export function usePriceList() {
   const [priceList, setPriceList] = useState<PriceItem[]>([]);

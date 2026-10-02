@@ -1,3 +1,4 @@
+import { Suspense, lazy, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
@@ -5,21 +6,28 @@ import { BottomNav } from './BottomNav';
 import { PWAInstallButton } from '../../shared/ui/PWAInstallButton';
 import { VersionBadge } from '../../shared/ui/VersionBadge';
 import { useAppStore } from '../../shared/store/useAppStore';
-import { useEffect } from 'react';
+
+// Ленивая загрузка тяжёлых элементов оформления — они не блокируют первый рендер.
+const NotificationPermissionBanner = lazy(() =>
+  import('../../shared/ui/NotificationPermissionBanner').then((m) => ({
+    default: m.NotificationPermissionBanner,
+  }))
+);
+
+function PageFallback() {
+  return (
+    <div className="flex items-center justify-center py-16" role="status" aria-label="Загрузка страницы">
+      <div className="animate-spin h-8 w-8 rounded-full border-4 border-blue-500 border-t-transparent" />
+    </div>
+  );
+}
 
 export function AppLayout() {
-  const theme = useAppStore((s: { theme: string }) => s.theme);
+  const theme = useAppStore((s) => s.theme);
 
   useEffect(() => {
-    console.log('Theme changed to:', theme);
     // Устанавливаем тему при монтировании и при изменении
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      console.log('Added dark class to html');
-    } else {
-      document.documentElement.classList.remove('dark');
-      console.log('Removed dark class from html');
-    }
+    document.documentElement.classList.toggle('dark', theme === 'dark');
   }, [theme]);
 
   return (
@@ -28,7 +36,9 @@ export function AppLayout() {
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header />
         <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4 md:p-6 pb-20 md:pb-6">
-          <Outlet />
+          <Suspense fallback={<PageFallback />}>
+            <Outlet />
+          </Suspense>
         </main>
         <footer className="text-center py-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-800">
           <div className="flex items-center justify-center gap-2">

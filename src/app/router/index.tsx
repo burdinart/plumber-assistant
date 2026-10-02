@@ -1,49 +1,8 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
+import * as P from './lazyPages';
 import { AppLayout } from '../layouts/AppLayout';
+// Dashboard — первая экранная точка входа, грузится eagerly (без Suspense-задержки)
 import { DashboardPage } from '../../features/dashboard/DashboardPage';
-import { PressureCalculatorPage } from '../../features/pressure-calculator/PressureCalculatorPage';
-import { PipeDiameterPage } from '../../features/pipe-calculator/PipeDiameterPage';
-import { WaterFlowPage } from '../../features/water-flow-calculator/WaterFlowPage';
-import { MaterialsReferencePage } from '../../features/materials-reference/MaterialsReferencePage';
-import { UnitsConverterPage } from '../../features/units-converter/UnitsConverterPage';
-import { PipeLengthPage } from '../../features/pipe-length/PipeLengthPage';
-import { HeatLossPage } from '../../features/heat-loss/HeatLossPage';
-import { SlopeCalculator } from '../../features/calculators/components/SlopeCalculator';
-import { BoilerErrors } from '../../features/reference/components/BoilerErrors';
-import { Troubleshooting } from '../../features/reference/components/Troubleshooting';
-import { ClientsPage } from '../../features/clients/ClientsPage';
-import { ClientForm } from '../../features/clients/components/ClientForm';
-import { ClientCard } from '../../features/clients/components/ClientCard';
-import { OrdersPage } from '../../features/orders/OrdersPage';
-import { OrderForm } from '../../features/orders/components/OrderForm';
-import { OrderCard } from '../../features/orders/components/OrderCard';
-import { FinanceDashboard } from '../../features/finance/components/FinanceDashboard';
-import { PriceList } from '../../features/finance/components/PriceList';
-import { EstimateList } from '../../features/finance/components/EstimateList';
-import { EstimateForm } from '../../features/finance/components/EstimateForm';
-import { EstimatePreview } from '../../features/finance/components/EstimatePreview';
-import { Transactions } from '../../features/finance/components/Transactions';
-import { TransactionForm } from '../../features/finance/components/TransactionForm';
-import { Reports } from '../../features/finance/components/Reports';
-import { DocumentsList } from '../../features/documents/components/DocumentsList';
-import { ActForm } from '../../features/documents/components/ActForm';
-import { ActPreview } from '../../features/documents/components/ActPreview';
-import { ContractForm } from '../../features/documents/components/ContractForm';
-import { ContractPreview } from '../../features/documents/components/ContractPreview';
-import { WarrantyForm } from '../../features/documents/components/WarrantyForm';
-import { WarrantyPreview } from '../../features/documents/components/WarrantyPreview';
-import { PropertyList } from '../../features/objects/components/PropertyList';
-import { PropertyForm } from '../../features/objects/components/PropertyForm';
-import { PropertyCard } from '../../features/objects/components/PropertyCard';
-import { DesignHub } from '../../features/calculators/components/DesignHub';
-import { PipeDiameterCalculator } from '../../features/calculators/components/PipeDiameterCalculator';
-import { PumpCalculator } from '../../features/calculators/components/PumpCalculator';
-import { ExpansionTankCalculator } from '../../features/calculators/components/ExpansionTankCalculator';
-import { RadiatorCalculator } from '../../features/calculators/components/RadiatorCalculator';
-import { RegulationsPage } from '../../features/reference/regulations/components/RegulationsPage';
-import { AboutPage } from '../../features/app/components/AboutPage';
-import { ProfilePage } from '../../features/profile/components/ProfilePage';
-import { RemindersPage } from '../../features/reminders/components/RemindersPage';
 
 export const router = createBrowserRouter([
   {
@@ -57,214 +16,214 @@ export const router = createBrowserRouter([
       // CRM - Clients
       {
         path: 'clients',
-        element: <ClientsPage />,
+        element: <P.ClientsPage />,
       },
       {
         path: 'clients/new',
-        element: <ClientForm />,
+        element: <P.ClientForm />,
       },
       {
         path: 'clients/:id',
-        element: <ClientCard />,
+        element: <P.ClientCard />,
       },
       {
         path: 'clients/:id/edit',
-        element: <ClientForm />,
+        element: <P.ClientForm />,
       },
       // CRM - Objects (Properties)
       {
         path: 'objects',
-        element: <PropertyList />,
+        element: <P.PropertyList />,
       },
       {
         path: 'objects/new',
-        element: <PropertyForm />,
+        element: <P.PropertyForm />,
       },
       {
         path: 'objects/:id',
-        element: <PropertyCard />,
+        element: <P.PropertyCard />,
       },
       {
         path: 'objects/:id/edit',
-        element: <PropertyForm />,
+        element: <P.PropertyForm />,
       },
       // CRM - Orders
       {
         path: 'orders',
-        element: <OrdersPage />,
+        element: <P.OrdersPage />,
       },
       {
         path: 'orders/new',
-        element: <OrderForm />,
+        element: <P.OrderForm />,
       },
       {
         path: 'orders/:id',
-        element: <OrderCard />,
+        element: <P.OrderCard />,
       },
       {
         path: 'orders/:id/edit',
-        element: <OrderForm />,
+        element: <P.OrderForm />,
       },
       // CRM - Reminders (Напоминания)
       {
         path: 'reminders',
-        element: <RemindersPage />,
+        element: <P.RemindersPage />,
       },
       // Calculators
       {
         path: 'calculators/pressure',
-        element: <PressureCalculatorPage />,
+        element: <P.PressureCalculatorPage />,
       },
       {
         path: 'calculators/pipe-diameter',
-        element: <PipeDiameterPage />,
+        element: <P.PipeDiameterPage />,
       },
       {
         path: 'calculators/water-flow',
-        element: <WaterFlowPage />,
+        element: <P.WaterFlowPage />,
       },
       {
         path: 'calculators/pipe-length',
-        element: <PipeLengthPage />,
+        element: <P.PipeLengthPage />,
       },
       {
         path: 'calculators/heat-loss',
-        element: <HeatLossPage />,
+        element: <P.HeatLossPage />,
       },
       {
         path: 'calculators/slope',
-        element: <SlopeCalculator />,
+        element: <P.SlopeCalculator />,
       },
       // Reference
       {
         path: 'reference/materials',
-        element: <MaterialsReferencePage />,
+        element: <P.MaterialsReferencePage />,
       },
       {
         path: 'reference/regulations',
-        element: <RegulationsPage />,
+        element: <P.RegulationsPage />,
       },
       {
         path: 'reference/boiler-errors',
-        element: <BoilerErrors />,
+        element: <P.BoilerErrors />,
       },
       {
         path: 'reference/troubleshooting',
-        element: <Troubleshooting />,
+        element: <P.Troubleshooting />,
       },
       // Tools
       {
         path: 'tools/units-converter',
-        element: <UnitsConverterPage />,
+        element: <P.UnitsConverterPage />,
       },
       // Finance
       {
         path: 'finance',
-        element: <FinanceDashboard />,
+        element: <P.FinanceDashboard />,
       },
       {
         path: 'finance/price-list',
-        element: <PriceList />,
+        element: <P.PriceList />,
       },
       {
         path: 'finance/estimates',
-        element: <EstimateList />,
+        element: <P.EstimateList />,
       },
       {
         path: 'finance/estimates/new',
-        element: <EstimateForm />,
+        element: <P.EstimateForm />,
       },
       {
         path: 'finance/estimates/:id',
-        element: <EstimateForm />,
+        element: <P.EstimateForm />,
       },
       {
         path: 'finance/estimates/:id/preview',
-        element: <EstimatePreview />,
+        element: <P.EstimatePreview />,
       },
       {
         path: 'finance/transactions',
-        element: <Transactions />,
+        element: <P.Transactions />,
       },
       {
         path: 'finance/transactions/new',
-        element: <TransactionForm />,
+        element: <P.TransactionForm />,
       },
       {
         path: 'finance/reports',
-        element: <Reports />,
+        element: <P.Reports />,
       },
       // Documents
       {
         path: 'documents',
-        element: <DocumentsList />,
+        element: <P.DocumentsList />,
       },
       {
         path: 'documents/acts/new',
-        element: <ActForm />,
+        element: <P.ActForm />,
       },
       {
         path: 'documents/acts/:id',
-        element: <ActPreview />,
+        element: <P.ActPreview />,
       },
       {
         path: 'documents/acts/:id/edit',
-        element: <ActForm />,
+        element: <P.ActForm />,
       },
       {
         path: 'documents/contracts/new',
-        element: <ContractForm />,
+        element: <P.ContractForm />,
       },
       {
         path: 'documents/contracts/:id',
-        element: <ContractPreview />,
+        element: <P.ContractPreview />,
       },
       {
         path: 'documents/contracts/:id/edit',
-        element: <ContractForm />,
+        element: <P.ContractForm />,
       },
       {
         path: 'documents/warranties/new',
-        element: <WarrantyForm />,
+        element: <P.WarrantyForm />,
       },
       {
         path: 'documents/warranties/:id',
-        element: <WarrantyPreview />,
+        element: <P.WarrantyPreview />,
       },
       {
         path: 'documents/warranties/:id/edit',
-        element: <WarrantyForm />,
+        element: <P.WarrantyForm />,
       },
       // Design - Проектирование
       {
         path: 'design',
-        element: <DesignHub />,
+        element: <P.DesignHub />,
       },
       {
         path: 'design/pipe-diameter',
-        element: <PipeDiameterCalculator />,
+        element: <P.PipeDiameterCalculator />,
       },
       {
         path: 'design/pump',
-        element: <PumpCalculator />,
+        element: <P.PumpCalculator />,
       },
       {
         path: 'design/expansion-tank',
-        element: <ExpansionTankCalculator />,
+        element: <P.ExpansionTankCalculator />,
       },
       {
         path: 'design/radiator',
-        element: <RadiatorCalculator />,
+        element: <P.RadiatorCalculator />,
       },
       // О приложении
       {
         path: 'about',
-        element: <AboutPage />,
+        element: <P.AboutPage />,
       },
       // Настройки и Профиль
       {
         path: 'settings/profile',
-        element: <ProfilePage />,
+        element: <P.ProfilePage />,
       },
       // Catch-all
       {

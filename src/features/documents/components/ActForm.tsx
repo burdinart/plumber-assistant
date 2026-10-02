@@ -8,7 +8,7 @@ import { useOrders } from '../../orders/hooks/useOrders';
 import { useProfile } from '../../profile/hooks/useProfile';
 import { Act } from '../types';
 import { EstimateItem } from '../../finance/types';
-import { getTodayDate } from '../../finance/utils/formatters';
+import { getTodayDate } from '../../../shared/utils/dates';
 import { Toast } from '../../../shared/ui/Toast';
 
 export function ActForm() {

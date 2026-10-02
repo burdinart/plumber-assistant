@@ -142,3 +142,18 @@ export const CATEGORIES: CategoryInfo[] = [
   { id: 'tools', title: 'Инструменты', icon: 'Wrench' },
   { id: 'design', title: 'Проектирование', icon: 'Ruler' },
 ];
+
+// ---------------------------------------------------------------------------
+// Ключи LocalStorage: единый реестр, чтобы избежать рассинхронизации строк
+// между фичами и ручных обращений (plumber-assistant-settings в main.tsx).
+// ---------------------------------------------------------------------------
+export const STORAGE_KEYS = {
+  settings: 'plumber-assistant-settings',
+  clients: 'plumber-assistant-clients',
+  orders: 'plumber-assistant-orders',
+  properties: 'plumber-assistant-properties',
+  documents: 'plumber-assistant-documents',
+  estimates: 'plumber-assistant-estimates',
+  transactions: 'plumber-assistant-transactions',
+  priceList: 'plumber-assistant-price-list',
+} as const;
