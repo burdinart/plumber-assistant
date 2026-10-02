@@ -35,7 +35,7 @@ export function AppLayout() {
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header />
-        <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4 md:p-6 pb-20 md:pb-6" style={{ paddingBottom: "calc(5rem + env(safe-area-inset-bottom))" }}>
+        <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4 sm:p-6 pb-20 sm:pb-6" style={{ paddingBottom: "calc(5rem + env(safe-area-inset-bottom))" }}>
           <Suspense fallback={<PageFallback />}>
             <Outlet />
           </Suspense>

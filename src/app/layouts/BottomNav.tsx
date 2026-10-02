@@ -27,7 +27,7 @@ export function BottomNav() {
   return (
     <>
       {/* Нижняя панель */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-gray-800 dark:bg-gray-800 border-t border-gray-700 md:hidden z-40" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <nav className="fixed bottom-0 left-0 right-0 bg-gray-800 dark:bg-gray-800 border-t border-gray-700 sm:hidden z-40" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
         <div className="flex items-center justify-around h-16">
           {mainItems.map((item) => {
             const Icon = item.icon;
@@ -69,7 +69,7 @@ export function BottomNav() {
 
       {/* Модальное меню "Ещё" */}
       {showMore && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end md:hidden">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end sm:hidden">
           <div className="bg-gray-800 dark:bg-gray-800 rounded-t-2xl w-full max-h-[70vh] overflow-y-auto" style={{ paddingBottom: "calc(0.5rem + env(safe-area-inset-bottom))" }}>
             {/* Заголовок */}
             <div className="sticky top-0 bg-gray-800 dark:bg-gray-800 p-4 border-b border-gray-700 flex items-center justify-between">
@@ -109,7 +109,7 @@ export function BottomNav() {
       )}
 
       {/* Отступ для контента, чтобы не перекрывался нижней панелью */}
-      <div className="md:hidden h-16"></div>
+      <div className="sm:hidden h-16"></div>
     </>
   );
 }
