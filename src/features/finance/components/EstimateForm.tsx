@@ -5,7 +5,8 @@ import { useEstimates } from '../hooks/useEstimates';
 import { usePriceList } from '../hooks/usePriceList';
 import { useClients } from '../../clients/hooks/useClients';
 import { Estimate, EstimateItem, EstimateItemType } from '../types';
-import { formatCurrency, getTodayDate, getDateAfterDays } from '../utils/formatters';
+import { formatCurrency } from '../utils/formatters';
+import { getTodayDate, getDateAfterDays } from '../utils/dateUtils';
 import { Modal } from '../../../shared/ui/Modal';
 import { Toast } from '../../../shared/ui/Toast';
 

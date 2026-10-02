@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Transaction } from '../types';
 import { storage, generateId } from '../../../shared/utils/storage';
+import { STORAGE_KEYS } from '../../../shared/utils/constants';
 
-const STORAGE_KEY = 'plumber-assistant-transactions';
+const STORAGE_KEY = STORAGE_KEYS.transactions;
 
 // Демо-данные транзакций
 const DEMO_TRANSACTIONS: Transaction[] = [

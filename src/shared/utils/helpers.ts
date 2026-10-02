@@ -27,18 +27,6 @@ export function formatDateTime(dateString: string, timeString: string): string {
 }
 
 /**
- * Форматирование суммы
- */
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('ru-RU', {
-    style: 'currency',
-    currency: 'RUB',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount);
-}
-
-/**
  * Получение цвета статуса заявки
  */
 export function getOrderStatusColor(status: OrderStatus): string {
@@ -147,13 +135,6 @@ export function isDateInPast(dateString: string, timeString: string): boolean {
 }
 
 /**
- * Получение сегодняшней даты в формате YYYY-MM-DD
- */
-export function getTodayDate(): string {
-  return new Date().toISOString().split('T')[0];
-}
-
-/**
  * Получение текущего времени в формате HH:MM
  */
 export function getCurrentTime(): string {
@@ -171,3 +152,11 @@ export function getInitials(name: string): string {
   }
   return (parts[0].charAt(0) + parts[1].charAt(0)).toUpperCase();
 }
+
+// ---------------------------------------------------------------------------
+// Реэкспорты: единые источники форматирования и работы с датами.
+// formatCurrency — finance/utils/formatters, getTodayDate — finance/utils/dateUtils.
+//Сохраняем совместимость существующих импортов из shared/utils/helpers.
+// ---------------------------------------------------------------------------
+export { formatCurrency } from '../../features/finance/utils/formatters';
+export { getTodayDate } from '../../features/finance/utils/dateUtils';

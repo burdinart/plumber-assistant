@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Order, OrderStatus } from '../../../shared/types';
 import { storage, generateId } from '../../../shared/utils/storage';
+import { STORAGE_KEYS } from '../../../shared/utils/constants';
 
-const STORAGE_KEY = 'plumber-assistant-orders';
+const STORAGE_KEY = STORAGE_KEYS.orders;
 
 // Демо-данные заявок
 const DEMO_ORDERS: Order[] = [

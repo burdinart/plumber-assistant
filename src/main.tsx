@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 import { APP_VERSION } from './version';
+import { STORAGE_KEYS } from './shared/utils/constants';
 
 // Логирование версии приложения в консоль
 console.log('%c Помощник Сантехника', 'color: #3b82f6; font-size: 20px; font-weight: bold;');
@@ -14,7 +15,7 @@ console.log('%cGitHub Pages: https://burdinart.github.io/plumber-assistant/', 'c
 // Инициализация темы при загрузке приложения
 const initializeTheme = () => {
   try {
-    const stored = localStorage.getItem('plumber-assistant-settings');
+    const stored = localStorage.getItem(STORAGE_KEYS.settings);
     if (stored) {
       const settings = JSON.parse(stored);
       if (settings.state && settings.state.theme === 'dark') {

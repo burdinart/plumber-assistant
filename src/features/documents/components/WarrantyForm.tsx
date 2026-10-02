@@ -6,7 +6,7 @@ import { useClients } from '../../clients/hooks/useClients';
 import { useOrders } from '../../orders/hooks/useOrders';
 import { Warranty } from '../types';
 import { EstimateItem } from '../../finance/types';
-import { getTodayDate, getDateAfterDays } from '../../finance/utils/formatters';
+import { getTodayDate, getDateAfterDays } from '../../../shared/utils/dates';
 import { Toast } from '../../../shared/ui/Toast';
 
 export function WarrantyForm() {

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Estimate, EstimateStatus } from '../types';
 import { storage, generateId } from '../../../shared/utils/storage';
+import { STORAGE_KEYS } from '../../../shared/utils/constants';
 
-const STORAGE_KEY = 'plumber-assistant-estimates';
+const STORAGE_KEY = STORAGE_KEYS.estimates;
 
 export function useEstimates() {
   const [estimates, setEstimates] = useState<Estimate[]>([]);

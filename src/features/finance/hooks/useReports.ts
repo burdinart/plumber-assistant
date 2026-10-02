@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useTransactions } from './useTransactions';
 import { useClients } from '../../clients/hooks/useClients';
 import { Transaction } from '../types';
-import { getWeekStart, getWeekEnd } from '../utils/formatters';
+import { getWeekStart, getWeekEnd } from '../utils/dateUtils';
 import { calculateBalance, calculatePercentChange } from '../utils/calculations';
 
 export function useReports() {

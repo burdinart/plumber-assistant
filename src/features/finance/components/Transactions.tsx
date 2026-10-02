@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Wallet, Plus, Search, TrendingUp, TrendingDown, Trash2, User, Building2 } from 'lucide-react';
 import { useTransactions } from '../hooks/useTransactions';
 import { useClients } from '../../clients/hooks/useClients';
 import { formatCurrency, formatDate } from '../utils/formatters';
+import { getPeriodRange, getPeriodLabel, type PeriodType } from '../utils/period';
+import { PeriodFilter } from './PeriodFilter';
 import { TRANSACTION_CATEGORY_NAMES } from '../types';
 import { Modal } from '../../../shared/ui/Modal';
 import { Toast } from '../../../shared/ui/Toast';
 
 export function Transactions() {
-  const { transactions, deleteTransaction, search, getBalance, refreshTransactions } = useTransactions();
+  const { transactions, deleteTransaction, search, refreshTransactions } = useTransactions();
   const { clients } = useClients();
   const location = useLocation();
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,27 +21,54 @@ export function Transactions() {
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
+  // Фильтр по периоду (по умолчанию — «Этот месяц»)
+  const [period, setPeriod] = useState<PeriodType>('month');
+  const [customStart, setCustomStart] = useState<string>('');
+  const [customEnd, setCustomEnd] = useState<string>('');
+
   // Перечитываем данные при каждом переходе на эту страницу
   useEffect(() => {
     refreshTransactions();
   }, [location.pathname]);
 
-  // Текущий месяц
-  const now = new Date();
-  const startDate = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
-  const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0];
-  const balance = getBalance(startDate, endDate);
+  // Границы выбранного периода (YYYY-MM-DD, включительно)
+  const { start: startDate, end: endDate } = useMemo(
+    () => getPeriodRange(period, customStart, customEnd),
+    [period, customStart, customEnd],
+  );
 
-  const filteredTransactions = (() => {
-    let items = searchQuery ? search(searchQuery) : transactions;
+  // Транзакции за выбранный период — базовый массив и для сводки, и для списка
+  const periodTransactions = useMemo(
+    () => transactions.filter(t => t.date >= startDate && t.date <= endDate),
+    [transactions, startDate, endDate],
+  );
+
+  // Сводка считается именно по отфильтрованным по периоду транзакциям
+  const balance = useMemo(() => {
+    const income = periodTransactions
+      .filter(t => t.type === 'income')
+      .reduce((sum, t) => sum + t.amount, 0);
+    const expense = periodTransactions
+      .filter(t => t.type === 'expense')
+      .reduce((sum, t) => sum + t.amount, 0);
+    return { income, expense, balance: income - expense };
+  }, [periodTransactions]);
+
+  const filteredTransactions = useMemo(() => {
+    // Поиск и доп. фильтры применяем уже к транзакциям выбранного периода
+    let items = searchQuery
+      ? search(searchQuery).filter(t => t.date >= startDate && t.date <= endDate)
+      : periodTransactions;
     if (typeFilter !== 'all') {
       items = items.filter(t => t.type === typeFilter);
     }
     if (clientFilter !== 'all') {
       items = items.filter(t => t.clientId === clientFilter);
     }
-    return items.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-  })();
+    return [...items].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [periodTransactions, search, searchQuery, startDate, endDate, typeFilter, clientFilter]);
+
+  const periodLabel = getPeriodLabel(period, { start: startDate, end: endDate });
 
   const handleDelete = (id: string) => {
     setTransactionToDelete(id);
@@ -102,12 +131,22 @@ export function Transactions() {
         </Link>
       </div>
 
+      {/* Период фильтрации */}
+      <PeriodFilter
+        period={period}
+        onPeriodChange={setPeriod}
+        customStart={customStart}
+        customEnd={customEnd}
+        onCustomStartChange={setCustomStart}
+        onCustomEndChange={setCustomEnd}
+      />
+
       {/* Balance cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center gap-2 mb-2">
             <TrendingUp className="w-5 h-5 text-green-600 dark:text-green-400" />
-            <span className="text-sm text-gray-500 dark:text-gray-400">Доходы (месяц)</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">Доходы ({periodLabel})</span>
           </div>
           <div className="text-2xl font-bold text-green-600 dark:text-green-400">
             {formatCurrency(balance.income)}
@@ -116,7 +155,7 @@ export function Transactions() {
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center gap-2 mb-2">
             <TrendingDown className="w-5 h-5 text-red-600 dark:text-red-400" />
-            <span className="text-sm text-gray-500 dark:text-gray-400">Расходы (месяц)</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">Расходы ({periodLabel})</span>
           </div>
           <div className="text-2xl font-bold text-red-600 dark:text-red-400">
             {formatCurrency(balance.expense)}
@@ -125,7 +164,7 @@ export function Transactions() {
         <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4">
           <div className="flex items-center gap-2 mb-2">
             <Wallet className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-            <span className="text-sm text-gray-500 dark:text-gray-400">Баланс (месяц)</span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">Баланс ({periodLabel})</span>
           </div>
           <div className={`text-2xl font-bold ${balance.balance >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}>
             {formatCurrency(balance.balance)}
@@ -270,7 +309,9 @@ export function Transactions() {
           <p className="text-gray-500 dark:text-gray-400 mb-4">
             {searchQuery || typeFilter !== 'all' || clientFilter !== 'all'
               ? 'Попробуйте изменить параметры поиска'
-              : 'Добавьте первую транзакцию'}
+              : period === 'all'
+                ? 'Добавьте первую транзакцию'
+                : 'За выбранный период транзакций нет. Попробуйте изменить период или добавьте новую.'}
           </p>
           {!searchQuery && typeFilter === 'all' && clientFilter === 'all' && (
             <Link

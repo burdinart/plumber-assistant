@@ -7,9 +7,10 @@ import {
   DocumentType,
 } from '../types';
 import { storage, generateId } from '../../../shared/utils/storage';
+import { STORAGE_KEYS } from '../../../shared/utils/constants';
 import { generateDocumentNumber } from '../utils/documentHelpers';
 
-const STORAGE_KEY = 'plumber-assistant-documents';
+const STORAGE_KEY = STORAGE_KEYS.documents;
 
 // Демо-данные документов
 const DEMO_DOCUMENTS: Documents = {

@@ -4,7 +4,7 @@ import { Wallet, Save, X, User, Building2 } from 'lucide-react';
 import { useTransactions } from '../hooks/useTransactions';
 import { useClients } from '../../clients/hooks/useClients';
 import { Transaction, TransactionType, TransactionCategory, INCOME_CATEGORY_NAMES, EXPENSE_CATEGORY_NAMES } from '../types';
-import { getTodayDate } from '../utils/formatters';
+import { getTodayDate } from '../utils/dateUtils';
 import { Toast } from '../../../shared/ui/Toast';
 
 export function TransactionForm() {

@@ -3,7 +3,9 @@ import { Client } from '../../../shared/types';
 import { storage, generateId } from '../../../shared/utils/storage';
 import { useAppStore } from '../../../shared/store/useAppStore';
 
-export const CLIENTS_STORAGE_KEY = 'plumber-assistant-clients';
+import { STORAGE_KEYS } from '../../../shared/utils/constants';
+
+export const CLIENTS_STORAGE_KEY = STORAGE_KEYS.clients;
 
 // Демо-данные клиентов
 export const DEMO_CLIENTS: Client[] = [

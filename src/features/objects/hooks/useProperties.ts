@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Property } from '../types';
 import { storage, generateId } from '../../../shared/utils/storage';
+import { STORAGE_KEYS } from '../../../shared/utils/constants';
 
-const STORAGE_KEY = 'plumber-assistant-properties';
+const STORAGE_KEY = STORAGE_KEYS.properties;
 
 // Демо-данные объектов
 const DEMO_PROPERTIES: Property[] = [
