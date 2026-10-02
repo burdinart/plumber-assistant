@@ -9,7 +9,8 @@ import { Document, DocumentType, DocumentContent, DocumentItem, ChangeHistoryEnt
 import { generateDocumentPDF } from '../utils/pdfGenerator';
 import { getChangedFields } from '../utils/diffUtils';
 import { buildContractorAutoFill, hasContractorData } from '../utils/autoFillProfile';
-import { FileText, Save, Download, X, Plus, Trash2, Eye, User, Building, ArrowLeft } from 'lucide-react';
+import { FileText, Save, Download, X, Plus, Trash2, Eye, User, Building, ArrowLeft, RotateCcw, Maximize2 } from 'lucide-react';
+import { useScreenOrientation } from '../../../shared/hooks/useScreenOrientation';
 
 const DOCUMENT_TYPES: { value: DocumentType; label: string }[] = [
   { value: 'act', label: 'Акт выполненных работ' },
@@ -24,6 +25,10 @@ export const DocumentEditor = () => {
   const navigate = useNavigate();
   const { profile } = useProfile();
   const { documents, addDocument, updateDocument, clients } = useAppStore();
+
+  // Управление ориентацией экрана: в альбомном режиме редактор документов
+  // становится двухколоночным (форма + таблица работ), место под таблицу важнее отступов.
+  const { isLandscape, lockSupported, lockOrientation, unlockOrientation } = useScreenOrientation();
   
   const [document, setDocument] = useState<Partial<Document>>({
     type: 'act',
@@ -301,16 +306,38 @@ export const DocumentEditor = () => {
   const docType = DOCUMENT_TYPES.find(t => t.value === document.type);
 
   return (
-    <div className="p-4 max-w-6xl mx-auto">
+    <div className="p-4 landscape:p-2 max-w-6xl mx-auto">
       {/* Заголовок */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div className="flex items-center gap-3">
-          <FileText className="w-8 h-8 text-blue-400" />
-          <h1 className="text-2xl font-bold text-white">
+          <FileText className="w-8 h-8 text-blue-400 shrink-0" />
+          <h1 className="text-xl sm:text-2xl font-bold text-white">
             {id && id !== 'new' ? 'Редактирование документа' : 'Новый документ'}
           </h1>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          {/* Блокировка альбомной ориентации — доступна только в установленной PWA;
+              в обычном браузере кнопка скрывается, lockOrientation безопасно no-op. */}
+          {lockSupported && !isLandscape && (
+            <button
+              onClick={() => lockOrientation('landscape')}
+              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg flex items-center gap-2 min-h-[44px]"
+              title="Развернуть в альбомный режим для удобного редактирования таблицы"
+            >
+              <Maximize2 className="w-4 h-4" />
+              Альбомно
+            </button>
+          )}
+          {lockSupported && isLandscape && (
+            <button
+              onClick={unlockOrientation}
+              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg flex items-center gap-2 min-h-[44px]"
+              title="Вернуть свободную ориентацию"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Сброс ориентации
+            </button>
+          )}
           <button
             onClick={() => setShowPreview(true)}
             className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg flex items-center gap-2"
@@ -341,8 +368,8 @@ export const DocumentEditor = () => {
         </div>
       </div>
 
-      {/* Основная форма */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Основная форма: в альбомном режиме (landscape) или на широких экранах — 2 колонки */}
+      <div className="grid grid-cols-1 landscape:grid-cols-2 lg:grid-cols-2 gap-6">
         {/* Левая колонка - Основные данные */}
         <div className="space-y-4">
           {/* Тип документа */}
@@ -611,10 +638,10 @@ export const DocumentEditor = () => {
       {/* Модальное окно предпросмотра */}
       {showPreview && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-gray-800 rounded-xl max-w-4xl w-full max-h-[90vh] landscape:max-h-[95vh] overflow-y-auto">
             <div className="flex items-center justify-between p-4 border-b border-gray-700">
               <h2 className="text-xl font-bold text-white">Предпросмотр документа</h2>
-              <button onClick={() => setShowPreview(false)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setShowPreview(false)} className="text-gray-400 hover:text-white p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
                 <X className="w-6 h-6" />
               </button>
             </div>
