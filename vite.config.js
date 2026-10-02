@@ -22,7 +22,9 @@ export default defineConfig({
         theme_color: "#1e293b",
         background_color: "#0f172a",
         display: "standalone",
-        orientation: "portrait",
+        // "any" — разрешаем автоповорот; отдельные страницы могут
+        // блокировать ориентацию через Screen Orientation API (useScreenOrientation)
+        orientation: "any",
         scope: "/plumber-assistant/",
         start_url: "/plumber-assistant/",
         icons: [

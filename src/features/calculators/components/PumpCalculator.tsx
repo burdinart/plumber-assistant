@@ -40,9 +40,9 @@ export function PumpCalculator() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+    <div className="max-w-4xl mx-auto p-6 landscape:p-3">
+      <div className="mb-6 landscape:mb-3">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-2">
           Расчёт циркуляционного насоса
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
@@ -50,7 +50,8 @@ export function PumpCalculator() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* В альбомном режиме на телефоне сразу 2 колонки: форма слева, результат справа */}
+      <div className="grid grid-cols-1 landscape:grid-cols-2 lg:grid-cols-2 gap-6 landscape:gap-3">
         {/* Форма ввода */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
