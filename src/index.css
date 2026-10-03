@@ -80,3 +80,42 @@
     animation: slide-up 0.3s ease-out;
   }
 }
+
+/* ==========================================================================
+   Печать: печатается ТОЛЬКО документ (.print-area), а не весь интерфейс.
+   Без этого на мобильных при window.print() в PDF/печать попадали шапка,
+   боковое меню и кнопки, а таблица обрезалась по ширине экрана.
+   ========================================================================== */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Прячем всё, кроме области документа (если она размечена) */
+  body:has(.print-area) *:not(.print-area):not(.print-area *) {
+    visibility: hidden !important;
+  }
+  body:has(.print-area) .print-area,
+  body:has(.print-area) .print-area * {
+    visibility: visible !important;
+  }
+  body:has(.print-area) .print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Запрет разрыва строки таблицы посередине позиции */
+  tr {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+}
