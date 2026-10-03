@@ -104,6 +104,10 @@ export const router = createBrowserRouter([
         element: <P.RegulationsPage />,
       },
       {
+        path: 'reference/standards',
+        element: <P.StandardsReference />,
+      },
+      {
         path: 'reference/boiler-errors',
         element: <P.BoilerErrors />,
       },

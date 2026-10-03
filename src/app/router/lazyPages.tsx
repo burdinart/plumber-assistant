@@ -45,6 +45,7 @@ export const SlopeCalculator = lazy(() => import('../../features/calculators/com
 export const BoilerErrors = lazy(() => import('../../features/reference/components/BoilerErrors').then(m => ({ default: m.BoilerErrors })));
 export const Troubleshooting = lazy(() => import('../../features/reference/components/Troubleshooting').then(m => ({ default: m.Troubleshooting })));
 export const RegulationsPage = lazy(() => import('../../features/reference/regulations/components/RegulationsPage').then(m => ({ default: m.RegulationsPage })));
+export const StandardsReference = lazy(() => import('../../features/reference/components/StandardsReference').then(m => ({ default: m.StandardsReference })));
 
 // Проектирование
 export const DesignHub = lazy(() => import('../../features/calculators/components/DesignHub').then(m => ({ default: m.DesignHub })));
