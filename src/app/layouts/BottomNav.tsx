@@ -27,7 +27,7 @@ export function BottomNav() {
   return (
     <>
       {/* Нижняя панель */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-gray-800 dark:bg-gray-800 border-t border-gray-700 sm:hidden z-40" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <nav className="fixed bottom-0 left-0 right-0 bg-gray-800 dark:bg-gray-800 border-t border-gray-700 md:hidden z-40" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
         <div className="flex items-center justify-around h-16">
           {mainItems.map((item) => {
             const Icon = item.icon;

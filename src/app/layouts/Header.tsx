@@ -16,7 +16,7 @@ export function Header({ onOpenSidebar }: { onOpenSidebar?: () => void }) {
         {/* Бургер для мобильного drawer сайдбара */}
         <button
           onClick={onOpenSidebar}
-          className="sm:hidden p-2 -ml-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
+          className="md:hidden p-2 -ml-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300"
           aria-label="Открыть меню"
         >
           <Menu className="w-5 h-5" />
