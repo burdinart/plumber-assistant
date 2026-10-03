@@ -33,7 +33,7 @@ function getCurrentTime(): string {
 }
 
 export const APP_VERSION: AppVersion = {
-  version: '1.1.0',
+  version: '1.1.1',
   buildDate: getCurrentDate(),
   buildTime: getCurrentTime(),
 };
@@ -45,6 +45,16 @@ export interface ChangelogEntry {
 }
 
 export const CHANGELOG: ChangelogEntry[] = [
+  {
+    version: '1.1.1',
+    date: '03.10.2026',
+    changes: [
+      '🧭 Исправлено пропадание бокового сайдбара на десктопе (ширина окна ≥768px)',
+      '⚙️ Состояние свёрнутого сайдбара из localStorage больше не прячет навигацию на ПК: при загрузке и ресайзе окна на ≥768px он принудительно разворачивается',
+      '📱 На мобильных (<768px) свёрнутое состояние игнорируется — drawer работает как прежде',
+      '▸ Обновление приложения происходит автоматически при следующем открытии вкладки (обновлённый Service Worker активируется сам)'
+    ]
+  },
   {
     version: '1.1.0',
     date: '27.09.2026',
