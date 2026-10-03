@@ -14,6 +14,8 @@ interface DocumentToolbarProps {
 
 const TOOLBAR_BTN =
   'px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg flex items-center gap-2 min-h-[44px]';
+const ACTION_BTN =
+  'px-4 py-2 text-white rounded-lg flex items-center gap-2 min-h-[44px]';
 
 /** Шапка редактора документов: заголовок + действия (ориентация, предпросмотр, PDF, сохранение). */
 export const DocumentToolbar = ({
@@ -57,21 +59,21 @@ export const DocumentToolbar = ({
         )}
         <button
           onClick={onShowPreview}
-          className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg flex items-center gap-2"
+          className={`${ACTION_BTN} bg-gray-700 hover:bg-gray-600`}
         >
           <Eye className="w-4 h-4" />
           Предпросмотр
         </button>
         <button
           onClick={onExportPDF}
-          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2"
+          className={`${ACTION_BTN} bg-green-600 hover:bg-green-700`}
         >
           <Download className="w-4 h-4" />
           PDF
         </button>
         <button
           onClick={onSave}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2"
+          className={`${ACTION_BTN} bg-blue-600 hover:bg-blue-700`}
         >
           <Save className="w-4 h-4" />
           Сохранить
