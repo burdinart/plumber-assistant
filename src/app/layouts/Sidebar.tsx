@@ -86,9 +86,9 @@ export function Sidebar({ mobileOpen = false, onCloseMobile }: {
       />
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-col transition-transform duration-300 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 max-w-[85vw] overflow-y-auto overscroll-contain bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-col transition-transform duration-300 ease-in-out ${
           mobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
-        } sm:transform-none sm:transition-all sm:static sm:z-auto sm:flex sm:shrink-0 ${sidebarCollapsed ? 'sm:w-16' : 'sm:w-64'} lg:!w-64`}
+        } sm:transform-none sm:transition-all sm:static sm:z-auto sm:flex sm:h-full sm:min-h-0 sm:shrink-0 ${sidebarCollapsed ? 'sm:w-16' : 'sm:w-64'} lg:!w-64`}
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
         aria-label="Боковая навигация"
       >
@@ -101,8 +101,8 @@ export function Sidebar({ mobileOpen = false, onCloseMobile }: {
           <X className="w-5 h-5" />
         </button>
 
-        {/* Logo */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+        {/* Logo (шапка не уезжает при прокрутке списка пунктов) */}
+        <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
           {/* Мобильный drawer всегда полный (с подписями), независимо от sidebarCollapsed */}
           <div className="flex items-center gap-2 lg:hidden">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
