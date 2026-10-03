@@ -71,6 +71,15 @@ export const MODULES: Module[] = [
     isNew: true,
   },
   {
+    id: 'standards',
+    title: 'Стандарты установки сантехприборов',
+    description: 'Высоты и расстояния установки по СП 30.13330.2020 и СП 73.13330.2016',
+    icon: 'Ruler',
+    path: '/reference/standards',
+    category: 'reference',
+    isNew: true,
+  },
+  {
     id: 'boiler-errors',
     title: 'Ошибки котлов',
     description: 'Коды ошибок Baxi, Vaillant, Bosch, Navien, Protherm',
