@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAppStore } from '../../shared/store/useAppStore';
 import { MODULES, CATEGORIES } from '../../shared/utils/constants';
@@ -65,8 +65,37 @@ export function Sidebar({ mobileOpen = false, onCloseMobile }: {
   mobileOpen?: boolean;
   onCloseMobile?: () => void;
 } = {}) {
-  const { sidebarCollapsed, toggleSidebar } = useAppStore();
+  const storedCollapsed = useAppStore((s) => s.sidebarCollapsed);
+  const toggleSidebar = useAppStore((s) => s.toggleSidebar);
   const location = useLocation();
+
+  // Страховка от «пропавшего» сайдбара: если состояние sidebarCollapsed=true
+  // сохранилось в localStorage с прошлых версий (или было получено с узкого
+  // окна), на десктопе (>768px) сайдбар принудительно разворачивается при
+  // загрузке и всегда остаётся видимым при переключении размера окна.
+  const [desktopForcedOpen, setDesktopForcedOpen] = useState(
+    () => typeof window !== 'undefined' && window.innerWidth >= 768
+  );
+
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 768px)');
+    const handle = (e: MediaQueryListEvent | MediaQueryList) => {
+      if (e.matches) setDesktopForcedOpen(true);   // перешли на десктоп — разворачиваем
+      else setDesktopForcedOpen(false);            // вернулись на мобильный — управляем drawer'ом
+    };
+    handle(mql);
+    mql.addEventListener('change', handle);
+    return () => mql.removeEventListener('change', handle);
+  }, []);
+
+  // На мобильных (<768px) свёрнутое состояние игнорируется полностью.
+  const sidebarCollapsed = desktopForcedOpen ? storedCollapsed : false;
+
+  // Обработчик кнопки «свернуть/развернуть»: сбрасывает страховку при явном действии.
+  const handleToggle = () => {
+    setDesktopForcedOpen(false);
+    toggleSidebar();
+  };
 
   // Закрываем мобильный drawer при переходе по ссылке.
   useEffect(() => {
@@ -108,12 +137,12 @@ export function Sidebar({ mobileOpen = false, onCloseMobile }: {
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shrink-0">
               <Wrench className="w-5 h-5 text-white" />
             </div>
-            <span className={`font-bold text-gray-800 dark:text-white text-sm truncate ${sidebarCollapsed ? 'hidden md:hidden' : 'inline'}`}>
+            <span className={`font-bold text-gray-800 dark:text-white text-sm truncate ${sidebarCollapsed ? 'md:hidden' : 'inline'}`}>
               Помощник Сантехника
             </span>
           </div>
           <button
-            onClick={toggleSidebar}
+            onClick={handleToggle}
             className="hidden md:block p-1 rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 shrink-0"
             aria-label={sidebarCollapsed ? 'Развернуть меню' : 'Свернуть меню'}
           >
