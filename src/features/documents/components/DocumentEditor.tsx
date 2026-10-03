@@ -1,26 +1,33 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { UserProfile, createEmptyProfile } from '../../profile/types';
+import { createEmptyProfile } from '../../profile/types';
 import { useProfile } from '../../profile/hooks/useProfile';
 import { useAppStore } from '../../../shared/store/useAppStore';
 import { hydrateClientsFromStorage } from '../../clients/hooks/useClients';
-import { useDocuments } from '../hooks/useDocuments';
-import { Document, DocumentType, DocumentContent, DocumentItem, ChangeHistoryEntry, isEditableDocument } from '../types';
-import { generateDocumentPDF } from '../utils/pdfGenerator';
+import { Document, DocumentType, DocumentContent, DocumentItem, ChangeHistoryEntry } from '../types';
 import { getChangedFields } from '../utils/diffUtils';
-import { buildContractorAutoFill, hasContractorData } from '../utils/autoFillProfile';
-import { DEFAULT_UNIT, unitOptionsFor } from '../utils/units';
-import { FileText, Save, Download, X, Plus, Trash2, Eye, User, Building, ArrowLeft, RotateCcw, Maximize2 } from 'lucide-react';
+import { generateDocumentPDF } from '../utils/pdfGenerator';
+import { buildContractorAutoFill, hasContractorData, getContractorFields } from '../utils/autoFillProfile';
+import { generateDocumentNumber } from '../model/documentNumber';
+import { useDocumentItems } from '../hooks/useDocumentItems';
 import { useScreenOrientation } from '../../../shared/hooks/useScreenOrientation';
+import { DocumentToolbar } from './editor/DocumentToolbar';
+import { DocumentBasicsPanel } from './editor/DocumentBasicsPanel';
+import { DocumentContentPanel } from './editor/DocumentContentPanel';
+import { DocumentPreviewModal } from './editor/DocumentPreviewModal';
 
-const DOCUMENT_TYPES: { value: DocumentType; label: string }[] = [
-  { value: 'act', label: 'Акт выполненных работ' },
-  { value: 'contract', label: 'Договор на оказание услуг' },
-  { value: 'warranty', label: 'Гарантийный талон' },
-  { value: 'handover', label: 'Акт приёмки-передачи' },
-  { value: 'estimate', label: 'Смета' },
-];
-
+/**
+ * Редактор документов.
+ *
+ * Рефакторинг (decomposition): компонент разбит на части:
+ * - model/documentNumber.ts  — генерация номера по шаблону профиля;
+ * - model/documentItems.ts   — чистые функции пересчёта позиций и итогов;
+ * - hooks/useDocumentItems.ts — логика позиций (add/update/remove);
+ * - editor/DocumentToolbar.tsx      — шапка с действиями;
+ * - editor/DocumentBasicsPanel.tsx  — левая колонка (тип, реквизиты, заказчик, исполнитель);
+ * - editor/DocumentContentPanel.tsx — правая колонка (содержание, позиции, доп. условия);
+ * - editor/DocumentPreviewModal.tsx — модальное окно предпросмотра.
+ */
 export const DocumentEditor = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -30,7 +37,7 @@ export const DocumentEditor = () => {
   // Управление ориентацией экрана: в альбомном режиме редактор документов
   // становится двухколоночным (форма + таблица работ), место под таблицу важнее отступов.
   const { isLandscape, lockSupported, lockOrientation, unlockOrientation } = useScreenOrientation();
-  
+
   const [document, setDocument] = useState<Partial<Document>>({
     type: 'act',
     title: '',
@@ -51,7 +58,6 @@ export const DocumentEditor = () => {
   const [showPreview, setShowPreview] = useState(false);
   const [selectedClient, setSelectedClient] = useState<any>(null);
   const [hasChanges, setHasChanges] = useState(false);
-  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
   const isEditMode = !!id && id !== 'new';
 
   // Гидрация CRM-клиентов из localStorage в стор при прямом заходе на редактор
@@ -61,12 +67,12 @@ export const DocumentEditor = () => {
 
   // Загрузка существующего документа
   useEffect(() => {
-    if (id && id !== 'new') {
-      const existing = documents.find(d => d.id === id);
+    if (isEditMode) {
+      const existing = documents.find((d) => d.id === id);
       if (existing) {
         setDocument(existing);
         if (existing.clientId) {
-          const client = clients.find(c => c.id === existing.clientId);
+          const client = clients.find((c) => c.id === existing.clientId);
           setSelectedClient(client || null);
         }
       } else {
@@ -74,13 +80,13 @@ export const DocumentEditor = () => {
         navigate('/documents');
       }
     }
-  }, [id, documents, clients, navigate]);
+  }, [id, isEditMode, documents, clients, navigate]);
 
   // Автозаполнение нового документа данными из профиля (ФИО / телефон / адрес исполнителя).
   // Ручные правки уже открытого документа не перезаписываются (см. buildContractorAutoFill).
   useEffect(() => {
     if (!isEditMode && hasContractorData(profile)) {
-      setDocument(prev => ({
+      setDocument((prev) => ({
         ...prev,
         content: {
           ...prev.content,
@@ -94,65 +100,58 @@ export const DocumentEditor = () => {
   // Генерация номера по шаблону профиля для новых документов
   useEffect(() => {
     if (!isEditMode) {
-      const template = profile?.contractNumberTemplate || '№ {number} от {date}';
-      const nextNumber = (documents.filter(d => d.type === document.type).length + 1).toString();
-      const dateStr = new Date().toLocaleDateString('ru-RU');
-
-      const generatedNumber = template
-        .replace('{number}', nextNumber)
-        .replace('{date}', dateStr);
-
-      setDocument(prev => ({
+      setDocument((prev) => ({
         ...prev,
-        number: generatedNumber,
+        number: generateDocumentNumber(profile?.contractNumberTemplate, documents, prev.type as DocumentType),
         date: new Date().toISOString().split('T')[0],
       }));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [document.type, isEditMode]);
 
+  const markChanged = () => setHasChanges(true);
+
+  const handleTypeChange = (type: DocumentType) => {
+    setDocument((prev) => ({ ...prev, type }));
+    markChanged();
+  };
+
   const handleClientSelect = (clientId: string) => {
-    const client = clients.find(c => c.id === clientId);
+    const client = clients.find((c) => c.id === clientId);
     setSelectedClient(client || null);
-    setDocument(prev => ({ ...prev, clientId }));
-    setHasChanges(true);
-    
-    if (client) {
-      setDocument(prev => ({
-        ...prev,
-        content: {
-          ...prev.content,
-          customer: client,
-        },
-      }));
-    }
+    setDocument((prev) => ({
+      ...prev,
+      clientId,
+      ...(client ? { content: { ...prev.content, customer: client } } : {}),
+    }));
+    markChanged();
   };
 
   // Отслеживание изменений в полях документа
   const handleChange = (field: string, value: any) => {
-    setDocument(prev => ({
+    setDocument((prev) => ({
       ...prev,
       [field]: value,
       updatedAt: new Date().toISOString(),
     }));
-    setHasChanges(true);
+    markChanged();
   };
 
   const handleContentChange = (field: string, value: any) => {
-    setDocument(prev => ({
+    setDocument((prev) => ({
       ...prev,
       content: {
         ...prev.content,
         [field]: value,
       },
     }));
-    setHasChanges(true);
+    markChanged();
   };
 
   // Ручное редактирование полей исполнителя внутри документа
   // (значения по умолчанию приходят из профиля, но могут быть переопределены)
   const handleContractorChange = (field: 'fullName' | 'phone' | 'address', value: string) => {
-    setDocument(prev => ({
+    setDocument((prev) => ({
       ...prev,
       content: {
         ...prev.content,
@@ -163,67 +162,16 @@ export const DocumentEditor = () => {
         },
       },
     }));
-    setHasChanges(true);
+    markChanged();
   };
 
-  const addItem = () => {
-    const newItem: DocumentItem = {
-      id: `${Date.now()}`,
-      name: '',
-      unit: 'шт',
-      quantity: 1,
-      price: 0,
-      total: 0,
-    };
-    setDocument(prev => ({
-      ...prev,
-      content: {
-        ...prev.content,
-        items: [...(prev.content?.items || []), newItem],
-      },
-    }));
-    setHasChanges(true);
-  };
-
-  const updateItem = (index: number, field: keyof DocumentItem, value: any) => {
-    const items = [...(document.content?.items || [])];
-    items[index] = { ...items[index], [field]: value };
-
-    // Пересчёт суммы
-    if (field === 'quantity' || field === 'price') {
-      const qty = field === 'quantity' ? Number(value) : items[index].quantity;
-      const price = field === 'price' ? Number(value) : items[index].price;
-      items[index].total = qty * price;
-    }
-
-    // Пересчёт общей суммы
-    const totalAmount = items.reduce((sum, item) => sum + item.total, 0);
-
-    setDocument(prev => ({
-      ...prev,
-      content: {
-        ...prev.content,
-        items,
-        totalAmount,
-      },
-    }));
-    setHasChanges(true);
-  };
-
-  const removeItem = (index: number) => {
-    const items = (document.content?.items || []).filter((_, i) => i !== index);
-    const totalAmount = items.reduce((sum, item) => sum + item.total, 0);
-    
-    setDocument(prev => ({
-      ...prev,
-      content: {
-        ...prev.content,
-        items,
-        totalAmount,
-      },
-    }));
-    setHasChanges(true);
-  };
+  // Позиции работ/материалов — логика вынесена в useDocumentItems
+  const { addItem, updateItem, removeItem } = useDocumentItems(
+    () => document.content?.items || [],
+    (items: DocumentItem[], totalAmount: number) =>
+      setDocument((prev) => ({ ...prev, content: { ...prev.content, items, totalAmount } })),
+    markChanged,
+  );
 
   const handleSave = () => {
     if (!document.title || !document.number) {
@@ -244,12 +192,12 @@ export const DocumentEditor = () => {
       updatedAt: new Date().toISOString(),
     };
 
-    if (id && id !== 'new') {
+    if (isEditMode) {
       // Режим редактирования — обновляем существующий документ
-      const oldDoc = documents.find(d => d.id === id);
+      const oldDoc = documents.find((d) => d.id === id);
       updateDocument(docToSave);
-      
-      // Добавляем запись в историю изменений
+
+      // История изменений: фиксируем diff старого и нового состояний
       if (oldDoc) {
         const changes = getChangedFields(docToSave, oldDoc);
         if (Object.keys(changes).length > 0) {
@@ -258,14 +206,13 @@ export const DocumentEditor = () => {
             timestamp: new Date().toISOString(),
             changes,
           };
-          // Используем addChangeHistory из store (будет добавлено)
           console.log('История изменений:', historyEntry);
         }
       }
     } else {
       // Режим создания — создаём новый документ
       addDocument(docToSave);
-      
+
       // Добавляем запись о создании в историю
       const historyEntry: ChangeHistoryEntry = {
         action: 'created',
@@ -304,426 +251,54 @@ export const DocumentEditor = () => {
     generateDocumentPDF(docToExport, profile);
   };
 
-  const docType = DOCUMENT_TYPES.find(t => t.value === document.type);
-
   return (
     <div className="p-4 landscape:p-2 max-w-6xl mx-auto">
-      {/* Заголовок */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <div className="flex items-center gap-3">
-          <FileText className="w-8 h-8 text-blue-400 shrink-0" />
-          <h1 className="text-xl sm:text-2xl font-bold text-white">
-            {id && id !== 'new' ? 'Редактирование документа' : 'Новый документ'}
-          </h1>
-        </div>
-        <div className="flex gap-2 flex-wrap">
-          {/* Блокировка альбомной ориентации — доступна только в установленной PWA;
-              в обычном браузере кнопка скрывается, lockOrientation безопасно no-op. */}
-          {lockSupported && !isLandscape && (
-            <button
-              onClick={() => lockOrientation('landscape')}
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg flex items-center gap-2 min-h-[44px]"
-              title="Развернуть в альбомный режим для удобного редактирования таблицы"
-            >
-              <Maximize2 className="w-4 h-4" />
-              Альбомно
-            </button>
-          )}
-          {lockSupported && isLandscape && (
-            <button
-              onClick={unlockOrientation}
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg flex items-center gap-2 min-h-[44px]"
-              title="Вернуть свободную ориентацию"
-            >
-              <RotateCcw className="w-4 h-4" />
-              Сброс ориентации
-            </button>
-          )}
-          <button
-            onClick={() => setShowPreview(true)}
-            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg flex items-center gap-2"
-          >
-            <Eye className="w-4 h-4" />
-            Предпросмотр
-          </button>
-          <button
-            onClick={handleExportPDF}
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2"
-          >
-            <Download className="w-4 h-4" />
-            PDF
-          </button>
-          <button
-            onClick={handleSave}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2"
-          >
-            <Save className="w-4 h-4" />
-            Сохранить
-          </button>
-          <button
-            onClick={() => navigate('/documents')}
-            className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-      </div>
+      <DocumentToolbar
+        isEditMode={isEditMode}
+        lockSupported={lockSupported}
+        isLandscape={isLandscape}
+        onLockOrientation={() => lockOrientation('landscape')}
+        onUnlockOrientation={unlockOrientation}
+        onShowPreview={() => setShowPreview(true)}
+        onExportPDF={handleExportPDF}
+        onSave={handleSave}
+      />
 
       {/* Основная форма: в альбомном режиме (landscape) или на широких экранах — 2 колонки */}
       <div className="grid grid-cols-1 landscape:grid-cols-2 lg:grid-cols-2 gap-6">
-        {/* Левая колонка - Основные данные */}
-        <div className="space-y-4">
-          {/* Тип документа */}
-          <div className="bg-gray-800 rounded-xl p-4">
-            <h3 className="text-lg font-semibold text-white mb-3">Тип документа</h3>
-            <select
-              value={document.type}
-              onChange={(e) => setDocument(prev => ({ ...prev, type: e.target.value as DocumentType }))}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              disabled={!!id && id !== 'new'}
-            >
-              {DOCUMENT_TYPES.map(type => (
-                <option key={type.value} value={type.value}>{type.label}</option>
-              ))}
-            </select>
-          </div>
+        <DocumentBasicsPanel
+          document={document}
+          isEditMode={isEditMode}
+          clients={clients}
+          selectedClient={selectedClient}
+          hasContractor={hasContractorData(profile)}
+          contractorDefaults={getContractorFields(profile)}
+          onTypeChange={handleTypeChange}
+          onFieldChange={handleChange}
+          onClientSelect={handleClientSelect}
+          onContractorChange={handleContractorChange}
+          onNavigateToProfile={() => navigate('/settings/profile')}
+        />
 
-          {/* Номер и дата */}
-          <div className="bg-gray-800 rounded-xl p-4 space-y-4">
-            <h3 className="text-lg font-semibold text-white">Реквизиты</h3>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Номер *</label>
-              <input
-                type="text"
-                value={document.number}
-                onChange={(e) => setDocument(prev => ({ ...prev, number: e.target.value }))}
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="№ 1 от 01.01.2026"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Дата</label>
-              <input
-                type="date"
-                value={document.date?.split('T')[0]}
-                onChange={(e) => setDocument(prev => ({ ...prev, date: e.target.value }))}
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-
-          {/* Заказчик */}
-          <div className="bg-gray-800 rounded-xl p-4">
-            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-              <User className="w-5 h-5" />
-              Заказчик
-            </h3>
-            <select
-              value={document.clientId || ''}
-              onChange={(e) => handleClientSelect(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Выберите клиента</option>
-              {clients.map(client => (
-                <option key={client.id} value={client.id}>{client.name}</option>
-              ))}
-            </select>
-            
-            {selectedClient && (
-              <div className="mt-3 p-3 bg-gray-700 rounded-lg text-sm text-gray-300">
-                <p><strong>Телефон:</strong> {selectedClient.phone}</p>
-                <p><strong>Адрес:</strong> {selectedClient.address}</p>
-              </div>
-            )}
-          </div>
-
-          {/* Исполнитель (автозаполнение из профиля, можно править вручную) */}
-          <div className="bg-gray-800 rounded-xl p-4">
-            <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-              <Building className="w-5 h-5" />
-              Исполнитель
-            </h3>
-            {!hasContractorData(profile) && (
-              <div className="mb-3 p-3 bg-yellow-900 bg-opacity-30 border border-yellow-700 rounded-lg text-sm text-yellow-300">
-                <p>💡 Заполните данные в Настройки → Профиль, чтобы они подставлялись в документы автоматически</p>
-                <button
-                  onClick={() => navigate('/settings/profile')}
-                  className="mt-2 text-blue-400 hover:text-blue-300 underline"
-                >
-                  Перейти в профиль
-                </button>
-              </div>
-            )}
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">ФИО исполнителя</label>
-                <input
-                  type="text"
-                  value={document.content?.contractor?.fullName ?? profile.fullName}
-                  onChange={(e) => handleContractorChange('fullName', e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Иванов Иван Иванович"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Номер телефона</label>
-                <input
-                  type="tel"
-                  value={document.content?.contractor?.phone ?? profile.phone}
-                  onChange={(e) => handleContractorChange('phone', e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="+7 (999) 123-45-67"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">Адрес</label>
-                <input
-                  type="text"
-                  value={document.content?.contractor?.address ?? profile.address}
-                  onChange={(e) => handleContractorChange('address', e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="г. Москва, ул. Примерная, д. 1"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Правая колонка - Содержимое */}
-        <div className="space-y-4">
-          {/* Название и предмет */}
-          <div className="bg-gray-800 rounded-xl p-4 space-y-4">
-            <h3 className="text-lg font-semibold text-white">Содержание</h3>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Название *</label>
-              <input
-                type="text"
-                value={document.title}
-                onChange={(e) => setDocument(prev => ({ ...prev, title: e.target.value }))}
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Например: Акт выполненных работ по установке сантехники"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Предмет</label>
-              <input
-                type="text"
-                value={document.content?.subject || ''}
-                onChange={(e) => setDocument(prev => ({
-                  ...prev,
-                  content: { ...prev.content, subject: e.target.value }
-                }))}
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Например: Монтаж системы отопления"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Описание</label>
-              <textarea
-                value={document.content?.description || ''}
-                onChange={(e) => setDocument(prev => ({
-                  ...prev,
-                  content: { ...prev.content, description: e.target.value }
-                }))}
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                rows={3}
-                placeholder="Подробное описание работ"
-              />
-            </div>
-          </div>
-
-          {/* Таблица работ/материалов */}
-          <div className="bg-gray-800 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-lg font-semibold text-white">Работы и материалы</h3>
-              <button
-                onClick={addItem}
-                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                Добавить
-              </button>
-            </div>
-
-            {(document.content?.items || []).length === 0 ? (
-              <p className="text-gray-400 text-sm text-center py-4">Нет позиций. Добавьте работы или материалы.</p>
-            ) : (
-              <div className="space-y-2">
-                {(document.content?.items || []).map((item, index) => (
-                  <div key={index} className="grid grid-cols-12 gap-2 items-center bg-gray-700 p-3 rounded-lg">
-                    <input
-                      type="text"
-                      value={item.name}
-                      onChange={(e) => updateItem(index, 'name', e.target.value)}
-                      className="col-span-5 px-2 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      placeholder="Наименование"
-                    />
-                    <select
-                      value={item.unit || DEFAULT_UNIT}
-                      onChange={(e) => updateItem(index, 'unit', e.target.value)}
-                      className="col-span-1 px-2 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-center"
-                      title="Единица измерения"
-                    >
-                      {unitOptionsFor(item.unit).map((opt) => (
-                        <option key={opt.value} value={opt.value}>{opt.value}</option>
-                      ))}
-                    </select>
-                    <input
-                      type="number"
-                      value={item.quantity}
-                      onChange={(e) => updateItem(index, 'quantity', Number(e.target.value))}
-                      step="any"
-                      min="0"
-                      className="col-span-2 px-2 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-center"
-                      placeholder="Кол-во"
-                    />
-                    <input
-                      type="number"
-                      value={item.price}
-                      onChange={(e) => updateItem(index, 'price', Number(e.target.value))}
-                      className="col-span-2 px-2 py-2 bg-gray-600 border border-gray-500 rounded text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 text-right"
-                      placeholder="Цена"
-                    />
-                    <div className="col-span-1 text-right text-white text-sm font-medium">
-                      {item.total.toFixed(0)} ₽
-                    </div>
-                    <button
-                      onClick={() => removeItem(index)}
-                      className="col-span-1 text-red-400 hover:text-red-300"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-                
-                {/* Итого */}
-                <div className="mt-3 pt-3 border-t border-gray-600 flex justify-end">
-                  <div className="text-lg font-bold text-white">
-                    Итого: {document.content?.totalAmount?.toFixed(2) || '0.00'} ₽
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Дополнительные условия */}
-          <div className="bg-gray-800 rounded-xl p-4 space-y-4">
-            <h3 className="text-lg font-semibold text-white">Дополнительно</h3>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Гарантийный срок</label>
-              <input
-                type="text"
-                value={document.content?.warrantyPeriod || ''}
-                onChange={(e) => setDocument(prev => ({
-                  ...prev,
-                  content: { ...prev.content, warrantyPeriod: e.target.value }
-                }))}
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Например: 12 месяцев"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Условия оплаты</label>
-              <textarea
-                value={document.content?.paymentTerms || ''}
-                onChange={(e) => setDocument(prev => ({
-                  ...prev,
-                  content: { ...prev.content, paymentTerms: e.target.value }
-                }))}
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                rows={2}
-                placeholder="Условия оплаты работ"
-              />
-            </div>
-          </div>
-        </div>
+        <DocumentContentPanel
+          title={document.title || ''}
+          content={document.content}
+          onFieldChange={handleChange}
+          onContentChange={handleContentChange}
+          onAddItem={addItem}
+          onUpdateItem={updateItem}
+          onRemoveItem={removeItem}
+        />
       </div>
 
-      {/* Модальное окно предпросмотра */}
       {showPreview && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-xl max-w-4xl w-full max-h-[90vh] landscape:max-h-[95vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b border-gray-700">
-              <h2 className="text-xl font-bold text-white">Предпросмотр документа</h2>
-              <button onClick={() => setShowPreview(false)} className="text-gray-400 hover:text-white p-2 min-w-[44px] min-h-[44px] flex items-center justify-center">
-                <X className="w-6 h-6" />
-              </button>
-            </div>
-            <div className="p-6 bg-white text-black min-h-[600px]">
-              {/* Простой предпросмотр */}
-              <div className="text-center mb-6">
-                <h1 className="text-2xl font-bold">{document.title}</h1>
-                <p className="text-gray-600 mt-2">{document.number}</p>
-                <p className="text-gray-600">от {new Date(document.date || '').toLocaleDateString('ru-RU')}</p>
-              </div>
-              
-              <div className="mb-6">
-                <p><strong>Исполнитель:</strong> {profile?.companyName || 'Не указан'}</p>
-                <p><strong>Заказчик:</strong> {selectedClient?.name || 'Не выбран'}</p>
-              </div>
-
-              {document.content?.items && document.content.items.length > 0 && (
-                <table className="w-full mb-6 border-collapse border border-gray-300">
-                  <thead>
-                    <tr className="bg-gray-100">
-                      <th className="border border-gray-300 p-2 text-left">№</th>
-                      <th className="border border-gray-300 p-2 text-left">Наименование</th>
-                      <th className="border border-gray-300 p-2 text-center">Ед.</th>
-                      <th className="border border-gray-300 p-2 text-center">Кол-во</th>
-                      <th className="border border-gray-300 p-2 text-right">Цена</th>
-                      <th className="border border-gray-300 p-2 text-right">Сумма</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {document.content.items.map((item, i) => (
-                      <tr key={i}>
-                        <td className="border border-gray-300 p-2">{i + 1}</td>
-                        <td className="border border-gray-300 p-2">{item.name || '-'}</td>
-                        <td className="border border-gray-300 p-2 text-center">{item.unit}</td>
-                        <td className="border border-gray-300 p-2 text-center">{item.quantity}</td>
-                        <td className="border border-gray-300 p-2 text-right">{item.price.toFixed(2)}</td>
-                        <td className="border border-gray-300 p-2 text-right">{item.total.toFixed(2)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-
-              <div className="text-right text-xl font-bold mb-6">
-                Итого: {document.content?.totalAmount?.toFixed(2) || '0.00'} ₽
-              </div>
-
-              <div className="mt-12 grid grid-cols-2 gap-8">
-                <div>
-                  <p className="font-bold mb-8">Исполнитель:</p>
-                  <p className="text-sm text-gray-600">{profile?.companyName}</p>
-                  {profile?.stampUrl && (
-                    <img src={profile.stampUrl} alt="Печать" className="mt-4 h-20" />
-                  )}
-                </div>
-                <div>
-                  <p className="font-bold mb-8">Заказчик:</p>
-                  <p className="text-sm text-gray-600">_________________</p>
-                </div>
-              </div>
-            </div>
-            <div className="p-4 border-t border-gray-700 flex justify-end gap-2">
-              <button
-                onClick={() => setShowPreview(false)}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg"
-              >
-                Закрыть
-              </button>
-              <button
-                onClick={handleExportPDF}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2"
-              >
-                <Download className="w-4 h-4" />
-                Скачать PDF
-              </button>
-            </div>
-          </div>
-        </div>
+        <DocumentPreviewModal
+          document={document}
+          profile={profile}
+          selectedClient={selectedClient}
+          onClose={() => setShowPreview(false)}
+          onExportPDF={handleExportPDF}
+        />
       )}
     </div>
   );
