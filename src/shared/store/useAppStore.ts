@@ -8,6 +8,7 @@ type Theme = 'light' | 'dark';
 
 interface AppState {
   theme: Theme;
+  /** @deprecated Сайдбар на десктопе всегда развёрнут (md:w-64, без сворачивания). Поле оставлено только для миграции старых persist-состояний. */
   sidebarCollapsed: boolean;
   reminders: Reminder[];
   documents: Document[];
@@ -79,9 +80,19 @@ export const useAppStore = create<AppState>()(
     name: 'plumber-assistant-settings',
     partialize: (state) => ({
       theme: state.theme,
-      sidebarCollapsed: state.sidebarCollapsed,
+      // sidebarCollapsed больше не персистится: на десктопе сайдбар всегда
+      // развёрнут, а старое сохранённое значение `true` ломало навигацию.
       reminders: state.reminders,
       documents: state.documents
-    })
+    }),
+    merge: (persistedState, currentState) => {
+      const persisted = (persistedState ?? {}) as Partial<AppState>;
+      return {
+        ...currentState,
+        ...persisted,
+        // принудительная миграция: сбрасываем устаревшее состояние сворачивания
+        sidebarCollapsed: false,
+      };
+    }
   })
 );
