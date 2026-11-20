@@ -117,6 +117,17 @@ src/
 │   ├── ui/               # UI компоненты
 │   └── utils/            # Утилиты
 └── main.tsx              # Entry point
+
+tests/                     # Unit-тесты (Vitest)
+docs/                      # Документация и история изменений
+REFACTORING_PLAN.md        # План реконструкции кода
+```
+
+### Запуск тестов
+
+```bash
+npm test          # разовый прогон (vitest run)
+npm run test:watch # режим наблюдения
 ```
 
 ## 🔧 Конфигурация
